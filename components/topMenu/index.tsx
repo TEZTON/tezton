@@ -44,7 +44,7 @@ export const TopMenu = () => {
   async function handleLogout() {
     try {
       await signOut(auth);
-      r.push("/");
+      r.push("/login");
     } catch (error) {
       console.log(error);
     }
