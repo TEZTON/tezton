@@ -7,6 +7,7 @@ import {
   Authentication,
   RedirectIfAuthenticated,
 } from "@/components/auth/Authentication";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,8 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathName = usePathname();
-
-  console.log(pathName);
+  const queryClient = new QueryClient();
 
   return (
     <html lang="en">
@@ -26,15 +26,17 @@ export default function RootLayout({
         <meta name="description" content="Tezton Dashboard" />
         <title>Tezton Dashboard</title>
       </head>
-      {pathName === "/login" || pathName === "/register" ? (
-        <body className={inter.className}>
-          <RedirectIfAuthenticated>{children}</RedirectIfAuthenticated>
-        </body>
-      ) : (
-        <body className={inter.className}>
-          <Authentication>{children}</Authentication>
-        </body>
-      )}
+      <QueryClientProvider client={queryClient}>
+        {pathName === "/login" || pathName === "/register" ? (
+          <body className={inter.className}>
+            <RedirectIfAuthenticated>{children}</RedirectIfAuthenticated>
+          </body>
+        ) : (
+          <body className={inter.className}>
+            <Authentication>{children}</Authentication>
+          </body>
+        )}
+      </QueryClientProvider>
     </html>
   );
 }

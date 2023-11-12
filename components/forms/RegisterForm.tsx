@@ -1,31 +1,59 @@
 import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
-import axios from "axios";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { CreateUser, CreateUserType, createUserApi } from "@/api/createUser";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 
-type Inputs = {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-};
+function getError(err: any) {
+  return err.response?.data?.message || "Invalid";
+}
 
 export const RegisterForm = () => {
-  const { register, handleSubmit } = useForm<Inputs>();
-  const r = useRouter();
+  const [successMsg, setSuccessMsg] = useState<string>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm<CreateUserType>({
+    resolver: zodResolver(CreateUser),
+  });
+  const { push } = useRouter();
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    try {
-      const user = await axios.post(
-        "https://tezton-api-b7127338731a.herokuapp.com/api/user",
-        data
-      );
+  const createUserMutation = useMutation({
+    mutationFn: createUserApi,
+    onSuccess() {
+      setSuccessMsg("Usuário criado com sucesso");
 
-      console.log(user);
-      r.push("/login");
-    } catch (error) {
-      console.log(error);
-    }
+      setTimeout(() => {
+        push("/login");
+      }, 2000);
+    },
+    onError(err) {
+      if ((err as any).code === "ERR_BAD_REQUEST") {
+        setError("root", { message: getError(err) });
+      } else {
+        setError("root", {
+          message: "Something went wrong, please try again later.",
+        });
+      }
+    },
+  });
+
+  const onSubmit: SubmitHandler<CreateUserType> = async (data) => {
+    createUserMutation.mutate(data);
+  };
+
+  const getErrors = () => {
+    return (
+      errors.email?.message ||
+      errors.password?.message ||
+      errors.firstName?.message ||
+      errors.lastName?.message ||
+      errors.root?.message
+    );
   };
 
   return (
@@ -34,6 +62,8 @@ export const RegisterForm = () => {
       onSubmit={handleSubmit(onSubmit)}
     >
       <span>Registro de usuário</span>
+      {successMsg && <span className="text-[green] text-xs">{successMsg}</span>}
+      {getErrors() && <span className="text-[red] text-xs">{getErrors()}</span>}
       <div className="flex flex-col justify-start items-start">
         <label htmlFor="firstname">Primeiro nome</label>
         <input
