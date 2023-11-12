@@ -65,7 +65,7 @@ export const AppTemplate = ({ children }: React.PropsWithChildren) => {
             {data?.map(({ id, name }) => (
               <Link
                 key={id}
-                href={`company/${id}`}
+                href={`/company/${id}`}
                 className="group flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden p-1 group"
               >
                 <div className="invisible group-hover:visible absolute text-primary mt-[-30px] ml-[-30px]">
