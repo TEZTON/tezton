@@ -1,4 +1,3 @@
-"use client";
 export const InfoContent = () => {
   const MOCK_CHANNELS = [
     { label: "Android", value: true },

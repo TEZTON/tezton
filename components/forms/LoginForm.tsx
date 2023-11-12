@@ -10,7 +10,12 @@ type Inputs = {
 };
 
 export const LoginForm = () => {
-  const { register, handleSubmit } = useForm<Inputs>();
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<Inputs>();
   const router = useRouter();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -20,12 +25,20 @@ export const LoginForm = () => {
         data.email,
         data.password
       );
-      console.log(user);
+
       if (user.user) {
-        router.push("/home");
+        router.push("/");
       }
     } catch (error) {
-      console.log(error);
+      if (
+        (error as unknown as any).code &&
+        ((error as unknown as any).code === "auth/invalid-login-credentials" ||
+          (error as unknown as any).code === "auth/invalid-email")
+      ) {
+        setError("root", { message: "Credenciais inválidas" });
+      } else {
+        setError("root", { message: "Erro inesperado" });
+      }
     }
   };
 
@@ -35,6 +48,9 @@ export const LoginForm = () => {
       onSubmit={handleSubmit(onSubmit)}
     >
       <span>Login de usuário</span>
+      {errors.root && (
+        <span className="text-[red] text-xs">{errors.root.message}</span>
+      )}
       <div className="flex flex-col justify-start items-start">
         <label htmlFor="Email">Email</label>
         <input

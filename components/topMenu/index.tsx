@@ -39,12 +39,12 @@ export const TopMenu = () => {
   const [selectedAmbient, setSelectedAmbient] = useState("");
   const [selectedPlatforms, setSelectedPlatforms] = useState("");
 
-  const r = useRouter();
+  const { push } = useRouter();
 
   async function handleLogout() {
     try {
       await signOut(auth);
-      r.push("/login");
+      push("/login");
     } catch (error) {
       console.log(error);
     }
