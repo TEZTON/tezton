@@ -34,15 +34,6 @@ export const AppTemplate = ({ children }: React.PropsWithChildren) => {
     edit_logo_company: EditLogoCompany,
   };
 
-  function toggleTheme() {
-    document.documentElement.classList.toggle("dark");
-    console.log(document.documentElement.classList.value);
-    localStorage.setItem(
-      "@teztonTheme",
-      document.documentElement.classList.value
-    );
-  }
-
   return (
     <div
       className="w-screen h-screen bg-[#fff] dark:bg-[#1c1c1c] flex"
@@ -83,11 +74,7 @@ export const AppTemplate = ({ children }: React.PropsWithChildren) => {
             {findSpecificCompany?.company_products.map((product) => (
               <Link
                 key={product.product_id}
-                href={
-                  selectedCompany.product_id
-                    ? ""
-                    : `product/${product.product_id}`
-                }
+                href={`product/${product.product_id}`}
                 className="group flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden p-1 group"
               >
                 <div className="invisible group-hover:visible absolute text-primary mt-[-30px] ml-[-30px]">
@@ -147,14 +134,6 @@ export const AppTemplate = ({ children }: React.PropsWithChildren) => {
                 </Link>
               ))}
           </div>
-        </div>
-        <div className="w-full mb-4 flex items-center justify-center">
-          <button
-            onClick={toggleTheme}
-            className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden p-1"
-          >
-            <MoonIcon />
-          </button>
         </div>
       </div>
       {!!selectedCompany?.company_id && <SubMenu />}

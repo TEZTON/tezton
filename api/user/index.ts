@@ -2,6 +2,8 @@ import { z } from "zod";
 import axios from "axios";
 import { API_URL } from "..";
 
+axios.defaults.baseURL = API_URL;
+
 export const CreateUser = z.object({
   firstName: z
     .string()
@@ -14,5 +16,5 @@ export const CreateUser = z.object({
 export type CreateUserType = z.infer<typeof CreateUser>;
 
 export async function createUserApi(data: CreateUserType) {
-  return axios.post(`${API_URL}/user`, data).then((res) => res.data);
+  return axios.post("/user", data).then((res) => res.data);
 }

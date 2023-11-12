@@ -1,8 +1,8 @@
 import { auth } from "@/firebase-config";
 import { onAuthStateChanged } from "@firebase/auth";
 import { useRouter } from "next/navigation";
-
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface AuthenticationProps {
   children?: React.ReactNode;
@@ -14,10 +14,16 @@ export function Authentication({ children }: AuthenticationProps) {
   const { push } = useRouter();
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
       if (user && auth.currentUser) {
+        axios.interceptors.request.use(async (config) => {
+          const token = await user.getIdToken();
+          config.headers.authorization = `Bearer ${token}`;
+          return config;
+        });
         setLoading(false);
       } else {
+        axios.interceptors.request.clear();
         push("/login");
       }
     });

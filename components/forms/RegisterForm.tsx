@@ -2,7 +2,7 @@ import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { CreateUser, CreateUserType, createUserApi } from "@/api/createUser";
+import { CreateUser, CreateUserType, createUserApi } from "@/api/user";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
