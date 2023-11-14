@@ -25,7 +25,7 @@ export const ResumeCompanies = ({ onSelectStatus }: any) => {
             value={company.company_id + idx}
           >
             <Accordion.Trigger
-              onClick={() => setSelectedCompany(company)}
+              // onClick={() => setSelectedCompany(company)}
               className="w-full"
             >
               <ResumeCompaniesHeader
