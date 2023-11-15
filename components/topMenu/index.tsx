@@ -30,7 +30,7 @@ export const TopMenu = () => {
   ];
 
   const STATS = [
-    { id: 1, label: "Configurações", icon: SettingsIcon },
+    { id: 1, label: "Configurações", icon: SettingsIcon, navigate: "company" },
     { id: 2, label: "Deslogar", icon: LogOutIcon },
   ];
 
@@ -109,9 +109,11 @@ export const TopMenu = () => {
             </div>
           </DropdownMenu.Trigger>
           <DropdownMenu.Content className="bg-foreground flex flex-col w-max max-w-[250px] gap-2 border border-default dark:border-defaultdark rounded-md overflow-hidden shadow-md drop-shadow-lg">
-            {STATS.map(({ id, label, icon: Icon }) => (
+            {STATS.map(({ id, label, icon: Icon, navigate }) => (
               <DropdownMenu.Item
-                onClick={() => (label === "Deslogar" ? handleLogout() : {})}
+                onClick={() => (label === "Deslogar" ? handleLogout() : 
+                  push("/access")
+                )}
                 key={label + id}
                 className="w-full h-7 flex justify-between items-center gap-2 hover:bg-primary px-2 py-3"
               >
