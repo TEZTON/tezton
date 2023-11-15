@@ -7,7 +7,7 @@ const nextConfig = {
                 hostname: 'cdn-icons-png.flaticon.com',
                 port: '',
                 pathname: '**',
-            },
+            }
         ],
     },
 }

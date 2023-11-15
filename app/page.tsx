@@ -4,7 +4,7 @@ import { AppTemplate } from "@/components/templates/Template";
 import { AtomIcon, User2Icon } from "lucide-react";
 
 import { CardSumary } from "@/components/cardSumary";
-import { ResumeCompanies } from "@/components/companies";
+import { Companies } from "@/components/companies";
 import { Calendar } from "@/components/calendar";
 import { useState } from "react";
 
@@ -55,7 +55,8 @@ export default function Home() {
         <Calendar />
       </div>
       <div className="w-full grid grid-cols-2 justify-between gap-14 ">
-        <ResumeCompanies onSelectStatus={handleSelectStatus} />
+        <Companies />
+
         <div className="w-full">
           {selectedStatus && (
             <div className="flex flex-col gap-3 w-full">
