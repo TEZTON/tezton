@@ -10,13 +10,14 @@ import Image from "next/image";
 import { Dialog } from "../dialog";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { COMPANY_KEYS, getCompanyApi } from "@/api/company";
+import { COMPANY_KEYS, getAllCompanyApi } from "@/api/company";
+import FakePicture from "../FakePicture";
 
 export const AppTemplate = ({ children }: React.PropsWithChildren) => {
   const selectedCompany = useParams();
   const { data } = useQuery({
-    queryKey: [COMPANY_KEYS.getCompanies],
-    queryFn: getCompanyApi,
+    queryKey: [COMPANY_KEYS.getAllCompanies],
+    queryFn: getAllCompanyApi,
   });
 
   const FORMS = {
@@ -71,12 +72,7 @@ export const AppTemplate = ({ children }: React.PropsWithChildren) => {
                 <div className="invisible group-hover:visible absolute text-primary mt-[-30px] ml-[-30px]">
                   <EditIcon size={16} />
                 </div>
-                <Image
-                  src="/isotipo_png.png"
-                  alt={name}
-                  width={30}
-                  height={30}
-                />
+                <FakePicture name={name} />
               </Link>
             ))}
           </div>
