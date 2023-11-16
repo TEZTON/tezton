@@ -1,13 +1,17 @@
 import { SearchIcon } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { ACCESS_USER_KEY, getAccessApi } from "@/api/access";
 import { useState } from "react";
 import { Tables } from "../../components/table";
-import { useQuery } from "@tanstack/react-query";
 
 
 export const AccessComponent = () => {
   const [actives, setActives] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  /* const { data } = useQuery({
+    queryKey: [ACCESS_USER_KEY.getAccessUsers],
+    queryFn: getCompanyApi,
+  }); */
 
   const mockData = [
       {
