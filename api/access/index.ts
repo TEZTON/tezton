@@ -27,5 +27,5 @@ const GetAccessUser = z.object({
 type GetAccessUserType = z.infer<typeof GetAccessUser>;
 
 export async function getAccessApi(companyId: string, name: string): Promise<GetAccessUserType[]> {
-  return axios.get(`/access-requests/by-company/${companyId}/by-user/${name}`).then((res) => res.data);
+  return axios.get(`/user-access?companyId=${companyId}&name=${name}`).then((res) => res.data);
 }
