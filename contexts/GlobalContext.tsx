@@ -21,11 +21,6 @@ export default function GlobalProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    (async () => {
-      const theme = localStorage.getItem("@teztonTheme");
-      if (theme === "dark") document.documentElement.classList.add("dark");
-    })();
-
     onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         return setUser(currentUser);
