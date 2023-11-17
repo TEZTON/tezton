@@ -73,7 +73,7 @@ export default function UpsertCompany({
           className="input input-sm input-bordered input-primary"
           {...register("type")}
         >
-          <option selected value={CompanyTypeEnum.Enum.Consultoria}>
+          <option value={CompanyTypeEnum.Enum.Consultoria}>
             {CompanyTypeEnum.Enum.Consultoria}
           </option>
           <option value={CompanyTypeEnum.Enum.Financeira}>

@@ -5,7 +5,7 @@ import UpsertCompany from "@/components/forms/UpsertCompany";
 
 import Link from "next/link";
 import Image from "next/image";
-import Dialog from "../dialog";
+import Dialog from "../modal";
 
 import { useQuery } from "@tanstack/react-query";
 import { COMPANY_KEYS, getAllCompanyApi } from "@/api/company";
@@ -33,9 +33,9 @@ export default function MainPageSidebar() {
           open={isOpen}
           setOpen={setOpen}
           trigger={
-            <div className="hover:bg-black hover:bg-opacity-20 p-2 rounded-full cursor-pointer m-auto mt-2 flex">
+            <button className="btn btn-xs cursor-pointer m-auto mt-2 flex w-9 h-9">
               <PlusCircleIcon size={16} />
-            </div>
+            </button>
           }
         >
           <UpsertCompany

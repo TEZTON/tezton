@@ -52,10 +52,10 @@ export default function UpsertProduct({
         className="w-full flex flex-col gap-5"
         onSubmit={handleSubmit(onSubmit)}
       >
-        {getError() && <div className="text-[red] text-xs">{getError()}</div>}
+        {getError() && <div className="text-error text-xs">{getError()}</div>}
         <input
           type="text"
-          placeholder="Nome do Empresa"
+          placeholder="Nome do Produto"
           {...register("name")}
           className="input input-sm input-bordered input-primary"
         />

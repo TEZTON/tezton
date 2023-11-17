@@ -1,7 +1,7 @@
 import { EditIcon, HomeIcon, PlusCircleIcon } from "lucide-react";
 
 import Link from "next/link";
-import Dialog from "../dialog";
+import Dialog from "../modal";
 
 import { useQuery } from "@tanstack/react-query";
 import FakePicture from "../FakePicture";
@@ -31,13 +31,13 @@ export default function CompanyPageSidebar({
         <div className="w-full flex flex-col justify-center items-center gap-2">
           <Link
             href="/"
-            className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden p-1"
+            className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] overflow-hidden p-1"
           >
             <HomeIcon size={16} />
           </Link>
           <Dialog
             trigger={
-              <button className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden">
+              <button className="btn btn-xs cursor-pointer m-auto mt-2 flex w-9 h-9">
                 <PlusCircleIcon size={16} />
               </button>
             }
@@ -45,10 +45,10 @@ export default function CompanyPageSidebar({
             <UpsertProduct companyId={id} />
           </Dialog>
         </div>
-        {data?.map(({ id, name }) => (
+        {data?.map(({ id: productId, name }) => (
           <Link
-            key={id}
-            href={`/company/${id}`}
+            key={productId}
+            href={`/company/${id}/product/${productId}`}
             className="group flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden p-1 group"
           >
             <div className="invisible group-hover:visible absolute text-primary mt-[-30px] ml-[-30px]">
