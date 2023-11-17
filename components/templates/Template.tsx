@@ -1,6 +1,6 @@
 import { EditIcon, HomeIcon, PlusCircleIcon } from "lucide-react";
 
-import { EditNameCompany } from "@/components/forms/UpsertCompany";
+import EditNameCompany from "@/components/forms/UpsertCompany";
 import { SubMenu } from "@/components/subMenu";
 import { TopMenu } from "@/components/topMenu";
 import { DeleteCompany } from "@/components/forms/DeleteCompany";
