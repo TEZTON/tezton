@@ -27,18 +27,21 @@ export default function RootLayout({
         <meta name="description" content="Tezton Dashboard" />
         <title>Tezton Dashboard</title>
       </head>
-      <QueryClientProvider client={queryClient}>
-        {pathName === "/login" || pathName === "/register" ? (
+
+      {pathName === "/login" || pathName === "/register" ? (
+        <QueryClientProvider client={queryClient}>
           <body className={inter.className}>
             <RedirectIfAuthenticated>{children}</RedirectIfAuthenticated>
           </body>
-        ) : (
+        </QueryClientProvider>
+      ) : (
+        <QueryClientProvider client={queryClient}>
           <body className={inter.className}>
             <ReactQueryDevtools initialIsOpen={false} />
             <Authentication>{children}</Authentication>
           </body>
-        )}
-      </QueryClientProvider>
+        </QueryClientProvider>
+      )}
     </html>
   );
 }

@@ -6,7 +6,7 @@ import MainPageSidebar from "@/components/sidebar/MainPage";
 
 export default function Home() {
   return (
-    <main className="flex">
+    <main className="flex h-full">
       <MainPageSidebar />
       <div className="w-[calc(100%-55px)]">
         <div className="flex ">
