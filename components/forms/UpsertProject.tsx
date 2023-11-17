@@ -1,46 +1,47 @@
 import {
-  CreateProduct,
-  CreateProductType,
-  PRODUCT_KEYS,
-  createProductApi,
-} from "@/api/product";
+  CreatePrejectType,
+  CreateProject,
+  PROJECT_KEYS,
+  PriorityEnum,
+  createProjectApi,
+} from "@/api/project";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-interface UpsertProductProps {
-  companyId: string;
-  productId?: string;
+interface UpsertProjectProps {
+  productId: string;
+  projectId?: string;
   onSuccess: () => void;
 }
 
-export default function UpsertProduct({
-  companyId,
+export default function UpsertProject({
   productId,
+  projectId,
   onSuccess,
-}: UpsertProductProps) {
+}: UpsertProjectProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateProductType>({
-    resolver: zodResolver(CreateProduct),
+  } = useForm<CreatePrejectType>({
+    resolver: zodResolver(CreateProject),
   });
   const queryClient = useQueryClient();
 
   const create = useMutation({
-    mutationFn: createProductApi,
-    onSuccess() {
-      queryClient.invalidateQueries({
-        queryKey: [PRODUCT_KEYS.getProducts],
+    mutationFn: createProjectApi,
+    async onSuccess() {
+      await queryClient.invalidateQueries({
+        queryKey: [PROJECT_KEYS.getProjects],
       });
-
       onSuccess();
     },
   });
 
-  const onSubmit: SubmitHandler<CreateProductType> = (data) => {
-    create.mutate({ ...data, companyId });
+  const onSubmit: SubmitHandler<CreatePrejectType> = (data) => {
+    create.mutate({ ...data, productId });
   };
 
   const getError = () => {
@@ -50,7 +51,7 @@ export default function UpsertProduct({
   return (
     <div className="bg-white p-6">
       <p className="font-bold mb-5">
-        {productId ? "Atualizar Produto" : "Adicionar Produto"}
+        {projectId ? "Atualizar Projeto" : "Adicionar Projeto"}
       </p>
       <form
         className="w-full flex flex-col gap-5"
@@ -59,17 +60,30 @@ export default function UpsertProduct({
         {getError() && <div className="text-error text-xs">{getError()}</div>}
         <input
           type="text"
-          placeholder="Nome do Produto"
+          placeholder="Nome do Projeto"
           {...register("name")}
           className="input input-sm input-bordered input-primary"
         />
 
         <input
           type="text"
-          placeholder="Descrição"
+          placeholder="Descrição "
           {...register("description")}
           className="input input-sm input-bordered input-primary"
         />
+
+        <select
+          className="input input-sm input-bordered input-primary"
+          {...register("priority")}
+        >
+          <option value={PriorityEnum.Enum.Low}>{PriorityEnum.Enum.Low}</option>
+          <option value={PriorityEnum.Enum.Medium}>
+            {PriorityEnum.Enum.Medium}
+          </option>
+          <option value={PriorityEnum.Enum.High}>
+            {PriorityEnum.Enum.High}
+          </option>
+        </select>
 
         <button className="btn btn-primary text-white" type="submit">
           Salvar

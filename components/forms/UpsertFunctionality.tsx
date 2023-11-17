@@ -1,46 +1,44 @@
 import {
-  CreateProduct,
-  CreateProductType,
-  PRODUCT_KEYS,
-  createProductApi,
-} from "@/api/product";
+  CreateFunctionality,
+  CreateFunctionalityType,
+  createFunctionalityApi,
+} from "@/api/functionality";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-interface UpsertProductProps {
-  companyId: string;
-  productId?: string;
+interface UpsertFunctionalityrops {
+  projectId: string;
+  functionalityId?: string;
   onSuccess: () => void;
 }
 
-export default function UpsertProduct({
-  companyId,
-  productId,
+export default function UpsertFunctionality({
+  projectId,
+  functionalityId,
   onSuccess,
-}: UpsertProductProps) {
+}: UpsertFunctionalityrops) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateProductType>({
-    resolver: zodResolver(CreateProduct),
+  } = useForm<CreateFunctionalityType>({
+    resolver: zodResolver(CreateFunctionality),
   });
   const queryClient = useQueryClient();
 
   const create = useMutation({
-    mutationFn: createProductApi,
-    onSuccess() {
-      queryClient.invalidateQueries({
-        queryKey: [PRODUCT_KEYS.getProducts],
+    mutationFn: createFunctionalityApi,
+    async onSuccess() {
+      await queryClient.invalidateQueries({
+        // queryKey: [PROJECT_KEYS.getProjects],
       });
-
       onSuccess();
     },
   });
 
-  const onSubmit: SubmitHandler<CreateProductType> = (data) => {
-    create.mutate({ ...data, companyId });
+  const onSubmit: SubmitHandler<CreateFunctionalityType> = (data) => {
+    create.mutate({ ...data, projectId });
   };
 
   const getError = () => {
@@ -50,7 +48,9 @@ export default function UpsertProduct({
   return (
     <div className="bg-white p-6">
       <p className="font-bold mb-5">
-        {productId ? "Atualizar Produto" : "Adicionar Produto"}
+        {functionalityId
+          ? "Atualizar Funcionalidade"
+          : "Adicionar Funcionalidade"}
       </p>
       <form
         className="w-full flex flex-col gap-5"
@@ -59,14 +59,14 @@ export default function UpsertProduct({
         {getError() && <div className="text-error text-xs">{getError()}</div>}
         <input
           type="text"
-          placeholder="Nome do Produto"
+          placeholder="Nome da funcionalidade"
           {...register("name")}
           className="input input-sm input-bordered input-primary"
         />
 
         <input
           type="text"
-          placeholder="Descrição"
+          placeholder="Descrição "
           {...register("description")}
           className="input input-sm input-bordered input-primary"
         />
