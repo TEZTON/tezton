@@ -5,7 +5,6 @@ import {
   PlusIcon,
   TrashIcon,
 } from "lucide-react";
-import { Dialog } from "../dialog";
 
 export const ContextMenu = () => {
   const ITEMS = [
@@ -40,7 +39,6 @@ export const ContextMenu = () => {
             key={label + id}
             className="w-full h-7 flex justify-between items-center gap-2 hover:bg-primary px-2 py-3"
           >
-            <Dialog Trigger={<Icon size={14} />} />
             <span className="flex justify-start w-full text-xs">{label}</span>
           </DropdownMenu.Item>
         ))}
