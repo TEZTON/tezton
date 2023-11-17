@@ -15,7 +15,7 @@ export default function CompanyTemplate({ children }: PropsWithChildren) {
   });
 
   if (isLoading) {
-    return <div>...Loading</div>;
+    return <div>Loading...</div>;
   }
 
   if (isError) {

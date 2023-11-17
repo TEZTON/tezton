@@ -58,6 +58,5 @@ export async function getAllowedCompanyApi(): Promise<
 }
 
 export async function getCompanyByIdApi(id: string): Promise<CompaniesType> {
-  console.log(id);
   return axios.get(`/company/${id}`).then((res) => res.data);
 }

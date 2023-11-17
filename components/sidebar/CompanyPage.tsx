@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Dialog } from "../dialog";
 
 import { useQuery } from "@tanstack/react-query";
-import { getAllCompanyApi } from "@/api/company";
 import FakePicture from "../FakePicture";
 import UpsertProduct from "../forms/UpsertProduct";
 import { PRODUCT_KEYS, getProductsApi } from "@/api/product";
@@ -43,7 +42,7 @@ export default function CompanyPageSidebar({
                 <PlusCircleIcon size={16} />
               </button>
             }
-            Content={UpsertProduct}
+            Content={() => <UpsertProduct companyId={id} />}
           />
         </div>
         {data?.map(({ id, name }) => (

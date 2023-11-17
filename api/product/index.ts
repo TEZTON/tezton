@@ -19,17 +19,16 @@ export const GetProduct = z.object({
 export const CreateProduct = z.object({
   name: z.string().min(1, "Product name must contain at least 1 character(s)"),
   description: z.string().optional().nullable(),
-  companyId: z.string().uuid(),
 });
 
 export type CreateProductType = z.infer<typeof CreateProduct>;
 export type GetProductType = z.infer<typeof GetProduct>;
 
 export async function createProductApi({
-  companyId,
   name,
   description,
-}: CreateProductType) {
+  companyId,
+}: CreateProductType & { companyId: string }) {
   return axios
     .post(`/company/${companyId}/product`, { name, description })
     .then((res) => res.data);

@@ -18,9 +18,6 @@ export default function UpsertProduct({ companyId }: UpsertProductProps) {
     handleSubmit,
     formState: { errors },
   } = useForm<CreateProductType>({
-    defaultValues: {
-      companyId,
-    },
     resolver: zodResolver(CreateProduct),
   });
   const queryClient = useQueryClient();
@@ -28,23 +25,18 @@ export default function UpsertProduct({ companyId }: UpsertProductProps) {
   const create = useMutation({
     mutationFn: createProductApi,
     onSuccess() {
-      queryClient.refetchQueries({
+      queryClient.invalidateQueries({
         queryKey: [PRODUCT_KEYS.getProducts],
-        exact: true,
       });
     },
-    onError() {},
   });
 
   const onSubmit: SubmitHandler<CreateProductType> = (data) => {
-    console.log(123123);
-    create.mutate(data);
+    create.mutate({ ...data, companyId });
   };
 
   const getError = () => {
-    return (
-      errors.name?.message || errors.companyId?.message || errors.root?.message
-    );
+    return errors.name?.message || errors.root?.message;
   };
 
   return (
