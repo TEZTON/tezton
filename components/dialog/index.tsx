@@ -1,34 +1,50 @@
-import * as DialogRadix from "@radix-ui/react-dialog";
-import { XIcon } from "lucide-react";
+import * as Dialog from "@radix-ui/react-dialog";
 
-export const Dialog = ({
-  title,
-  Trigger,
-  Content,
-}: any) => {
+interface ModalProps {
+  /**
+   * Class names to apply to the content container which wraps `children`.
+   */
+  className?: string;
+  /**
+   * Element (e.g. button) which when interacted with, will open the sidebar.
+   */
+  trigger?: JSX.Element;
+  /**
+   * Whether the sidebar is open or not - used to control the sidebar manually.
+   */
+  open?: boolean;
+  /**
+   * Whether the sidebar *should* be open or not.
+   *
+   * e.g. if a user clicks on the area outside of the modal, onOpenChange will be called
+   * with `false`, but the modal won't actually close (since its open state is
+   * controlled by `open`).
+   */
+  setOpen?: (open: boolean) => void;
+  /**
+   * Content to render inside the sidebar.
+   */
+  children: React.ReactNode;
+}
+
+export default function Modal({
+  trigger,
+  className,
+  open,
+  setOpen,
+  children,
+}: ModalProps) {
   return (
-    <DialogRadix.Root>
-      <DialogRadix.Trigger asChild>{Trigger}</DialogRadix.Trigger>
-      <DialogRadix.Portal>
-        <DialogRadix.Overlay className="bg-black/50 data-[state=open]:animate-overlayShow fixed inset-0" />
-        <DialogRadix.Content className="bg-white border border-default dark:border-defaultdark data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-foreground p-[25px] focus:outline-none">
-          <DialogRadix.Title className="m-0 text-[17px] font-medium">
-            {title}
-          </DialogRadix.Title>
-          <DialogRadix.Description className="mt-[10px] mb-5 text-[15px] leading-normal">
-            {/* {description} */}
-          </DialogRadix.Description>
-          <Content />
-          <DialogRadix.Close asChild>
-            <button
-              className="text-violet11 hover:bg-violet4 focus:shadow-violet7 absolute top-[10px] right-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
-              aria-label="Close"
-            >
-              <XIcon />
-            </button>
-          </DialogRadix.Close>
-        </DialogRadix.Content>
-      </DialogRadix.Portal>
-    </DialogRadix.Root>
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 bg-default bg-opacity-50 backdrop-blur-[2px]" />
+        <Dialog.Content
+          className={`fixed top-1/2 left-1/2 min-h-[250px] w-full max-w-[450px] -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-md border border-disabled bg-white shadow-2DP ${className}`}
+        >
+          {children}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
-};
+}

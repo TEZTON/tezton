@@ -1,13 +1,11 @@
-import { EditIcon, HomeIcon, PlusCircleIcon } from "lucide-react";
+import { EditIcon, HomeIcon } from "lucide-react";
 
 import EditNameCompany from "@/components/forms/UpsertCompany";
-import { SubMenu } from "@/components/subMenu";
 import { TopMenu } from "@/components/topMenu";
 import { DeleteCompany } from "@/components/forms/DeleteCompany";
 import { EditLogoCompany } from "@/components/forms/EditLogoCompany";
 import Link from "next/link";
 import Image from "next/image";
-import { Dialog } from "../dialog";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { COMPANY_KEYS, getAllCompanyApi } from "@/api/company";
@@ -45,19 +43,6 @@ export const AppTemplate = ({ children }: React.PropsWithChildren) => {
               >
                 <HomeIcon size={16} />
               </Link>
-              <Dialog
-                title={
-                  selectedCompany.company_id
-                    ? "Adicionar Produto"
-                    : "Adicionar Empresa"
-                }
-                Trigger={
-                  <button className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden p-1">
-                    <PlusCircleIcon size={16} />
-                  </button>
-                }
-                Content={FORMS["edit_company"]}
-              />
             </div>
             {data?.map(({ id, name }) => (
               <Link

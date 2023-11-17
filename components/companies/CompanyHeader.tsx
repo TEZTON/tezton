@@ -16,7 +16,7 @@ export default function CompanyHeader({ logo, name }: CompanyHeaderProps) {
   ];
 
   return (
-    <div className="w-full h-12 bg-sky-400 flex items-center px-3 gap-2 rounded-lg">
+    <div className="w-full h-12 bg-primary flex items-center px-3 gap-2 rounded-lg">
       <div className="w-[60%] flex justify-between">
         <div className="w-[50%] flex justify-start items-center gap-2 whitespace-nowrap overflow-hidden">
           <FakePicture name={logo} />

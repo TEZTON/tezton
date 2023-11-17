@@ -1,7 +1,7 @@
 import { EditIcon, HomeIcon, PlusCircleIcon } from "lucide-react";
 
 import Link from "next/link";
-import { Dialog } from "../dialog";
+import Dialog from "../dialog";
 
 import { useQuery } from "@tanstack/react-query";
 import FakePicture from "../FakePicture";
@@ -37,7 +37,7 @@ export default function CompanyPageSidebar({
           </Link>
           <Dialog
             title="Adicionar Produto"
-            Trigger={
+            trigger={
               <button className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden">
                 <PlusCircleIcon size={16} />
               </button>
