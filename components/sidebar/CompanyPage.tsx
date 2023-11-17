@@ -36,14 +36,14 @@ export default function CompanyPageSidebar({
             <HomeIcon size={16} />
           </Link>
           <Dialog
-            title="Adicionar Produto"
             trigger={
               <button className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden">
                 <PlusCircleIcon size={16} />
               </button>
             }
-            Content={() => <UpsertProduct companyId={id} />}
-          />
+          >
+            <UpsertProduct companyId={id} />
+          </Dialog>
         </div>
         {data?.map(({ id, name }) => (
           <Link

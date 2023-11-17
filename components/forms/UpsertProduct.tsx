@@ -10,9 +10,13 @@ import { SubmitHandler, useForm } from "react-hook-form";
 
 interface UpsertProductProps {
   companyId: string;
+  productId?: string;
 }
 
-export default function UpsertProduct({ companyId }: UpsertProductProps) {
+export default function UpsertProduct({
+  companyId,
+  productId,
+}: UpsertProductProps) {
   const {
     register,
     handleSubmit,
@@ -40,28 +44,33 @@ export default function UpsertProduct({ companyId }: UpsertProductProps) {
   };
 
   return (
-    <form
-      className="w-full flex flex-col gap-5"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      {getError() && <div className="text-[red] text-xs">{getError()}</div>}
-      <input
-        type="text"
-        placeholder="Nome do Empresa"
-        {...register("name")}
-        className="w-full h-8 pl-2 rounded border border-default dark:border-defaultdark bg-foreground"
-      />
+    <div className="bg-white p-6">
+      <p className="font-bold mb-5">
+        {productId ? "Atualizar Produto" : "Adicionar Produto"}
+      </p>
+      <form
+        className="w-full flex flex-col gap-5"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        {getError() && <div className="text-[red] text-xs">{getError()}</div>}
+        <input
+          type="text"
+          placeholder="Nome do Empresa"
+          {...register("name")}
+          className="input input-sm input-bordered input-primary"
+        />
 
-      <input
-        type="text"
-        placeholder="Descrição"
-        {...register("description")}
-        className="w-full h-8 pl-2 rounded border border-default dark:border-defaultdark bg-foreground"
-      />
+        <input
+          type="text"
+          placeholder="Descrição"
+          {...register("description")}
+          className="input input-sm input-bordered input-primary"
+        />
 
-      <button className="btn" type="submit">
-        Salvar
-      </button>
-    </form>
+        <button className="btn btn-primary text-white" type="submit">
+          Salvar
+        </button>
+      </form>
+    </div>
   );
 }
