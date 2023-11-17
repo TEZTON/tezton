@@ -3,9 +3,11 @@ import color from "tinycolor2";
 
 interface FakePictureProps {
   name: string;
+  width?: number;
+  height?: number;
 }
 
-export default function FakePicture({ name }: FakePictureProps) {
+export default function FakePicture({ name, width, height }: FakePictureProps) {
   const hashed = hash(name);
   const c = color({ h: hashed % 360, s: 0.95, l: 0.5 });
   const c1 = c.toHexString();
@@ -15,8 +17,8 @@ export default function FakePicture({ name }: FakePictureProps) {
     <div
       className="flex items-center justify-center rounded-full"
       style={{
-        width: 30,
-        height: 30,
+        width: width || 30,
+        height: height || 30,
       }}
     >
       <svg viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">

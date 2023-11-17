@@ -8,6 +8,7 @@ axios.defaults.baseURL = API_URL;
 export const COMPANY_KEYS = {
   getAllCompanies: "getAllCompanies",
   getAllowedCompanies: "getAllowedCompanies",
+  getCompanyById: "getCompanyById",
 };
 
 export const CompanyTypeEnum = z.enum([
@@ -21,7 +22,7 @@ export const CreateCompany = z.object({
   type: z.optional(CompanyTypeEnum).default("Consultoria"),
 });
 
-const GetAllCompanies = z.object({
+const Companies = z.object({
   id: z.string(),
   name: z.string(),
   createdAt: z.string(),
@@ -39,14 +40,14 @@ const GetAllowedCompanies = z.object({
 });
 
 export type CreateCompanyType = z.infer<typeof CreateCompany>;
-type GetAllCompaniesType = z.infer<typeof GetAllCompanies>;
+type CompaniesType = z.infer<typeof Companies>;
 type GetAllowedCompaniesType = z.infer<typeof GetAllowedCompanies>;
 
 export async function createCompanyApi(data: CreateCompanyType) {
   return axios.post("/company", data).then((res) => res.data);
 }
 
-export async function getAllCompanyApi(): Promise<GetAllCompaniesType[]> {
+export async function getAllCompanyApi(): Promise<CompaniesType[]> {
   return axios.get("/company").then((res) => res.data);
 }
 
@@ -54,4 +55,9 @@ export async function getAllowedCompanyApi(): Promise<
   GetAllowedCompaniesType[]
 > {
   return axios.get("/company/allowed").then((res) => res.data);
+}
+
+export async function getCompanyByIdApi(id: string): Promise<CompaniesType> {
+  console.log(id);
+  return axios.get(`/company/${id}`).then((res) => res.data);
 }

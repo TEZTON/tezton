@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-export const EditNameCompany = ({ value }: any) => {
+export default function UpsertCompany() {
   const {
     register,
     handleSubmit,
@@ -44,17 +44,25 @@ export const EditNameCompany = ({ value }: any) => {
         type="text"
         placeholder="Nome do Empresa"
         {...register("name")}
-        value={value}
         className="w-full h-8 pl-2 rounded border border-default dark:border-defaultdark bg-foreground"
       />
-      <input
-        type="text"
-        placeholder="Tipo da Empresa"
+
+      <select
+        className="w-full h-8 pl-2 rounded border border-default dark:border-defaultdark bg-foreground"
         {...register("type")}
-        value={value}
-        className="w-full h-8 pl-2 rounded border border-default dark:border-defaultdark bg-foreground"
-      />
+      >
+        <option selected value={CompanyTypeEnum.Enum.Consultoria}>
+          {CompanyTypeEnum.Enum.Consultoria}
+        </option>
+        <option value={CompanyTypeEnum.Enum.Financeira}>
+          {CompanyTypeEnum.Enum.Financeira}
+        </option>
+        <option value={CompanyTypeEnum.Enum.Tecnologia}>
+          {CompanyTypeEnum.Enum.Tecnologia}
+        </option>
+      </select>
+
       <button type="submit">Salvar</button>
     </form>
   );
-};
+}
