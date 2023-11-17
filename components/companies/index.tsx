@@ -5,7 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { COMPANY_KEYS, getAllowedCompanyApi } from "@/api/company";
 import FakePicture from "../FakePicture";
 import Link from "next/link";
-import { Progress, Root, Indicator } from "@radix-ui/react-progress";
+import { Root, Indicator } from "@radix-ui/react-progress";
+import { useRouter } from "next/navigation";
 
 export const Companies = () => {
   const { data } = useQuery({
@@ -13,12 +14,19 @@ export const Companies = () => {
     queryFn: getAllowedCompanyApi,
   });
 
+  const { push } = useRouter();
+
   return (
     <div className="w-full">
       <Accordion.Root type="multiple" className="flex flex-col gap-2">
         {data?.map(({ name, id, products }) => (
           <Accordion.Item key={id} value={id}>
-            <Accordion.Trigger className="w-full">
+            <Accordion.Trigger
+              className="w-full"
+              onClick={() => {
+                push(`/company/${id}`);
+              }}
+            >
               <CompanyHeader name={name} logo={name} products={products} />
             </Accordion.Trigger>
 
@@ -42,28 +50,6 @@ export const Companies = () => {
                       </Root>
                     </Link>
                   </div>
-                  {/* <div className="w-[40%] flex items-center justify-between">
-                    {productsStatus[product?.product_name]
-                      ?.map((feature: { status: any[] }) =>
-                        feature.status.map((statu: any) => statu)
-                      )
-                      [product_idx]?.map(
-                        (statusName: {
-                          status_name: string;
-                          value: number;
-                        }) => (
-                          <div
-                            key={statusName.status_name}
-                            onClick={() =>
-                              onSelectStatus({ ...statusName, ...product })
-                            }
-                            className="w-full flex items-center justify-center"
-                          >
-                            {statusName.value}
-                          </div>
-                        )
-                      )}
-                  </div> */}
                 </div>
               ))}
             </Accordion.Content>

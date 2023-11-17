@@ -8,6 +8,7 @@ import {
   RedirectIfAuthenticated,
 } from "@/components/auth/Authentication";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,6 +34,7 @@ export default function RootLayout({
           </body>
         ) : (
           <body className={inter.className}>
+            <ReactQueryDevtools initialIsOpen={false} />
             <Authentication>{children}</Authentication>
           </body>
         )}

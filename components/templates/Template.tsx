@@ -1,6 +1,6 @@
 import { EditIcon, HomeIcon, PlusCircleIcon } from "lucide-react";
 
-import { EditNameCompany } from "@/components/forms/EditCompany";
+import EditNameCompany from "@/components/forms/UpsertCompany";
 import { SubMenu } from "@/components/subMenu";
 import { TopMenu } from "@/components/topMenu";
 import { DeleteCompany } from "@/components/forms/DeleteCompany";
@@ -27,12 +27,8 @@ export const AppTemplate = ({ children }: React.PropsWithChildren) => {
   };
 
   return (
-    <div
-      className="w-screen h-screen bg-[#fff] dark:bg-[#1c1c1c] flex"
-      style={{ height: "calc(0px + 100vh)", maxHeight: "calc(0px + 100vh)" }}
-    >
-      {/* MENU lateral esquerdo */}
-      <div className="w-14 h-screen border-r bg-[#F8F9FF] dark:bg-[#1c1c1c] border-default dark:border-defaultdark flex flex-col justify-between">
+    <div className="bg-[#fff] dark:bg-[#1c1c1c] flex">
+      <div className="w-14 border-r flex flex-col justify-between overflow-auto">
         <div className="w-full flex flex-col">
           <Image
             alt="Image"
@@ -78,7 +74,7 @@ export const AppTemplate = ({ children }: React.PropsWithChildren) => {
           </div>
         </div>
       </div>
-      {!!selectedCompany?.company_id && <SubMenu />}
+
       <div className="flex flex-col flex-1 w-full overflow-x-hidden">
         {/* MENU do TOPO */}
         <TopMenu />
