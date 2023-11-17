@@ -4,6 +4,7 @@ import UpsertProject from "../forms/UpsertProject";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PROJECT_KEYS, getProjectsApi } from "@/api/project";
+import ProjectAccordion from "../projects/ProjectAccordion";
 
 interface ProjectFunctionalityDeliverableAreaProps {
   productId: string;
@@ -19,7 +20,7 @@ export default function ProjectFunctionalityDeliverableArea({
   });
   return (
     <>
-      <div className="min-w-[300px] py-2 px-4 border-r">
+      <div className="w-[300px] py-2 px-4 border-r">
         <Modal
           trigger={
             <button className="btn btn-xs">
@@ -36,9 +37,9 @@ export default function ProjectFunctionalityDeliverableArea({
           />
         </Modal>
 
-        <div>
+        <div className="gap-2 flex flex-col mt-2">
           {data?.map(({ name, id }) => (
-            <div key={id}>{name}</div>
+            <ProjectAccordion name={name} key={id} id={id} />
           ))}
         </div>
       </div>

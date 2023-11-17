@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import FakePicture from "../FakePicture";
 import UpsertProduct from "../forms/UpsertProduct";
 import { PRODUCT_KEYS, getProductsApi } from "@/api/product";
+import { useState } from "react";
 
 interface CompanyPageSidebarProps {
   id: string;
@@ -17,6 +18,7 @@ export default function CompanyPageSidebar({
   name,
   id,
 }: CompanyPageSidebarProps) {
+  const [productModal, setProductModal] = useState(false);
   const { data } = useQuery({
     queryKey: [PRODUCT_KEYS.getProducts],
     queryFn: () => getProductsApi(id),
@@ -41,8 +43,10 @@ export default function CompanyPageSidebar({
                 <PlusCircleIcon size={16} />
               </button>
             }
+            open={productModal}
+            setOpen={setProductModal}
           >
-            <UpsertProduct companyId={id} />
+            <UpsertProduct companyId={id} onSuccess={() => {}} />
           </Dialog>
         </div>
         {data?.map(({ id: productId, name }) => (
