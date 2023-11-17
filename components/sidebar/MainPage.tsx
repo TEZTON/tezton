@@ -20,20 +20,20 @@ export default function MainPageSidebar() {
   });
 
   return (
-    <div className="w-14 border-r flex flex-col pb-4">
+    <div className="w-14 flex flex-col border-r">
       <Image
         alt="Image"
         src="/isotipo_png.png"
-        className="w-14 h-[58px] min-h-[54px] min-w-[54px] p-3 border-b border-default dark:border-defaultdark flex items-center justify-center"
+        className="w-14 h-[58px] min-h-[54px] min-w-[54px] p-3 border-b"
         width={56}
         height={58}
       />
-      <div className="w-full flex flex-col justify-center items-center gap-2 mt-3 overflow-auto">
+      <div className="w-full flex flex-col gap-2 pb-4">
         <Dialog
           open={isOpen}
           setOpen={setOpen}
           trigger={
-            <div className="hover:bg-black hover:bg-opacity-20 p-2 rounded-full cursor-pointer">
+            <div className="hover:bg-black hover:bg-opacity-20 p-2 rounded-full cursor-pointer m-auto mt-2 flex">
               <PlusCircleIcon size={16} />
             </div>
           }
