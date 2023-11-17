@@ -3,5 +3,5 @@
 import { PropsWithChildren } from "react";
 
 export default function CompanyLayout({ children }: PropsWithChildren) {
-  return <main className="flex h-full">{children}</main>;
+  return <main className="flex h-full w-full">{children}</main>;
 }
