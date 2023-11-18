@@ -4,7 +4,7 @@ import UpsertProject from "../forms/UpsertProject";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PROJECT_KEYS, getProjectsApi } from "@/api/project";
-import ProjectAccordion from "../projects/ProjectAccordion";
+import ProjectAccordion from "../project/ProjectAccordion";
 
 interface ProjectFunctionalityDeliverableAreaProps {
   productId: string;

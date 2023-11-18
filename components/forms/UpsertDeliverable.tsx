@@ -1,45 +1,45 @@
 import {
-  CreateFunctionality,
-  CreateFunctionalityType,
-  FUNCTIONALITY_KEYS,
-  createFunctionalityApi,
-} from "@/api/functionality";
+  CreateDeliverable,
+  CreateDeliverableType,
+  DELIVERABLE_KEYS,
+  createDeliverableApi,
+} from "@/api/deliverable";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-interface UpsertFunctionalityrops {
-  projectId: string;
-  functionalityId?: string;
+interface UpsertDeliverableProps {
+  functionalityId: string;
+  deliverableId?: string;
   onSuccess: () => void;
 }
 
-export default function UpsertFunctionality({
-  projectId,
+export default function UpsertDeliverable({
   functionalityId,
+  deliverableId,
   onSuccess,
-}: UpsertFunctionalityrops) {
+}: UpsertDeliverableProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateFunctionalityType>({
-    resolver: zodResolver(CreateFunctionality),
+  } = useForm<CreateDeliverableType>({
+    resolver: zodResolver(CreateDeliverable),
   });
   const queryClient = useQueryClient();
 
   const create = useMutation({
-    mutationFn: createFunctionalityApi,
+    mutationFn: createDeliverableApi,
     async onSuccess() {
       await queryClient.invalidateQueries({
-        queryKey: [FUNCTIONALITY_KEYS.getFunctionalities, projectId],
+        queryKey: [DELIVERABLE_KEYS.getDeliverables, functionalityId],
       });
       onSuccess();
     },
   });
 
-  const onSubmit: SubmitHandler<CreateFunctionalityType> = (data) => {
-    create.mutate({ ...data, projectId });
+  const onSubmit: SubmitHandler<CreateDeliverableType> = (data) => {
+    create.mutate({ ...data, functionalityId });
   };
 
   const getError = () => {
@@ -49,9 +49,7 @@ export default function UpsertFunctionality({
   return (
     <div className="bg-white p-6">
       <p className="font-bold mb-5">
-        {functionalityId
-          ? "Atualizar Funcionalidade"
-          : "Adicionar Funcionalidade"}
+        {deliverableId ? "Atualizar Entregavel" : "Adicionar Entregavel"}
       </p>
       <form
         className="w-full flex flex-col gap-5"
@@ -60,7 +58,7 @@ export default function UpsertFunctionality({
         {getError() && <div className="text-error text-xs">{getError()}</div>}
         <input
           type="text"
-          placeholder="Nome da funcionalidade"
+          placeholder="Nome da entrega"
           {...register("name")}
           className="input input-sm input-bordered input-primary"
         />
