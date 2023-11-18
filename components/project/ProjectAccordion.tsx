@@ -5,6 +5,7 @@ import { useState } from "react";
 import UpsertFunctionality from "../forms/UpsertFunctionality";
 import { useQuery } from "@tanstack/react-query";
 import { FUNCTIONALITY_KEYS, getFunctionalitiesApi } from "@/api/functionality";
+import FunctionalityAccordion from "../functionality/FunctionalityAccordion";
 
 interface ProjectAccordionProps {
   name: string;
@@ -46,9 +47,7 @@ export default function ProjectAccordion({ name, id }: ProjectAccordionProps) {
           </Modal>
           <div className="mt-2 flex gap-2 flex-col">
             {data?.map(({ id, name }) => (
-              <div className="cursor-pointer" key={id}>
-                {name}
-              </div>
+              <FunctionalityAccordion key={id} id={id} name={name} />
             ))}
           </div>
         </Accordion.AccordionContent>
