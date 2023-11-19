@@ -51,6 +51,11 @@ export const userMutations = router({
                 message: "This email address is taken.",
               });
             }
+
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Something went wrong",
+            });
           });
 
         return "OK";

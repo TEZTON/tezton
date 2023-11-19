@@ -1,0 +1,20 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1698379456567,
+      "tag": "0000_wealthy_yellow_claw",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1700360952407,
+      "tag": "0001_tense_sister_grimm",
+      "breakpoints": true
+    }
+  ]
+}
