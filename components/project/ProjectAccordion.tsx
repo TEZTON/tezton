@@ -3,9 +3,8 @@ import Modal from "../modal";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import UpsertFunctionality from "../forms/UpsertFunctionality";
-import { useQuery } from "@tanstack/react-query";
-import { FUNCTIONALITY_KEYS, getFunctionalitiesApi } from "@/api/functionality";
 import FunctionalityAccordion from "../functionality/FunctionalityAccordion";
+import { trpc } from "@/trpc";
 
 interface ProjectAccordionProps {
   name: string;
@@ -14,9 +13,8 @@ interface ProjectAccordionProps {
 
 export default function ProjectAccordion({ name, id }: ProjectAccordionProps) {
   const [functionalityModal, setFunctionalityModal] = useState(false);
-  const { data } = useQuery({
-    queryKey: [FUNCTIONALITY_KEYS.getFunctionalities, id],
-    queryFn: () => getFunctionalitiesApi(id),
+  const { data } = trpc.functionalities.getFunctionalities.useQuery({
+    projectId: id,
   });
 
   return (

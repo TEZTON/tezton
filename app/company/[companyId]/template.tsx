@@ -1,17 +1,13 @@
 "use client";
-import { COMPANY_KEYS, getCompanyByIdApi } from "@/api/company";
 import CompanyPageSidebar from "@/components/sidebar/CompanyPage";
-import { useQuery } from "@tanstack/react-query";
+import { trpc } from "@/trpc";
 import { useParams } from "next/navigation";
 import { PropsWithChildren } from "react";
 
 export default function CompanyTemplate({ children }: PropsWithChildren) {
   const { companyId } = useParams();
-  const { isLoading, isError, data } = useQuery({
-    queryKey: [COMPANY_KEYS.getCompanyById],
-    queryFn: () => getCompanyByIdApi(companyId as string),
-    enabled: typeof companyId === "string",
-    retry: false,
+  const { isLoading, isError, data } = trpc.companies.byId.useQuery({
+    companyId: companyId as string,
   });
 
   if (isLoading) {

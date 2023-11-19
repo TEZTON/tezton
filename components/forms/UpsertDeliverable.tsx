@@ -1,11 +1,9 @@
 import {
-  CreateDeliverable,
-  CreateDeliverableType,
-  DELIVERABLE_KEYS,
-  createDeliverableApi,
-} from "@/api/deliverable";
+  UpsertDeliverableSchema,
+  UpsertDeliverableSchemaType,
+} from "@/schema/deliverable";
+import { trpc } from "@/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 interface UpsertDeliverableProps {
@@ -23,23 +21,19 @@ export default function UpsertDeliverable({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateDeliverableType>({
-    resolver: zodResolver(CreateDeliverable),
-  });
-  const queryClient = useQueryClient();
-
-  const create = useMutation({
-    mutationFn: createDeliverableApi,
-    async onSuccess() {
-      await queryClient.invalidateQueries({
-        queryKey: [DELIVERABLE_KEYS.getDeliverables, functionalityId],
-      });
-      onSuccess();
+  } = useForm<UpsertDeliverableSchemaType>({
+    defaultValues: {
+      functionalityId: functionalityId,
     },
+    resolver: zodResolver(UpsertDeliverableSchema),
   });
+  const { deliverables } = trpc.useUtils();
+  const create = trpc.deliverables.createDeliverable.useMutation();
 
-  const onSubmit: SubmitHandler<CreateDeliverableType> = (data) => {
-    create.mutate({ ...data, functionalityId });
+  const onSubmit: SubmitHandler<UpsertDeliverableSchemaType> = async (data) => {
+    await create.mutateAsync({ ...data, functionalityId });
+    await deliverables.getDeliverables.invalidate();
+    onSuccess();
   };
 
   const getError = () => {

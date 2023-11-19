@@ -1,10 +1,9 @@
 import * as Accordion from "@radix-ui/react-accordion";
-import Modal from "../modal";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
-import UpsertFunctionality from "../forms/UpsertFunctionality";
-import { useQuery } from "@tanstack/react-query";
-import { DELIVERABLE_KEYS, getDeliverablesApi } from "@/api/deliverable";
+import { trpc } from "@/trpc";
+
+import Modal from "../modal";
 import UpsertDeliverable from "../forms/UpsertDeliverable";
 
 interface FunctionalityAccordionProps {
@@ -17,9 +16,8 @@ export default function FunctionalityAccordion({
   id,
 }: FunctionalityAccordionProps) {
   const [deliverableModal, setDeliverableModal] = useState(false);
-  const { data } = useQuery({
-    queryKey: [DELIVERABLE_KEYS.getDeliverables, id],
-    queryFn: () => getDeliverablesApi(id),
+  const { data } = trpc.deliverables.getDeliverables.useQuery({
+    functionalityId: id,
   });
 
   return (

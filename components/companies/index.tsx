@@ -1,19 +1,14 @@
 import * as Accordion from "@radix-ui/react-accordion";
 
 import CompanyHeader from "./CompanyHeader";
-import { useQuery } from "@tanstack/react-query";
-import { COMPANY_KEYS, getAllowedCompanyApi } from "@/api/company";
 import Link from "next/link";
 import { Root, Indicator } from "@radix-ui/react-progress";
 import { useRouter } from "next/navigation";
 import ImageRender from "../ImageRender";
+import { trpc } from "@/trpc";
 
 export const Companies = () => {
-  const { data } = useQuery({
-    queryKey: [COMPANY_KEYS.getAllowedCompanies],
-    queryFn: getAllowedCompanyApi,
-  });
-
+  const { data } = trpc.companies.getMyCompanies.useQuery();
   const { push } = useRouter();
 
   return (

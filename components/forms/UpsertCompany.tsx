@@ -1,16 +1,14 @@
-import {
-  CreateCompany,
-  CreateCompanyType,
-  CompanyTypeEnum,
-  createCompanyApi,
-  COMPANY_KEYS,
-  ACCEPTED_IMAGE_TYPES,
-} from "@/api/company";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
-import type { PutBlobResult } from "@vercel/blob";
-import { uploadAssetApi } from "@/api/asset";
+import {
+  ACCEPTED_IMAGE_TYPES,
+  CompanyTypeEnum,
+  UpsertCompanyFileUploadSchema,
+  UpsertCompanyFileUploadSchemaType,
+} from "@/schema/company";
+import { trpc } from "@/trpc";
+import { uploadAssetApi } from "@/trpc/asset";
 
 interface UpsertCompanyProps {
   companyId?: string;
@@ -25,21 +23,20 @@ export default function UpsertCompany({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateCompanyType>({
+  } = useForm<UpsertCompanyFileUploadSchemaType>({
     defaultValues: {
       type: CompanyTypeEnum.Enum.Consultoria,
     },
-    resolver: zodResolver(CreateCompany),
+    resolver: zodResolver(UpsertCompanyFileUploadSchema),
   });
 
-  const queryClient = useQueryClient();
-
-  const create = useMutation({
-    mutationFn: createCompanyApi,
-  });
+  const create = trpc.companies.createCompany.useMutation();
   const upload = useMutation({ mutationFn: uploadAssetApi });
+  const { companies } = trpc.useUtils();
 
-  const onSubmit: SubmitHandler<CreateCompanyType> = async (data) => {
+  const onSubmit: SubmitHandler<UpsertCompanyFileUploadSchemaType> = async (
+    data
+  ) => {
     let fileurl: string | undefined = undefined;
 
     if (data.companyImage[0]) {
@@ -51,15 +48,9 @@ export default function UpsertCompany({
       }
     }
 
-    create.mutate({ ...data, companyImageUrl: fileurl });
-
-    await queryClient.invalidateQueries({
-      queryKey: [
-        COMPANY_KEYS.getAllowedCompanies,
-        COMPANY_KEYS.getAllCompanies,
-      ],
-    });
-
+    await create.mutateAsync({ ...data, companyImageUrl: fileurl });
+    await companies.getAllCompanies.invalidate();
+    await companies.getMyCompanies.invalidate();
     onSuccess();
   };
 

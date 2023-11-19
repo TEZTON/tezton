@@ -1,13 +1,10 @@
 import { EditIcon, HomeIcon, PlusCircleIcon } from "lucide-react";
-
-import Link from "next/link";
-import Dialog from "../modal";
-
-import { useQuery } from "@tanstack/react-query";
-
-import UpsertProduct from "../forms/UpsertProduct";
-import { PRODUCT_KEYS, getProductsApi } from "@/api/product";
 import { useState } from "react";
+import Link from "next/link";
+import { trpc } from "@/trpc";
+
+import Dialog from "../modal";
+import UpsertProduct from "../forms/UpsertProduct";
 import ImageRender from "../ImageRender";
 
 interface CompanyPageSidebarProps {
@@ -22,10 +19,7 @@ export default function CompanyPageSidebar({
   companyImageUrl,
 }: CompanyPageSidebarProps) {
   const [productModal, setProductModal] = useState(false);
-  const { data } = useQuery({
-    queryKey: [PRODUCT_KEYS.getProducts],
-    queryFn: () => getProductsApi(id),
-  });
+  const { data } = trpc.products.getProducts.useQuery({ companyId: id });
 
   return (
     <div className="w-14 border-r flex flex-col overflow-auto">
@@ -54,7 +48,12 @@ export default function CompanyPageSidebar({
             open={productModal}
             setOpen={setProductModal}
           >
-            <UpsertProduct companyId={id} onSuccess={() => {}} />
+            <UpsertProduct
+              companyId={id}
+              onSuccessCallback={() => {
+                setProductModal(false);
+              }}
+            />
           </Dialog>
         </div>
         {data?.map(({ id: productId, name }) => (

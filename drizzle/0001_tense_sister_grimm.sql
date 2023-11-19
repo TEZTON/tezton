@@ -1,0 +1,1 @@
+ALTER TABLE companies ADD `company_image_url` text;

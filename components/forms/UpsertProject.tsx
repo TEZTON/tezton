@@ -1,13 +1,10 @@
 import {
-  CreatePrejectType,
-  CreateProject,
-  PROJECT_KEYS,
   PriorityEnum,
-  createProjectApi,
-} from "@/api/project";
-
+  UpsertProjectSchema,
+  UpsertProjectSchemaType,
+} from "@/schema/project";
+import { trpc } from "@/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 interface UpsertProjectProps {
@@ -25,23 +22,20 @@ export default function UpsertProject({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreatePrejectType>({
-    resolver: zodResolver(CreateProject),
-  });
-  const queryClient = useQueryClient();
-
-  const create = useMutation({
-    mutationFn: createProjectApi,
-    async onSuccess() {
-      await queryClient.invalidateQueries({
-        queryKey: [PROJECT_KEYS.getProjects],
-      });
-      onSuccess();
+  } = useForm<UpsertProjectSchemaType>({
+    defaultValues: {
+      productId: productId,
     },
+    resolver: zodResolver(UpsertProjectSchema),
   });
 
-  const onSubmit: SubmitHandler<CreatePrejectType> = (data) => {
-    create.mutate({ ...data, productId });
+  const { projects } = trpc.useUtils();
+  const create = trpc.projects.createProject.useMutation();
+
+  const onSubmit: SubmitHandler<UpsertProjectSchemaType> = async (data) => {
+    await create.mutateAsync({ ...data, productId });
+    projects.getProjects.invalidate();
+    onSuccess();
   };
 
   const getError = () => {

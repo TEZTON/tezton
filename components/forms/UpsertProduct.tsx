@@ -1,46 +1,37 @@
-import {
-  CreateProduct,
-  CreateProductType,
-  PRODUCT_KEYS,
-  createProductApi,
-} from "@/api/product";
+import { UpsertProductSchema, UpsertProductSchemaType } from "@/schema/product";
+import { trpc } from "@/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 interface UpsertProductProps {
   companyId: string;
   productId?: string;
-  onSuccess: () => void;
+  onSuccessCallback: () => void;
 }
 
 export default function UpsertProduct({
   companyId,
   productId,
-  onSuccess,
+  onSuccessCallback,
 }: UpsertProductProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateProductType>({
-    resolver: zodResolver(CreateProduct),
-  });
-  const queryClient = useQueryClient();
-
-  const create = useMutation({
-    mutationFn: createProductApi,
-    onSuccess() {
-      queryClient.invalidateQueries({
-        queryKey: [PRODUCT_KEYS.getProducts],
-      });
-
-      onSuccess();
+  } = useForm<UpsertProductSchemaType>({
+    defaultValues: {
+      companyId: companyId,
     },
+    resolver: zodResolver(UpsertProductSchema),
   });
 
-  const onSubmit: SubmitHandler<CreateProductType> = (data) => {
-    create.mutate({ ...data, companyId });
+  const { products } = trpc.useUtils();
+  const create = trpc.products.createProduct.useMutation();
+
+  const onSubmit: SubmitHandler<UpsertProductSchemaType> = async (data) => {
+    await create.mutateAsync({ ...data, companyId });
+    await products.getProducts.invalidate();
+    onSuccessCallback();
   };
 
   const getError = () => {

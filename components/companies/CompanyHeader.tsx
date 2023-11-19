@@ -1,11 +1,10 @@
-import { GetProductType } from "@/api/product";
-
+import { ProductSchemaType } from "@/schema/product";
 import ImageRender from "../ImageRender";
 
 interface CompanyHeaderProps {
   logo: string;
   name: string;
-  products: GetProductType[];
+  products: ProductSchemaType[];
   imageUrl?: string | null;
 }
 

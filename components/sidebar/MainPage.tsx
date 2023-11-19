@@ -7,17 +7,13 @@ import Link from "next/link";
 import Image from "next/image";
 import Dialog from "../modal";
 
-import { useQuery } from "@tanstack/react-query";
-import { COMPANY_KEYS, getAllCompanyApi } from "@/api/company";
 import { useState } from "react";
 import ImageRender from "../ImageRender";
+import { trpc } from "@/trpc";
 
 export default function MainPageSidebar() {
   const [isOpen, setOpen] = useState(false);
-  const { data } = useQuery({
-    queryKey: [COMPANY_KEYS.getAllCompanies],
-    queryFn: getAllCompanyApi,
-  });
+  const { data } = trpc.companies.getAllCompanies.useQuery();
 
   return (
     <div className="w-14 flex flex-col border-r">
