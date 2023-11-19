@@ -52,12 +52,12 @@ export default function UpsertCompany({
     }
 
     create.mutate({ ...data, companyImageUrl: fileurl });
-    await queryClient.invalidateQueries({
-      queryKey: [COMPANY_KEYS.getAllowedCompanies],
-    });
 
     await queryClient.invalidateQueries({
-      queryKey: [COMPANY_KEYS.getAllCompanies],
+      queryKey: [
+        COMPANY_KEYS.getAllowedCompanies,
+        COMPANY_KEYS.getAllCompanies,
+      ],
     });
 
     onSuccess();
