@@ -1,9 +1,10 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "@/server";
-import { companiesSchema } from "../../db/schema";
+import { companiesSchema, productsSchema } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { CompanySchema } from "@/schema/company";
+import { ProductSchema } from "@/schema/product";
 
 export const companyQueries = router({
   getAllCompanies: protectedProcedure
@@ -18,12 +19,24 @@ export const companyQueries = router({
 
   getMyCompanies: protectedProcedure
     .input(z.void())
-    .output(z.array(CompanySchema))
+    .output(z.array(CompanySchema.extend({ products: z.array(ProductSchema) })))
     .query(async ({ ctx: { db, user } }) => {
-      const companies = await db
+      const result = await db
         .select()
         .from(companiesSchema)
         .where(eq(companiesSchema.userId, user.id));
+
+      const companies = await Promise.all(
+        result.map(async (c) => {
+          return {
+            ...c,
+            products: await db
+              .select()
+              .from(productsSchema)
+              .where(eq(productsSchema.companyId, c.id)),
+          };
+        })
+      );
 
       return companies;
     }),
