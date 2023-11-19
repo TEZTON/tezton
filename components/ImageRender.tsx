@@ -1,5 +1,5 @@
 import Image from "next/image";
-import FallbackProfilePicture from "./FallbackProfilePicture";
+import FallbackImage from "./FallbackImage";
 
 interface ImageRenderProps {
   name: string;
@@ -29,5 +29,5 @@ export default function ImageRender({
     );
   }
 
-  return <FallbackProfilePicture width={width} height={height} name={name} />;
+  return <FallbackImage width={width} height={height} name={name} />;
 }

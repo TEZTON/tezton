@@ -1,13 +1,17 @@
 import hash from "string-hash";
 import color from "tinycolor2";
 
-interface FakePictureProps {
+interface FallbackImageProps {
   name: string;
   width?: number;
   height?: number;
 }
 
-export default function FakePicture({ name, width, height }: FakePictureProps) {
+export default function FallbackImage({
+  name,
+  width,
+  height,
+}: FallbackImageProps) {
   const hashed = hash(name);
   const c = color({ h: hashed % 360, s: 0.95, l: 0.5 });
   const c1 = c.toHexString();
