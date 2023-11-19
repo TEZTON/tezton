@@ -9,6 +9,7 @@ import {
 } from "@/components/auth/Authentication";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { trpc, trpcClient } from "@/trpc";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,18 +30,22 @@ export default function RootLayout({
       </head>
 
       {pathName === "/login" || pathName === "/register" ? (
-        <QueryClientProvider client={queryClient}>
-          <body className={inter.className}>
-            <RedirectIfAuthenticated>{children}</RedirectIfAuthenticated>
-          </body>
-        </QueryClientProvider>
+        <trpc.Provider client={trpcClient} queryClient={queryClient}>
+          <QueryClientProvider client={queryClient}>
+            <body className={inter.className}>
+              <RedirectIfAuthenticated>{children}</RedirectIfAuthenticated>
+            </body>
+          </QueryClientProvider>
+        </trpc.Provider>
       ) : (
-        <QueryClientProvider client={queryClient}>
-          <body className={inter.className}>
-            <ReactQueryDevtools initialIsOpen={false} />
-            <Authentication>{children}</Authentication>
-          </body>
-        </QueryClientProvider>
+        <trpc.Provider client={trpcClient} queryClient={queryClient}>
+          <QueryClientProvider client={queryClient}>
+            <body className={inter.className}>
+              <ReactQueryDevtools initialIsOpen={false} />
+              <Authentication>{children}</Authentication>
+            </body>
+          </QueryClientProvider>
+        </trpc.Provider>
       )}
     </html>
   );
