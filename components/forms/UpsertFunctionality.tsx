@@ -4,7 +4,6 @@ import {
 } from "@/schema/functionality";
 import { trpc } from "@/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 interface UpsertFunctionalityProps {
@@ -23,21 +22,21 @@ export default function UpsertFunctionality({
     handleSubmit,
     formState: { errors },
   } = useForm<UpsertFunctionalitySchemaType>({
+    defaultValues: {
+      projectId: projectId,
+    },
     resolver: zodResolver(UpsertFunctionalitySchema),
   });
-  const queryClient = useQueryClient();
+  const { functionalities } = trpc.useUtils();
 
-  const create = trpc.functionalities.createFunctionality.useMutation({
-    async onSuccess() {
-      await queryClient.invalidateQueries({
-        // queryKey: [FUNCTIONALITY_KEYS.getFunctionalities, projectId],
-      });
-      onSuccess();
-    },
-  });
+  const create = trpc.functionalities.createFunctionality.useMutation();
 
-  const onSubmit: SubmitHandler<UpsertFunctionalitySchemaType> = (data) => {
-    create.mutate({ ...data, projectId });
+  const onSubmit: SubmitHandler<UpsertFunctionalitySchemaType> = async (
+    data
+  ) => {
+    await create.mutateAsync({ ...data, projectId });
+    await functionalities.getFunctionalities.invalidate();
+    onSuccess();
   };
 
   const getError = () => {

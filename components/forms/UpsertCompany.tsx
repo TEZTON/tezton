@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { uploadAssetApi } from "@/api/asset";
 import {
   ACCEPTED_IMAGE_TYPES,
   CompanyTypeEnum,
@@ -9,6 +8,7 @@ import {
   UpsertCompanyFileUploadSchemaType,
 } from "@/schema/company";
 import { trpc } from "@/trpc";
+import { uploadAssetApi } from "@/trpc/asset";
 
 interface UpsertCompanyProps {
   companyId?: string;
@@ -30,10 +30,9 @@ export default function UpsertCompany({
     resolver: zodResolver(UpsertCompanyFileUploadSchema),
   });
 
-  const queryClient = useQueryClient();
   const create = trpc.companies.createCompany.useMutation();
-
   const upload = useMutation({ mutationFn: uploadAssetApi });
+  const { companies } = trpc.useUtils();
 
   const onSubmit: SubmitHandler<UpsertCompanyFileUploadSchemaType> = async (
     data
@@ -49,15 +48,9 @@ export default function UpsertCompany({
       }
     }
 
-    create.mutate({ ...data, companyImageUrl: fileurl });
-
-    // await queryClient.invalidateQueries({
-    //   queryKey: [
-    //     COMPANY_KEYS.getAllowedCompanies,
-    //     COMPANY_KEYS.getAllCompanies,
-    //   ],
-    // });
-
+    await create.mutateAsync({ ...data, companyImageUrl: fileurl });
+    await companies.getAllCompanies.invalidate();
+    await companies.getMyCompanies.invalidate();
     onSuccess();
   };
 

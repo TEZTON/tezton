@@ -12,7 +12,7 @@ export const appRouter = router({
   products: productRouter,
   projects: projectRouter,
   functionalities: functionalityRouter,
-  delivrables: deliverableRouter,
+  deliverables: deliverableRouter,
 });
 
 export type AppRouter = typeof appRouter;

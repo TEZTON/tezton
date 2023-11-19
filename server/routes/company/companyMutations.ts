@@ -9,14 +9,16 @@ export const companyMutations = router({
   createCompany: protectedProcedure
     .input(UpsertCompanySchema)
     .output(z.string())
-    .mutation(async ({ ctx: { db, user }, input: { name, type } }) => {
-      const result = await db
-        .insert(companiesSchema)
-        .values({ name, type, userId: user.id })
-        .returning({ id: companiesSchema.id });
+    .mutation(
+      async ({ ctx: { db, user }, input: { name, type, companyImageUrl } }) => {
+        const result = await db
+          .insert(companiesSchema)
+          .values({ name, type, companyImageUrl, userId: user.id })
+          .returning({ id: companiesSchema.id });
 
-      return result[0].id;
-    }),
+        return result[0].id;
+      }
+    ),
 
   updateCompany: protectedProcedure
     .input(UpsertCompanySchema.extend({ companyId: z.string().uuid() }))

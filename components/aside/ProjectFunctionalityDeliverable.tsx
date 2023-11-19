@@ -2,9 +2,9 @@ import { PlusIcon } from "lucide-react";
 import Modal from "../modal";
 import UpsertProject from "../forms/UpsertProject";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { PROJECT_KEYS, getProjectsApi } from "@/api/project";
+
 import ProjectAccordion from "../project/ProjectAccordion";
+import { trpc } from "@/trpc";
 
 interface ProjectFunctionalityDeliverableAreaProps {
   productId: string;
@@ -14,10 +14,8 @@ export default function ProjectFunctionalityDeliverableArea({
   productId,
 }: ProjectFunctionalityDeliverableAreaProps) {
   const [projectModal, setProjectModal] = useState(false);
-  const { data } = useQuery({
-    queryKey: [PROJECT_KEYS.getProjects],
-    queryFn: () => getProjectsApi(productId),
-  });
+  const { data } = trpc.projects.getProjects.useQuery({ productId });
+
   return (
     <>
       <div className="w-[300px] py-2 px-4 border-r">
