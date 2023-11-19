@@ -1,9 +1,5 @@
-import {
-  CreateProduct,
-  CreateProductType,
-  PRODUCT_KEYS,
-  createProductApi,
-} from "@/api/product";
+import { UpsertProductSchema, UpsertProductSchemaType } from "@/schema/product";
+import { trpc } from "@/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -23,23 +19,21 @@ export default function UpsertProduct({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateProductType>({
-    resolver: zodResolver(CreateProduct),
+  } = useForm<UpsertProductSchemaType>({
+    resolver: zodResolver(UpsertProductSchema),
   });
   const queryClient = useQueryClient();
-
-  const create = useMutation({
-    mutationFn: createProductApi,
+  const create = trpc.products.createProduct.useMutation({
     onSuccess() {
       queryClient.invalidateQueries({
-        queryKey: [PRODUCT_KEYS.getProducts],
+        // queryKey: [PRODUCT_KEYS.getProducts],
       });
 
       onSuccess();
     },
   });
 
-  const onSubmit: SubmitHandler<CreateProductType> = (data) => {
+  const onSubmit: SubmitHandler<UpsertProductSchemaType> = (data) => {
     create.mutate({ ...data, companyId });
   };
 

@@ -10,29 +10,19 @@ import {
 import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { deliverableIdAccessMiddleware } from "./acl";
-
-const deliverableSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  description: z.string().nullable(),
-});
+import {
+  DeliverableSchema,
+  SingleDeliverableSchema,
+} from "@/schema/deliverable";
 
 export const deliverablesQueries = router({
   getDeliverables: protectedProcedure
-    .meta({
-      openapi: {
-        method: "GET",
-        path: "/functionality/{functionalityId}/deliverable",
-      },
-    })
     .input(
       z.object({
         functionalityId: z.string(),
       })
     )
-    .output(z.array(deliverableSchema))
+    .output(z.array(DeliverableSchema))
     .query(async ({ ctx: { db, user }, input: { functionalityId } }) => {
       const result = await db
         .select()
@@ -64,19 +54,8 @@ export const deliverablesQueries = router({
     }),
 
   byId: protectedProcedure
-    .meta({
-      openapi: {
-        method: "GET",
-        path: "/functionality/{functionalityId}/deliverable/{deliverableId}",
-      },
-    })
-    .input(
-      z.object({
-        functionalityId: z.string(),
-        deliverableId: z.string(),
-      })
-    )
-    .output(deliverableSchema)
+    .input(SingleDeliverableSchema)
+    .output(DeliverableSchema)
     .use(deliverableIdAccessMiddleware)
     .query(
       async ({

@@ -11,22 +11,14 @@ import {
 import { and, eq, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { deliverableIdAccessMiddleware } from "./acl";
+import {
+  SingleDeliverableSchema,
+  UpsertDeliverableSchema,
+} from "@/schema/deliverable";
 
 export const deliverablesMutations = router({
   createDeliverable: protectedProcedure
-    .meta({
-      openapi: {
-        method: "POST",
-        path: "/functionality/{functionalityId}/deliverable",
-      },
-    })
-    .input(
-      z.object({
-        functionalityId: z.string(),
-        name: z.string(),
-        description: z.string().nullable().optional(),
-      })
-    )
+    .input(UpsertDeliverableSchema)
     .output(z.string())
     .mutation(
       async ({
@@ -72,20 +64,7 @@ export const deliverablesMutations = router({
     ),
 
   updateDeliverable: protectedProcedure
-    .meta({
-      openapi: {
-        method: "PATCH",
-        path: "/functionality/{functionalityId}/deliverable/{deliverableId}",
-      },
-    })
-    .input(
-      z.object({
-        functionalityId: z.string(),
-        deliverableId: z.string(),
-        name: z.string().nullable().optional(),
-        description: z.string().nullable().optional(),
-      })
-    )
+    .input(UpsertDeliverableSchema.extend({ deliverableId: z.string().uuid() }))
     .output(z.string())
     .use(deliverableIdAccessMiddleware)
     .mutation(
@@ -104,18 +83,8 @@ export const deliverablesMutations = router({
     ),
 
   deleteDeliverable: protectedProcedure
-    .meta({
-      openapi: {
-        method: "DELETE",
-        path: "/functionality/{functionalityId}/deliverable/{deliverableId}",
-      },
-    })
-    .input(
-      z.object({
-        functionalityId: z.string(),
-        deliverableId: z.string(),
-      })
-    )
+
+    .input(SingleDeliverableSchema)
     .output(z.string())
     .use(deliverableIdAccessMiddleware)
     .mutation(

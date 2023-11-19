@@ -1,11 +1,9 @@
 import {
-  CreatePrejectType,
-  CreateProject,
-  PROJECT_KEYS,
   PriorityEnum,
-  createProjectApi,
-} from "@/api/project";
-
+  UpsertProjectSchema,
+  UpsertProjectSchemaType,
+} from "@/schema/project";
+import { trpc } from "@/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -25,22 +23,20 @@ export default function UpsertProject({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreatePrejectType>({
-    resolver: zodResolver(CreateProject),
+  } = useForm<UpsertProjectSchemaType>({
+    resolver: zodResolver(UpsertProjectSchema),
   });
   const queryClient = useQueryClient();
-
-  const create = useMutation({
-    mutationFn: createProjectApi,
+  const create = trpc.projects.createProject.useMutation({
     async onSuccess() {
       await queryClient.invalidateQueries({
-        queryKey: [PROJECT_KEYS.getProjects],
+        // queryKey: [PROJECT_KEYS.getProjects],
       });
       onSuccess();
     },
   });
 
-  const onSubmit: SubmitHandler<CreatePrejectType> = (data) => {
+  const onSubmit: SubmitHandler<UpsertProjectSchemaType> = (data) => {
     create.mutate({ ...data, productId });
   };
 
