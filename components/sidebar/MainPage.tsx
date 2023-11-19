@@ -9,8 +9,8 @@ import Dialog from "../modal";
 
 import { useQuery } from "@tanstack/react-query";
 import { COMPANY_KEYS, getAllCompanyApi } from "@/api/company";
-import FakePicture from "../FakePicture";
 import { useState } from "react";
+import ImageRender from "../ImageRender";
 
 export default function MainPageSidebar() {
   const [isOpen, setOpen] = useState(false);
@@ -45,7 +45,7 @@ export default function MainPageSidebar() {
           />
         </Dialog>
 
-        {data?.map(({ id, name }) => (
+        {data?.map(({ id, name, companyImageUrl }) => (
           <Link
             key={id}
             href={`/company/${id}`}
@@ -54,7 +54,7 @@ export default function MainPageSidebar() {
             <div className="invisible group-hover:visible absolute text-primary mt-[-30px] ml-[-30px]">
               <EditIcon size={16} />
             </div>
-            <FakePicture name={name} />
+            <ImageRender name={name} imageUrl={companyImageUrl} />
           </Link>
         ))}
       </div>
