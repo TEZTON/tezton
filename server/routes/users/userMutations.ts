@@ -2,21 +2,15 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
 import { publicProcedure, router } from "@/server";
-import { usersSchema } from "../../schema";
+import { usersSchema } from "../../db/schema";
+import { CreateUserSchema } from "@/schema/users";
 
 export const userMutations = router({
   createUser: publicProcedure
     .meta({
       openapi: { method: "POST", path: "/user" },
     })
-    .input(
-      z.object({
-        firstName: z.string(),
-        lastName: z.string(),
-        email: z.string().email(),
-        password: z.string().min(8, "Password must be at least 8 characters"),
-      })
-    )
+    .input(CreateUserSchema)
     .output(z.string())
     .mutation(
       async ({

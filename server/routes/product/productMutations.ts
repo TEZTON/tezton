@@ -1,23 +1,15 @@
 import { z } from "zod";
 
 import { protectedProcedure, router } from "@/server";
-import { companiesSchema, productsSchema } from "../../schema";
+import { companiesSchema, productsSchema } from "../../db/schema";
 import { and, eq, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { productIdAccessMiddleware } from "./acl";
+import { SingleProductSchema, UpsertProductSchema } from "@/schema/product";
 
 export const productMutations = router({
   createProduct: protectedProcedure
-    .meta({
-      openapi: { method: "POST", path: "/company/{companyId}/product" },
-    })
-    .input(
-      z.object({
-        companyId: z.string(),
-        name: z.string(),
-        description: z.string().nullable().optional(),
-      })
-    )
+    .input(UpsertProductSchema)
     .output(z.string())
     .mutation(
       async ({
@@ -51,20 +43,7 @@ export const productMutations = router({
     ),
 
   updateProduct: protectedProcedure
-    .meta({
-      openapi: {
-        method: "PATCH",
-        path: "/company/{companyId}/product/{productId}",
-      },
-    })
-    .input(
-      z.object({
-        companyId: z.string(),
-        productId: z.string(),
-        name: z.string().nullable().optional(),
-        description: z.string().nullable().optional(),
-      })
-    )
+    .input(UpsertProductSchema.extend({ productId: z.string().uuid() }))
     .output(z.string())
     .use(productIdAccessMiddleware)
     .mutation(
@@ -91,18 +70,7 @@ export const productMutations = router({
     ),
 
   deleteProduct: protectedProcedure
-    .meta({
-      openapi: {
-        method: "DELETE",
-        path: "/company/{companyId}/product/{productId}",
-      },
-    })
-    .input(
-      z.object({
-        companyId: z.string(),
-        productId: z.string(),
-      })
-    )
+    .input(SingleProductSchema)
     .output(z.string())
     .use(productIdAccessMiddleware)
     .mutation(async ({ ctx: { db }, input: { companyId, productId } }) => {

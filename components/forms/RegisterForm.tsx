@@ -2,9 +2,9 @@ import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { CreateUser, CreateUserType, createUserApi } from "@/api/user";
-import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import { trpc } from "@/trpc";
+import { CreateUserSchema, CreateUserSchemaType } from "@/schema/users";
 
 function getError(err: any) {
   return err.response?.data?.message || "Invalid";
@@ -17,13 +17,11 @@ export const RegisterForm = () => {
     handleSubmit,
     formState: { errors },
     setError,
-  } = useForm<CreateUserType>({
-    resolver: zodResolver(CreateUser),
+  } = useForm<CreateUserSchemaType>({
+    resolver: zodResolver(CreateUserSchema),
   });
-  const { push } = useRouter();
 
-  const createUserMutation = useMutation({
-    mutationFn: createUserApi,
+  const createUserMutation = trpc.users.createUser.useMutation({
     onSuccess() {
       setSuccessMsg("Usuário criado com sucesso");
 
@@ -41,8 +39,9 @@ export const RegisterForm = () => {
       }
     },
   });
+  const { push } = useRouter();
 
-  const onSubmit: SubmitHandler<CreateUserType> = async (data) => {
+  const onSubmit: SubmitHandler<CreateUserSchemaType> = async (data) => {
     createUserMutation.mutate(data);
   };
 

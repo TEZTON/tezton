@@ -7,7 +7,7 @@ export type { ServiceAccount } from "firebase-admin";
 import { getDbInstance } from "./db";
 
 import { LibSQLDatabase } from "drizzle-orm/libsql";
-import { usersSchema } from "./schema";
+import { usersSchema } from "./db/schema";
 import { eq } from "drizzle-orm";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 

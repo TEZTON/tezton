@@ -7,7 +7,7 @@ import { Auth, getAuth } from "firebase-admin/auth";
 import { app } from "../../../app";
 import { getDbInstance } from "../../../db";
 import { seedCompany, seedUser } from "../../../seed_database";
-import { companiesSchema } from "../../../schema";
+import { companiesSchema } from "../../../db/schema";
 
 const testId = faker.string.uuid();
 const testId2 = faker.string.uuid();

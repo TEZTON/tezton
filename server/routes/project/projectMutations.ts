@@ -6,28 +6,16 @@ import {
   productsSchema,
   projectsSchema,
   usersSchema,
-} from "../../schema";
+} from "../../db/schema";
 import { and, eq, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { projectIdAccessMiddleware } from "./acl";
-import { priorityTypeEnum } from "@/common/domainValidation";
+import { priorityTypeEnum } from "@/schema/common";
+import { SingleProjectSchema, UpsertProjectSchema } from "@/schema/project";
 
 export const projectMutations = router({
   createProject: protectedProcedure
-    .meta({
-      openapi: {
-        method: "POST",
-        path: "/product/{productId}/project",
-      },
-    })
-    .input(
-      z.object({
-        productId: z.string(),
-        name: z.string(),
-        description: z.string().nullable().optional(),
-        priority: priorityTypeEnum.optional().default("Low"),
-      })
-    )
+    .input(UpsertProjectSchema)
     .output(z.string())
     .mutation(
       async ({
@@ -67,21 +55,7 @@ export const projectMutations = router({
     ),
 
   updateProject: protectedProcedure
-    .meta({
-      openapi: {
-        method: "PATCH",
-        path: "/product/{productId}/project/{projectId}",
-      },
-    })
-    .input(
-      z.object({
-        productId: z.string(),
-        projectId: z.string(),
-        name: z.string().nullable().optional(),
-        description: z.string().nullable().optional(),
-        priority: priorityTypeEnum.optional().nullable(),
-      })
-    )
+    .input(UpsertProjectSchema.extend({ projectId: z.string().uuid() }))
     .output(z.string())
     .use(projectIdAccessMiddleware)
     .mutation(
@@ -115,12 +89,7 @@ export const projectMutations = router({
         path: "/product/{productId}/project/{projectId}",
       },
     })
-    .input(
-      z.object({
-        productId: z.string(),
-        projectId: z.string(),
-      })
-    )
+    .input(SingleProjectSchema)
     .output(z.string())
     .use(projectIdAccessMiddleware)
     .mutation(async ({ ctx: { db }, input: { productId, projectId } }) => {

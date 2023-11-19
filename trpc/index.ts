@@ -1,3 +1,4 @@
+import { auth } from "@/firebase-config";
 import { AppRouter } from "@/server/app";
 import { createTRPCReact, httpBatchLink } from "@trpc/react-query";
 
@@ -23,8 +24,10 @@ export const trpcClient = trpc.createClient({
       url: `${getBaseUrl()}/api`,
       // You can pass any HTTP headers you wish here
       async headers() {
+        const token = await auth.currentUser?.getIdToken();
+
         return {
-          // authorization: getAuthCookie(),
+          authorization: `Bearer ${token}`,
         };
       },
     }),

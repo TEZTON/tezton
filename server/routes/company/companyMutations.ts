@@ -1,22 +1,13 @@
 import { z } from "zod";
-
 import { and, eq, sql } from "drizzle-orm";
-import { protectedProcedure, router } from "@/server";
-import { companyTypeEnum } from "@/common/domainValidation";
 
-import { companiesSchema } from "../../schema";
+import { protectedProcedure, router } from "@/server";
+import { companiesSchema } from "../../db/schema";
+import { UpsertCompanySchema } from "@/schema/company";
 
 export const companyMutations = router({
   createCompany: protectedProcedure
-    .meta({
-      openapi: { method: "POST", path: "/company" },
-    })
-    .input(
-      z.object({
-        name: z.string(),
-        type: companyTypeEnum.optional().default("Consultoria"),
-      })
-    )
+    .input(UpsertCompanySchema)
     .output(z.string())
     .mutation(async ({ ctx: { db, user }, input: { name, type } }) => {
       const result = await db
@@ -28,16 +19,7 @@ export const companyMutations = router({
     }),
 
   updateCompany: protectedProcedure
-    .meta({
-      openapi: { method: "PATCH", path: "/company/{companyId}" },
-    })
-    .input(
-      z.object({
-        companyId: z.string(),
-        name: z.string().optional().nullable(),
-        type: companyTypeEnum.optional().nullable(),
-      })
-    )
+    .input(UpsertCompanySchema.extend({ companyId: z.string().uuid() }))
     .output(z.string())
     .mutation(
       async ({ ctx: { db, user }, input: { name, type, companyId } }) => {
@@ -60,9 +42,6 @@ export const companyMutations = router({
     ),
 
   deleteCompany: protectedProcedure
-    .meta({
-      openapi: { method: "DELETE", path: "/company/{companyId}" },
-    })
     .input(
       z.object({
         companyId: z.string(),

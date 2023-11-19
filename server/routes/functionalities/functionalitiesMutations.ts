@@ -6,26 +6,18 @@ import {
   functionalitiesSchema,
   productsSchema,
   projectsSchema,
-} from "../../schema";
+} from "../../db/schema";
 import { and, eq, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { functionalityIdAccessMiddleware } from "./acl";
+import {
+  SingleFunctionalitySchema,
+  UpsertFunctionalitySchema,
+} from "@/schema/functionality";
 
 export const functionalitiesMutations = router({
   createFunctionality: protectedProcedure
-    .meta({
-      openapi: {
-        method: "POST",
-        path: "/project/{projectId}/functionality",
-      },
-    })
-    .input(
-      z.object({
-        projectId: z.string(),
-        name: z.string(),
-        description: z.string().nullable().optional(),
-      })
-    )
+    .input(UpsertFunctionalitySchema)
     .output(z.string())
     .mutation(
       async ({
@@ -67,19 +59,8 @@ export const functionalitiesMutations = router({
     ),
 
   updateFunctionality: protectedProcedure
-    .meta({
-      openapi: {
-        method: "PATCH",
-        path: "/project/{projectId}/functionality/{functionalityId}",
-      },
-    })
     .input(
-      z.object({
-        projectId: z.string(),
-        functionalityId: z.string(),
-        name: z.string().nullable().optional(),
-        description: z.string().nullable().optional(),
-      })
+      UpsertFunctionalitySchema.extend({ functionalityId: z.string().uuid() })
     )
     .output(z.string())
     .use(functionalityIdAccessMiddleware)
@@ -108,12 +89,7 @@ export const functionalitiesMutations = router({
         path: "/project/{projectId}/functionality/{functionalityId}",
       },
     })
-    .input(
-      z.object({
-        projectId: z.string(),
-        functionalityId: z.string(),
-      })
-    )
+    .input(SingleFunctionalitySchema)
     .output(z.string())
     .use(functionalityIdAccessMiddleware)
     .mutation(async ({ ctx: { db }, input: { functionalityId } }) => {

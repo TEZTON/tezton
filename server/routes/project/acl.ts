@@ -1,4 +1,4 @@
-import { companiesSchema, productsSchema, projectsSchema } from "../../schema";
+import { companiesSchema, productsSchema, projectsSchema } from "../../db/schema";
 import { and, eq, sql } from "drizzle-orm";
 import { TRPCError, experimental_standaloneMiddleware } from "@trpc/server";
 import { ExperimentalMiddlewareContext } from "../../context";

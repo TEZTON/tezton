@@ -5,33 +5,23 @@ import {
   functionalitiesSchema,
   productsSchema,
   projectsSchema,
-} from "../../schema";
+} from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { functionalityIdAccessMiddleware } from "./acl";
-
-const functionalitySchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  description: z.string().nullable(),
-});
+import {
+  FunctionalitySchema,
+  SingleFunctionalitySchema,
+} from "@/schema/functionality";
 
 export const functionalitiesQueries = router({
   getFunctionalities: protectedProcedure
-    .meta({
-      openapi: {
-        method: "GET",
-        path: "/project/{projectId}/functionality",
-      },
-    })
     .input(
       z.object({
         projectId: z.string(),
       })
     )
-    .output(z.array(functionalitySchema))
+    .output(z.array(FunctionalitySchema))
     .query(async ({ ctx: { db, user }, input: { projectId } }) => {
       const result = await db
         .select()
@@ -59,19 +49,8 @@ export const functionalitiesQueries = router({
     }),
 
   byId: protectedProcedure
-    .meta({
-      openapi: {
-        method: "GET",
-        path: "/project/{projectId}/functionality/{functionalityId}",
-      },
-    })
-    .input(
-      z.object({
-        projectId: z.string(),
-        functionalityId: z.string(),
-      })
-    )
-    .output(functionalitySchema)
+    .input(SingleFunctionalitySchema)
+    .output(FunctionalitySchema)
     .use(functionalityIdAccessMiddleware)
     .query(
       async ({ ctx: { db, user }, input: { projectId, functionalityId } }) => {

@@ -21,6 +21,7 @@ export const companiesSchema = sqliteTable("companies", {
     .$defaultFn(() => v4()),
   name: text("name").notNull(),
   type: text("type").notNull(),
+  companyImageUrl: text("company_image_url"),
   createdAt: text("created_at")
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),

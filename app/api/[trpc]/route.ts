@@ -6,9 +6,6 @@ const handler = (req: Request) =>
     endpoint: "/api",
     req,
     router: appRouter,
-    // createContext: (a) => {
-    //   console.log(123);
-    // },
     createContext,
   });
 export { handler as GET, handler as POST };

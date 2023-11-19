@@ -6,7 +6,7 @@ import {
   functionalitiesSchema,
   productsSchema,
   projectsSchema,
-} from "../../schema";
+} from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { deliverableIdAccessMiddleware } from "./acl";

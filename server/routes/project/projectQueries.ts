@@ -1,18 +1,14 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "@/server";
-import { companiesSchema, productsSchema, projectsSchema } from "../../schema";
+import {
+  companiesSchema,
+  productsSchema,
+  projectsSchema,
+} from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { projectIdAccessMiddleware } from "./acl";
-
-const projectSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  description: z.string().nullable(),
-  priority: z.string(),
-});
+import { ProjectSchema, SingleProjectSchema } from "@/schema/project";
 
 export const projectQueries = router({
   getProjects: protectedProcedure
@@ -23,9 +19,8 @@ export const projectQueries = router({
       },
     })
     .input(z.object({ productId: z.string() }))
-    .output(z.array(projectSchema))
+    .output(z.array(ProjectSchema))
     .query(async ({ ctx: { db, user }, input: { productId } }) => {
-      console.log("productId", productId);
       const result = await db
         .select()
         .from(projectsSchema)
@@ -48,20 +43,9 @@ export const projectQueries = router({
     }),
 
   byId: protectedProcedure
-    .meta({
-      openapi: {
-        method: "GET",
-        path: "/product/{productId}/project/{projectId}",
-      },
-    })
-    .input(
-      z.object({
-        productId: z.string(),
-        projectId: z.string(),
-      })
-    )
+    .input(SingleProjectSchema)
     .use(projectIdAccessMiddleware)
-    .output(projectSchema)
+    .output(ProjectSchema)
     .query(async ({ ctx: { db, user }, input: { productId, projectId } }) => {
       const result = await db
         .select()
