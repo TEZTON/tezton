@@ -1,13 +1,19 @@
 import { GetProductType } from "@/api/product";
-import FakePicture from "../FakePicture";
+
+import ImageRender from "../ImageRender";
 
 interface CompanyHeaderProps {
   logo: string;
   name: string;
   products: GetProductType[];
+  imageUrl?: string | null;
 }
 
-export default function CompanyHeader({ logo, name }: CompanyHeaderProps) {
+export default function CompanyHeader({
+  logo,
+  name,
+  imageUrl,
+}: CompanyHeaderProps) {
   const STATUS = [
     { status_name: "Sucesso" },
     { status_name: "Falhas" },
@@ -19,7 +25,7 @@ export default function CompanyHeader({ logo, name }: CompanyHeaderProps) {
     <div className="w-full h-12 bg-primary flex items-center px-3 gap-2 rounded-lg">
       <div className="w-[60%] flex justify-between">
         <div className="w-[50%] flex justify-start items-center gap-2 whitespace-nowrap overflow-hidden">
-          <FakePicture name={logo} />
+          <ImageRender name={logo} imageUrl={imageUrl} />
           <span className="text-base text-clip text-[#fff]">{name}</span>
         </div>
       </div>

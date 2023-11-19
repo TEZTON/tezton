@@ -7,6 +7,12 @@ const nextConfig = {
                 hostname: 'cdn-icons-png.flaticon.com',
                 port: '',
                 pathname: '**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'cu7oipw2ltgu7rmy.public.blob.vercel-storage.com',
+                port: '',
+                pathname: '**',
             }
         ],
     },
