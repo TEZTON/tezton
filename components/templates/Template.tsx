@@ -1,4 +1,4 @@
-import { EditIcon, HomeIcon, PlusCircleIcon } from "lucide-react";
+import { EditIcon, HomeIcon, MoonIcon, PlusCircleIcon } from "lucide-react";
 
 import { EditNameCompany } from "@/components/forms/EditCompany";
 import { SubMenu } from "@/components/subMenu";
@@ -11,19 +11,41 @@ import { Dialog } from "../dialog";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { COMPANY_KEYS, getCompanyApi } from "@/api/company";
+import { PRODUCT_KEYS, getProductsApi } from "@/api/product";
+import { CreateProduct } from "../forms/CreateProduct";
+import { CreateCompanyForm } from "../forms/CreateCompany";
 
 export const AppTemplate = ({ children }: React.PropsWithChildren) => {
   const selectedCompany = useParams();
+
   const { data } = useQuery({
     queryKey: [COMPANY_KEYS.getCompanies],
     queryFn: getCompanyApi,
   });
 
+  const { data: dataProduct } = useQuery({
+    queryKey: [PRODUCT_KEYS.getProduct],
+    queryFn: () => getProductsApi(selectedCompany.companyId),
+  });
+
+  console.log(selectedCompany);
+
   const FORMS = {
     edit_company: EditNameCompany,
     delete_company: DeleteCompany,
     edit_logo_company: EditLogoCompany,
+    create_product: CreateProduct,
+    create_company: CreateCompanyForm,
   };
+
+  function toggleTheme() {
+    document.documentElement.classList.toggle("dark");
+    console.log(document.documentElement.classList.value);
+    localStorage.setItem(
+      "@teztonTheme",
+      document.documentElement.classList.value
+    );
+  }
 
   return (
     <div
@@ -50,7 +72,7 @@ export const AppTemplate = ({ children }: React.PropsWithChildren) => {
               </Link>
               <Dialog
                 title={
-                  selectedCompany.company_id
+                  selectedCompany.companyId
                     ? "Adicionar Produto"
                     : "Adicionar Empresa"
                 }
@@ -59,30 +81,62 @@ export const AppTemplate = ({ children }: React.PropsWithChildren) => {
                     <PlusCircleIcon size={16} />
                   </button>
                 }
-                Content={FORMS["edit_company"]}
+                Content={
+                  FORMS[
+                    selectedCompany.companyId
+                      ? "create_product"
+                      : "create_company"
+                  ]
+                }
               />
             </div>
-            {data?.map(({ id, name }) => (
-              <Link
-                key={id}
-                href={`/company/${id}`}
-                className="group flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden p-1 group"
-              >
-                <div className="invisible group-hover:visible absolute text-primary mt-[-30px] ml-[-30px]">
-                  <EditIcon size={16} />
-                </div>
-                <Image
-                  src="/isotipo_png.png"
-                  alt={name}
-                  width={30}
-                  height={30}
-                />
-              </Link>
-            ))}
+            {selectedCompany.companyId
+              ? dataProduct?.map(({ id, name }) => (
+                  <Link
+                    key={id}
+                    href={`/company/${id}/product/${id}`}
+                    className="group flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden p-1 group"
+                  >
+                    <div className="invisible group-hover:visible absolute text-primary mt-[-30px] ml-[-30px]">
+                      <EditIcon size={16} />
+                    </div>
+                    <Image
+                      src="/isotipo_png.png"
+                      alt={name}
+                      width={30}
+                      height={30}
+                    />
+                  </Link>
+                ))
+              : data?.map(({ id, name }) => (
+                  <Link
+                    key={id}
+                    href={`/company/${id}`}
+                    className="group flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden p-1 group"
+                  >
+                    <div className="invisible group-hover:visible absolute text-primary mt-[-30px] ml-[-30px]">
+                      <EditIcon size={16} />
+                    </div>
+                    <Image
+                      src="/isotipo_png.png"
+                      alt={name}
+                      width={30}
+                      height={30}
+                    />
+                  </Link>
+                ))}
           </div>
         </div>
+        <div className="w-full mb-4 flex items-center justify-center">
+          <button
+            onClick={toggleTheme}
+            className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden p-1"
+          >
+            <MoonIcon />
+          </button>
+        </div>
       </div>
-      {!!selectedCompany?.company_id && <SubMenu />}
+      {!!selectedCompany?.companyId && <SubMenu />}
       <div className="flex flex-col flex-1 w-full overflow-x-hidden">
         {/* MENU do TOPO */}
         <TopMenu />

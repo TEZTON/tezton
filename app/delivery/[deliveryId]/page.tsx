@@ -11,9 +11,9 @@ import { useParams } from "next/navigation";
 export default function DeliveryScreen() {
   const { selectedFeature } = useContext(GlobalContext);
 
-  const { company_id, delivery_id } = useParams();
+  const { companyId, delivery_id } = useParams();
 
-  console.log(delivery_id, company_id);
+  console.log(delivery_id, companyId);
 
   //  const findSpecificCompany = MOCK_USER.companies.find(company => company.company_id === company_id)
   //  const findSpecificDelivery = findSpecificCompany?.company_products.flatMap(product => product.)

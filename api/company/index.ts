@@ -35,5 +35,5 @@ export async function createCompanyApi(data: CreateCompanyType) {
 }
 
 export async function getCompanyApi(): Promise<GetCompanyType[]> {
-  return axios.get("/company").then((res) => res.data);
+  return axios.get("/company/allowed").then((res) => res.data);
 }

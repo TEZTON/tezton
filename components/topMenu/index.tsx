@@ -35,7 +35,7 @@ export const TopMenu = () => {
   ];
 
   const { user } = useContext(GlobalContext);
-  const { company_id } = useParams();
+  const { companyId } = useParams();
   const [selectedAmbient, setSelectedAmbient] = useState("");
   const [selectedPlatforms, setSelectedPlatforms] = useState("");
 
@@ -53,7 +53,7 @@ export const TopMenu = () => {
   return (
     <div className="w-full h-[58px] bg-[#F8F9FF] dark:bg-[#1c1c1c] border-b border-default dark:border-defaultdark px-3 flex items-center justify-between">
       <div className="w-full flex justify-start items-center gap-2">
-        {company_id && (
+        {companyId && (
           <Fragment>
             <span className="text-xs">Dispositivos:</span>
             {PLATFORMS.map(({ label, icon: Icon }) => (

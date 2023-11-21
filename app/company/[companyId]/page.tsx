@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 import { useContext } from "react";
 
 export default function CompanyByIdPage() {
-  const { company_id } = useParams();
+  const { companyId } = useParams();
   const { selectedFeature } = useContext(GlobalContext);
 
   return (
