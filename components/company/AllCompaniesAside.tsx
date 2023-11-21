@@ -1,7 +1,7 @@
 "use client";
 import { EditIcon, PlusCircleIcon } from "lucide-react";
 
-import UpsertCompany from "@/components/forms/UpsertCompany";
+import UpsertCompany from "@/components/company/UpsertCompany";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -11,7 +11,7 @@ import { useState } from "react";
 import ImageRender from "../ImageRender";
 import { trpc } from "@/trpc";
 
-export default function MainPageSidebar() {
+export default function AllCompaniesAside() {
   const [isOpen, setOpen] = useState(false);
   const { data } = trpc.companies.getAllCompanies.useQuery();
 

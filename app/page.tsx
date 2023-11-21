@@ -1,13 +1,13 @@
 "use client";
 
-import { Companies } from "@/components/companies";
+import { Companies } from "@/components/company";
 import { Calendar } from "@/components/calendar";
-import MainPageSidebar from "@/components/sidebar/MainPage";
+import AllCompaniesAside from "@/components/company/AllCompaniesAside";
 
 export default function Home() {
   return (
     <main className="flex min-h-full overflow-y-auto overflow-x-hidden">
-      <MainPageSidebar />
+      <AllCompaniesAside />
       <div className="w-[calc(100%-55px)] ml-4">
         <div className="flex ">
           <Calendar />

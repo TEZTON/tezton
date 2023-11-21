@@ -1,6 +1,6 @@
 import { PlusIcon } from "lucide-react";
 import Modal from "../modal";
-import UpsertProject from "../forms/UpsertProject";
+import UpsertProject from "../project/UpsertProject";
 import { useState } from "react";
 
 import ProjectAccordion from "../project/ProjectAccordion";

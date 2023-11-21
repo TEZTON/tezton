@@ -4,7 +4,7 @@ import * as Tabs from "@radix-ui/react-tabs";
 export default function ProjectExpanded() {
   return (
     <Tabs.Root
-      className="flex flex-col w-[300px] py-2 px-4 border-l ml-auto"
+      className="flex flex-col w-[330px] py-2 px-4 border-l"
       defaultValue="tab1"
     >
       <Tabs.List

@@ -1,5 +1,5 @@
 "use client";
-import CompanyPageSidebar from "@/components/sidebar/CompanyPage";
+import AllProductsAside from "@/components/product/AllProductsAside";
 import { trpc } from "@/trpc";
 import { useParams } from "next/navigation";
 import { PropsWithChildren } from "react";
@@ -17,7 +17,7 @@ export default function CompanyTemplate({ children }: PropsWithChildren) {
   if (isError) {
     return (
       <>
-        <CompanyPageSidebar name="ERROR" id="ERROR" />
+        <AllProductsAside name="ERROR" id="ERROR" />
         {isError && <div>NOT ALLOWED</div>}
       </>
     );
@@ -29,7 +29,11 @@ export default function CompanyTemplate({ children }: PropsWithChildren) {
 
   return (
     <>
-      <CompanyPageSidebar name={data.name} id={data.id} />
+      <AllProductsAside
+        name={data.name}
+        id={data.id}
+        companyImageUrl={data.companyImageUrl}
+      />
       {children}
     </>
   );

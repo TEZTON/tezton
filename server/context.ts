@@ -39,7 +39,7 @@ export const retrieveTokenBearer = async ({
 
     if (result.length !== 1) {
       // delete the user from firebase if it exists
-      await auth.deleteUser(userFirebase.uid);
+      // await auth.deleteUser(userFirebase.uid);
 
       return null;
     }

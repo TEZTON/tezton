@@ -4,25 +4,25 @@ import Link from "next/link";
 import { trpc } from "@/trpc";
 
 import Dialog from "../modal";
-import UpsertProduct from "../forms/UpsertProduct";
+import UpsertProduct from "./UpsertProduct";
 import ImageRender from "../ImageRender";
 
-interface CompanyPageSidebarProps {
+interface AllProductsAsideProps {
   id: string;
   name: string;
   companyImageUrl?: string | null;
 }
 
-export default function CompanyPageSidebar({
+export default function AllProductsAside({
   name,
   id,
   companyImageUrl,
-}: CompanyPageSidebarProps) {
+}: AllProductsAsideProps) {
   const [productModal, setProductModal] = useState(false);
   const { data } = trpc.products.getProducts.useQuery({ companyId: id });
 
   return (
-    <div className="w-14 border-r flex flex-col overflow-auto">
+    <div className="w-14 min-w-[56px] border-r flex flex-col overflow-auto">
       <div className="p-3 border-b">
         <ImageRender
           name={name}
