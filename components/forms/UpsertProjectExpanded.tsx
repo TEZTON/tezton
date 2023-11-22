@@ -1,4 +1,4 @@
-export default function UpserProjectExpanded() {
+export default function UpsertProjectExpanded() {
   return (
     <form className="flex flex-col gap-4">
       <input
@@ -30,7 +30,7 @@ export default function UpserProjectExpanded() {
         <label className="label cursor-pointer justify-normal">
           <input
             type="checkbox"
-            checked={true}
+            defaultChecked={true}
             className="checkbox checkbox-primary text-white"
           />
           <span className="label-text ml-2">Android</span>
@@ -39,7 +39,7 @@ export default function UpserProjectExpanded() {
         <label className="label cursor-pointer justify-normal">
           <input
             type="checkbox"
-            checked={true}
+            defaultChecked={true}
             className="checkbox checkbox-primary text-white"
           />
           <span className="label-text ml-2">iOS</span>
@@ -48,7 +48,7 @@ export default function UpserProjectExpanded() {
         <label className="label cursor-pointer justify-normal">
           <input
             type="checkbox"
-            checked={true}
+            defaultChecked={true}
             className="checkbox checkbox-primary text-white"
           />
           <span className="label-text ml-2">Tablet</span>
@@ -57,7 +57,7 @@ export default function UpserProjectExpanded() {
         <label className="label cursor-pointer justify-normal">
           <input
             type="checkbox"
-            checked={true}
+            defaultChecked={true}
             className="checkbox checkbox-primary text-white"
           />
           <span className="label-text ml-2">Web</span>
@@ -66,7 +66,7 @@ export default function UpserProjectExpanded() {
         <label className="label cursor-pointer justify-normal">
           <input
             type="checkbox"
-            checked={true}
+            defaultChecked={true}
             className="checkbox checkbox-primary text-white"
           />
           <span className="label-text ml-2">Outros</span>

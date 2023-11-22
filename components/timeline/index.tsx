@@ -1,88 +1,74 @@
-// "use client";
-// import { GanttComponent } from "@syncfusion/ej2-react-gantt";
+"use client";
 
-// const GanttData: object[] = [
-//   {
-//     TaskID: 1,
-//     TaskName: "Project Initiation",
-//     StartDate: new Date("04/02/2019"),
-//     EndDate: new Date("04/21/2019"),
-//     subtasks: [
-//       {
-//         TaskID: 2,
-//         TaskName: "Identify Site location",
-//         StartDate: new Date("04/02/2019"),
-//         Duration: 4,
-//         Progress: 50,
-//       },
-//       {
-//         TaskID: 3,
-//         TaskName: "Perform Soil test",
-//         StartDate: new Date("04/02/2019"),
-//         Duration: 4,
-//         Progress: 50,
-//       },
-//       {
-//         TaskID: 4,
-//         TaskName: "Soil test approval",
-//         StartDate: new Date("04/02/2019"),
-//         Duration: 4,
-//         Progress: 50,
-//       },
-//     ],
-//   },
-//   {
-//     TaskID: 5,
-//     TaskName: "Project Estimation",
-//     StartDate: new Date("04/02/2019"),
-//     EndDate: new Date("04/21/2019"),
-//     subtasks: [
-//       {
-//         TaskID: 6,
-//         TaskName: "Develop floor plan for estimation",
-//         StartDate: new Date("04/04/2019"),
-//         Duration: 3,
-//         Progress: 50,
-//       },
-//       {
-//         TaskID: 7,
-//         TaskName: "List materials",
-//         StartDate: new Date("04/04/2019"),
-//         Duration: 3,
-//         Progress: 50,
-//       },
-//       {
-//         TaskID: 8,
-//         TaskName: "Estimation approval",
-//         StartDate: new Date("04/04/2019"),
-//         Duration: 3,
-//         Progress: 50,
-//       },
-//     ],
-//   },
-// ];
+import { add, startOfToday, startOfTomorrow, sub } from "date-fns";
+import { useEffect, useRef } from "react";
 
-// export default function Timeline() {
-//   const taskFields: any = {
-//     id: "TaskID",
-//     name: "TaskName",
-//     startDate: "StartDate",
-//     duration: "Duration",
-//     progress: "Progress",
-//     child: "subtasks",
-//   };
+import { Timeline as TL, DataSet } from "vis-timeline/standalone";
 
-//   return (
-//     <div className="" style={{ height: "600px" }}>
-//       <GanttComponent
-//         dataSource={GanttData}
-//         height="450px"
-//         taskFields={taskFields}
-//       />
-//     </div>
-//   );
-// }
+var groups = new DataSet([
+  { id: 0, content: "First", value: 1 },
+  { id: 1, content: "Third", value: 3 },
+  { id: 2, content: "Second", value: 2 },
+]);
+
+var items = new DataSet([
+  {
+    id: 0,
+    group: 0,
+    content: "item 0",
+    start: add(startOfToday(), { hours: 8 }),
+    end: add(startOfTomorrow(), { hours: 8 }),
+  },
+  {
+    id: 1,
+    group: 0,
+    content: "item 1",
+    start: sub(startOfToday(), { days: 2 }),
+    end: add(startOfTomorrow(), { hours: 8 }),
+  },
+  {
+    id: 2,
+    group: 1,
+    content: "item 2",
+    start: sub(startOfToday(), { days: 1 }),
+    end: add(startOfTomorrow(), { days: 8 }),
+  },
+  {
+    id: 3,
+    group: 1,
+    content: "item 3",
+    start: sub(startOfToday(), { days: 0 }),
+    end: add(startOfTomorrow(), { hours: 8 }),
+  },
+  {
+    id: 4,
+    group: 1,
+    content: "item 4",
+    start: add(startOfToday(), { days: 3 }),
+    end: add(startOfTomorrow(), { days: 8 }),
+  },
+  {
+    id: 5,
+    group: 2,
+    content: "item 5",
+    start: add(startOfToday(), { days: 3 }),
+    end: add(startOfTomorrow(), { days: 8 }),
+  },
+]);
 
 export default function Timeline() {
-  return <div>GANTT</div>;
+  const timelineRef = useRef(null);
+
+  useEffect(() => {
+    const timeline = new TL(timelineRef.current, items, groups, {
+      orientation: "top",
+    });
+
+    // Cleanup function
+    return () => {
+      timeline.destroy();
+    };
+  }, []);
+
+  return <div ref={timelineRef}> </div>;
 }

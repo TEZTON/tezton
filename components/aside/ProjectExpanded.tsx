@@ -1,4 +1,4 @@
-import UpserProjectExpanded from "../forms/UpsertProjectExpanded";
+import UpsertProjectExpanded from "../forms/UpsertProjectExpanded";
 import * as Tabs from "@radix-ui/react-tabs";
 
 export default function ProjectExpanded() {
@@ -31,7 +31,7 @@ export default function ProjectExpanded() {
         </Tabs.Trigger>
       </Tabs.List>
       <Tabs.Content className="my-4" value="tab1">
-        <UpserProjectExpanded />
+        <UpsertProjectExpanded />
       </Tabs.Content>
       <Tabs.Content className="my-4" value="tab2">
         Reporte
