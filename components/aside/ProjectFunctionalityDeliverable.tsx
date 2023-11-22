@@ -8,10 +8,12 @@ import { trpc } from "@/trpc";
 
 interface ProjectFunctionalityDeliverableAreaProps {
   productId: string;
+  companyId: string;
 }
 
 export default function ProjectFunctionalityDeliverableArea({
   productId,
+  companyId,
 }: ProjectFunctionalityDeliverableAreaProps) {
   const [projectModal, setProjectModal] = useState(false);
   const { data } = trpc.projects.getProjects.useQuery({ productId });
@@ -37,7 +39,13 @@ export default function ProjectFunctionalityDeliverableArea({
 
         <div className="gap-2 flex flex-col mt-2">
           {data?.map(({ name, id }) => (
-            <ProjectAccordion name={name} key={id} id={id} />
+            <ProjectAccordion
+              name={name}
+              key={id}
+              projectId={id}
+              productId={productId}
+              companyId={companyId}
+            />
           ))}
         </div>
       </div>

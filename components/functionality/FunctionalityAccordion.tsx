@@ -5,28 +5,41 @@ import { trpc } from "@/trpc";
 
 import Modal from "../modal";
 import UpsertDeliverable from "../forms/UpsertDeliverable";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 interface FunctionalityAccordionProps {
   name: string;
-  id: string;
+  functionalityId: string;
+  productId: string;
+  projectId: string;
+  companyId: string;
 }
 
 export default function FunctionalityAccordion({
   name,
-  id,
+  functionalityId,
+  companyId,
+  productId,
+  projectId,
 }: FunctionalityAccordionProps) {
   const [deliverableModal, setDeliverableModal] = useState(false);
   const { data } = trpc.deliverables.getDeliverables.useQuery({
-    functionalityId: id,
+    functionalityId,
   });
+
+  const { functionalityId: pathFunctionalityId } = useParams();
 
   return (
     <Accordion.Root
       className="bg-base-200 rounded-md"
       type="single"
       collapsible
+      defaultValue={
+        typeof pathFunctionalityId === "string" ? pathFunctionalityId : ""
+      }
     >
-      <Accordion.Item value="item-1">
+      <Accordion.Item value={functionalityId}>
         <Accordion.AccordionTrigger className="px-1 py-2 w-full text-left">
           {name}
         </Accordion.AccordionTrigger>
@@ -42,15 +55,19 @@ export default function FunctionalityAccordion({
             setOpen={setDeliverableModal}
           >
             <UpsertDeliverable
-              functionalityId={id}
+              functionalityId={functionalityId}
               onSuccess={() => setDeliverableModal(false)}
             />
           </Modal>
           <div className="mt-2 flex gap-2 flex-col">
             {data?.map(({ id, name }) => (
-              <div className="cursor-pointer" key={id}>
+              <Link
+                className="cursor-pointer"
+                key={id}
+                href={`/company/${companyId}/product/${productId}/project/${projectId}/functionality/${functionalityId}/deliverable/${id}`}
+              >
                 {name}
-              </div>
+              </Link>
             ))}
           </div>
         </Accordion.AccordionContent>

@@ -1,18 +1,75 @@
-export default function UpsertProjectExpanded() {
+import { UpsertDeliverableTypeSchemaType } from "@/schema/deliverable";
+import { format, formatISO, startOfToday } from "date-fns";
+import { useFormContext } from "react-hook-form";
+import { CalendarIcon } from "lucide-react";
+import CalendarPopover from "../calendar/CalendarPopover";
+import { useState } from "react";
+
+export default function UpsertDeliverablePhase() {
+  const { watch, register, setValue } =
+    useFormContext<UpsertDeliverableTypeSchemaType>();
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
+
+  const startDate = watch("startDate");
+  const endDate = watch("endDate");
+
   return (
     <form className="flex flex-col gap-4">
       <input
         className="input input-sm input-bordered input-primary"
         placeholder="Titulo"
+        {...register("name")}
       />
 
-      <input
-        className="input input-sm input-bordered input-primary"
-        placeholder="Data de Inicio"
+      <CalendarPopover
+        open={startDateOpen}
+        onOpenChange={setStartDateOpen}
+        value={startDate && formatISO(startDate)}
+        minDate={startOfToday()}
+        onChange={(date) => {
+          if (date && !Array.isArray(date)) {
+            setValue("startDate", date);
+          }
+
+          setStartDateOpen(false);
+        }}
+        trigger={
+          <div className="flex items-center gap-2">
+            <CalendarIcon size={16} />
+
+            <input
+              className="input input-sm input-bordered input-primary w-full"
+              placeholder="Data de Inicio"
+              defaultValue={startDate && format(startDate, "PP")}
+            />
+          </div>
+        }
       />
-      <input
-        className="input input-sm input-bordered input-primary"
-        placeholder="Data de Fim"
+
+      <CalendarPopover
+        open={endDateOpen}
+        onOpenChange={setEndDateOpen}
+        value={endDate && formatISO(endDate)}
+        minDate={startDate}
+        onChange={(date) => {
+          if (date && !Array.isArray(date)) {
+            setValue("endDate", date);
+          }
+
+          setEndDateOpen(false);
+        }}
+        trigger={
+          <div className="flex items-center gap-2">
+            <CalendarIcon size={16} />
+
+            <input
+              className="input input-sm input-bordered input-primary w-full"
+              placeholder="Data de Fim"
+              defaultValue={endDate && format(endDate, "PP")}
+            />
+          </div>
+        }
       />
 
       <input
@@ -90,7 +147,7 @@ export default function UpsertProjectExpanded() {
 
       <textarea
         className="textarea textarea-sm textarea-bordered textarea-primary"
-        placeholder="Url"
+        placeholder="Descricao"
         rows={4}
       />
     </form>

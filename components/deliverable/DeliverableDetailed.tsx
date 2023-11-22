@@ -1,7 +1,9 @@
-import UpsertProjectExpanded from "../forms/UpsertProjectExpanded";
+import { useFormContext } from "react-hook-form";
+import UpsertDeliverablePhase from "./UpsertDeliverablePhase";
 import * as Tabs from "@radix-ui/react-tabs";
+import { UpsertDeliverableTypeSchemaType } from "@/schema/deliverable";
 
-export default function ProjectExpanded() {
+export default function DeliverableDetailed() {
   return (
     <Tabs.Root
       className="flex flex-col w-[330px] py-2 px-4 border-l"
@@ -31,7 +33,7 @@ export default function ProjectExpanded() {
         </Tabs.Trigger>
       </Tabs.List>
       <Tabs.Content className="my-4" value="tab1">
-        <UpsertProjectExpanded />
+        <UpsertDeliverablePhase />
       </Tabs.Content>
       <Tabs.Content className="my-4" value="tab2">
         Reporte
