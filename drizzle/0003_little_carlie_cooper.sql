@@ -1,0 +1,2 @@
+-- Custom SQL migration file, put you code below! --
+insert into deliverableTypes ("id", "name") values ("Ideação", "Ideação"), ("Refinamento", "Refinamento"), ("Desenvolvimento", "Desenvolvimento"), ("Teste", "Teste"), ("Piloto", "Piloto"), ("Produção", "Produção");

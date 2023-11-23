@@ -1,27 +1,56 @@
-import { UpsertDeliverableTypeSchemaType } from "@/schema/deliverable";
+import { UpsertDeliverablePhaseSchemaType } from "@/schema/deliverable";
 import { format, formatISO, startOfToday } from "date-fns";
 import { useFormContext } from "react-hook-form";
 import { CalendarIcon } from "lucide-react";
 import CalendarPopover from "../calendar/CalendarPopover";
 import { useState } from "react";
+import { trpc } from "@/trpc";
 
 export default function UpsertDeliverablePhase() {
-  const { watch, register, setValue } =
-    useFormContext<UpsertDeliverableTypeSchemaType>();
+  const {
+    watch,
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useFormContext<UpsertDeliverablePhaseSchemaType>();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const createPhase =
+    trpc.deliverablePhases.createDeliverablePhase.useMutation();
+
+  const { deliverablePhases } = trpc.useUtils();
+
+  const submitForm = async (data: UpsertDeliverablePhaseSchemaType) => {
+    await createPhase.mutateAsync(data);
+    await deliverablePhases.getPhases.invalidate({
+      deliverableId: data.deliverableId,
+    });
+    reset();
+  };
+
+  const getError = () => {
+    return (
+      errors.name?.message ||
+      errors.endDate?.message ||
+      errors.startDate?.message ||
+      errors.root?.message ||
+      errors.deliverableTypeId?.message
+    );
+  };
 
   const startDate = watch("startDate");
   const endDate = watch("endDate");
 
   return (
-    <form className="flex flex-col gap-4">
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit(submitForm)}>
+      <p className="text-xs text-error">{getError()}</p>
       <input
         className="input input-sm input-bordered input-primary"
         placeholder="Titulo"
         {...register("name")}
       />
-
       <CalendarPopover
         open={startDateOpen}
         onOpenChange={setStartDateOpen}
@@ -46,7 +75,6 @@ export default function UpsertDeliverablePhase() {
           </div>
         }
       />
-
       <CalendarPopover
         open={endDateOpen}
         onOpenChange={setEndDateOpen}
@@ -71,7 +99,6 @@ export default function UpsertDeliverablePhase() {
           </div>
         }
       />
-
       <input
         type="file"
         className="file-input file-input-xs  file-input-bordered text-xs file-input-primary"
@@ -79,77 +106,17 @@ export default function UpsertDeliverablePhase() {
       />
 
       <div>
-        <p>Canais</p>
-        <div className="divider m-0" />
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        <label className="label cursor-pointer justify-normal">
-          <input
-            type="checkbox"
-            defaultChecked={true}
-            className="checkbox checkbox-primary text-white"
-          />
-          <span className="label-text ml-2">Android</span>
-        </label>
-
-        <label className="label cursor-pointer justify-normal">
-          <input
-            type="checkbox"
-            defaultChecked={true}
-            className="checkbox checkbox-primary text-white"
-          />
-          <span className="label-text ml-2">iOS</span>
-        </label>
-
-        <label className="label cursor-pointer justify-normal">
-          <input
-            type="checkbox"
-            defaultChecked={true}
-            className="checkbox checkbox-primary text-white"
-          />
-          <span className="label-text ml-2">Tablet</span>
-        </label>
-
-        <label className="label cursor-pointer justify-normal">
-          <input
-            type="checkbox"
-            defaultChecked={true}
-            className="checkbox checkbox-primary text-white"
-          />
-          <span className="label-text ml-2">Web</span>
-        </label>
-
-        <label className="label cursor-pointer justify-normal">
-          <input
-            type="checkbox"
-            defaultChecked={true}
-            className="checkbox checkbox-primary text-white"
-          />
-          <span className="label-text ml-2">Outros</span>
-        </label>
-      </div>
-
-      <div>
-        <p>Url</p>
-        <div className="divider m-0" />
-      </div>
-
-      <input
-        className="input input-sm input-bordered input-primary"
-        placeholder="Url"
-      />
-
-      <div>
         <p>Descricao</p>
         <div className="divider m-0" />
       </div>
-
       <textarea
         className="textarea textarea-sm textarea-bordered textarea-primary"
         placeholder="Descricao"
         rows={4}
       />
+      <button className="btn btn-primary text-white" type="submit">
+        Salvar
+      </button>
     </form>
   );
 }

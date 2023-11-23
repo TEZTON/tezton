@@ -15,6 +15,27 @@
       "when": 1700360952407,
       "tag": "0001_tense_sister_grimm",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1700661530490,
+      "tag": "0002_groovy_trish_tilby",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1700661793049,
+      "tag": "0003_little_carlie_cooper",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1700699500199,
+      "tag": "0004_giant_bug",
+      "breakpoints": true
     }
   ]
 }

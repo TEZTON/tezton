@@ -106,3 +106,36 @@ export const deliverablesSchema = sqliteTable("deliverables", {
     .notNull()
     .references(() => functionalitiesSchema.id, { onDelete: "cascade" }),
 });
+
+export const deliverablePhases = sqliteTable("deliverable_phases", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => v4()),
+  name: text("name").notNull(),
+  description: text("description"),
+  startDate: text("start_date").notNull(),
+  endDate: text("end_date").notNull(),
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  deliverableId: text("deliverable_id")
+    .notNull()
+    .references(() => deliverablesSchema.id, { onDelete: "cascade" }),
+  type: text("type")
+    .notNull()
+    .references(() => deliverableTypesSchema.id),
+});
+
+export const deliverableTypesSchema = sqliteTable("deliverableTypes", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});

@@ -32,6 +32,7 @@ export const retrieveTokenBearer = async ({
 }: retrieveTokenHolderParams) => {
   try {
     const userFirebase = await auth.verifyIdToken(token, true);
+
     const result = await db
       .select()
       .from(usersSchema)

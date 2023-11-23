@@ -4,8 +4,8 @@ import DeliverableDetailed from "@/components/deliverable/DeliverableDetailed";
 import DeliverableOptions from "@/components/deliverable/DeliverableOptions";
 import DeliverableTimeline from "@/components/deliverable/DeliverableTimeline";
 import {
-  UpsertDeliverableTypeSchema,
-  UpsertDeliverableTypeSchemaType,
+  UpsertDeliverablePhaseSchema,
+  UpsertDeliverablePhaseSchemaType,
 } from "@/schema/deliverable";
 import { trpc } from "@/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,14 +20,23 @@ export default function DeliverablePage() {
       functionalityId: functionalityId as string,
     },
     {
-      enabled: !(
-        typeof deliverableId !== "string" || typeof functionalityId !== "string"
-      ),
+      enabled:
+        typeof deliverableId === "string" &&
+        typeof functionalityId === "string",
     }
   );
+  const { data: deliverableTypesData } =
+    trpc.deliverableTypes.getTypes.useQuery();
 
-  const methods = useForm<UpsertDeliverableTypeSchemaType>({
-    resolver: zodResolver(UpsertDeliverableTypeSchema),
+  const { data: phasesData } = trpc.deliverablePhases.getPhases.useQuery({
+    deliverableId: deliverableId as string,
+  });
+
+  const methods = useForm<UpsertDeliverablePhaseSchemaType>({
+    defaultValues: {
+      deliverableId: deliverableId as string,
+    },
+    resolver: zodResolver(UpsertDeliverablePhaseSchema),
   });
 
   if (isLoading || !data) {
@@ -41,8 +50,11 @@ export default function DeliverablePage() {
   return (
     <FormProvider {...methods}>
       <div className="w-[calc(100%-700px)] mx-2">
-        <DeliverableOptions />
-        <DeliverableTimeline />
+        <DeliverableOptions data={deliverableTypesData || []} />
+        <DeliverableTimeline
+          groups={deliverableTypesData || []}
+          phases={phasesData || []}
+        />
       </div>
       <DeliverableDetailed />
     </FormProvider>

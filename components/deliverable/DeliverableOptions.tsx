@@ -1,26 +1,32 @@
-import {
-  DeliverableTypeEnum,
-  UpsertDeliverableTypeSchemaType,
-} from "@/schema/deliverable";
+"use client";
+import { UpsertDeliverablePhaseSchemaType } from "@/schema/deliverable";
 import { useFormContext } from "react-hook-form";
 
-export default function DeliverableOptions() {
-  const { watch, setValue } = useFormContext<UpsertDeliverableTypeSchemaType>();
-  const type = watch("type");
+interface DeliverableOptionsProps {
+  data: {
+    id: string;
+    name: string;
+  }[];
+}
+
+export default function DeliverableOptions({ data }: DeliverableOptionsProps) {
+  const { watch, setValue } =
+    useFormContext<UpsertDeliverablePhaseSchemaType>();
+  const type = watch("deliverableTypeId");
 
   return (
     <div className="flex gap-2 my-4">
-      {Object.keys(DeliverableTypeEnum.Values).map((v) => (
+      {data.map(({ id, name }) => (
         <button
           className={`btn btn-active text-white btn-sm text-xs ${
-            type === v && "btn-primary"
+            type === id && "btn-primary"
           }`}
-          key={v}
+          key={id}
           onClick={() => {
-            setValue("type", v as keyof typeof DeliverableTypeEnum.Values);
+            setValue("deliverableTypeId", id);
           }}
         >
-          {v}
+          {name}
         </button>
       ))}
     </div>

@@ -1,7 +1,5 @@
-import { useFormContext } from "react-hook-form";
 import UpsertDeliverablePhase from "./UpsertDeliverablePhase";
 import * as Tabs from "@radix-ui/react-tabs";
-import { UpsertDeliverableTypeSchemaType } from "@/schema/deliverable";
 
 export default function DeliverableDetailed() {
   return (

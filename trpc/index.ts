@@ -1,6 +1,7 @@
 import { auth } from "@/firebase-config";
 import { AppRouter } from "@/server/app";
 import { createTRPCReact, httpBatchLink } from "@trpc/react-query";
+import superjson from "superjson";
 
 function getBaseUrl() {
   if (typeof window !== "undefined")
@@ -15,6 +16,7 @@ function getBaseUrl() {
 export const trpc = createTRPCReact<AppRouter>({});
 
 export const trpcClient = trpc.createClient({
+  transformer: superjson,
   links: [
     httpBatchLink({
       /**
