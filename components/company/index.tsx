@@ -9,19 +9,13 @@ import { trpc } from "@/trpc";
 
 export const Companies = () => {
   const { data } = trpc.companies.getMyCompanies.useQuery();
-  const { push } = useRouter();
 
   return (
     <div className="w-full">
       <Accordion.Root type="multiple" className="flex flex-col gap-2">
         {data?.map(({ name, id, products, companyImageUrl }) => (
           <Accordion.Item key={id} value={id}>
-            <Accordion.Trigger
-              className="w-full"
-              onClick={() => {
-                push(`/company/${id}`);
-              }}
-            >
+            <Accordion.Trigger className="w-full">
               <CompanyHeader
                 name={name}
                 logo={name}
@@ -31,10 +25,10 @@ export const Companies = () => {
             </Accordion.Trigger>
 
             <Accordion.Content className="p-4 h-max border border-t-0 -mt-1 rounded-md border-default dark:border-defaultdark text-sm leading-normal text-blue-gray-500/80">
-              {products?.map(({ id, name }) => (
-                <div key={id} className="flex w-full gap-3 mb-4">
+              {products?.map(({ id: productId, name }) => (
+                <div key={productId} className="flex w-full gap-3 mb-4">
                   <div className="flex flex-col justify-center w-[59%] gap-3">
-                    <Link href={`company/${id}`}>
+                    <Link href={`company/${id}/product/${productId}`}>
                       <div className="flex items-center gap-3 ">
                         <ImageRender name={name} />
 

@@ -6,7 +6,7 @@ import { useState } from "react";
 import UpsertFunctionality from "../functionality/UpsertFunctionality";
 import FunctionalityAccordion from "../functionality/FunctionalityAccordion";
 import { trpc } from "@/trpc";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 interface ProjectAccordionProps {
   name: string;
@@ -26,6 +26,7 @@ export default function ProjectAccordion({
     projectId,
   });
   const { projectId: pathProjectId } = useParams();
+  const { push, replace, refresh } = useRouter();
 
   return (
     <Accordion.Root
@@ -35,7 +36,15 @@ export default function ProjectAccordion({
       defaultValue={typeof pathProjectId === "string" ? pathProjectId : ""}
     >
       <Accordion.Item value={projectId}>
-        <Accordion.AccordionTrigger className="px-1 py-2 w-full text-left">
+        <Accordion.AccordionTrigger
+          className="px-1 py-2 w-full text-left"
+          onClick={() => {
+            replace(
+              `/company/${companyId}/product/${productId}/project/${projectId}`
+            );
+            refresh();
+          }}
+        >
           {name}
         </Accordion.AccordionTrigger>
         <Accordion.AccordionContent className="pl-4 py-2 pr-1">
