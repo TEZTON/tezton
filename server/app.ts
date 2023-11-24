@@ -7,6 +7,7 @@ import { functionalityRouter } from "./routes/functionalities";
 import { deliverableRouter } from "./routes/deliverables";
 import { deliverableTypeRouter } from "./routes/deliverableTypes";
 import { deliverablePhasesRouter } from "./routes/deliverablesPhases";
+import { deliverableDiagramsRouter } from "./routes/deliverableDiagrams";
 
 export const appRouter = router({
   users: userRouter,
@@ -17,6 +18,7 @@ export const appRouter = router({
   deliverables: deliverableRouter,
   deliverableTypes: deliverableTypeRouter,
   deliverablePhases: deliverablePhasesRouter,
+  deliverableDiagrams: deliverableDiagramsRouter,
 });
 
 export type AppRouter = typeof appRouter;

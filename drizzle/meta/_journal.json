@@ -36,6 +36,20 @@
       "when": 1700699500199,
       "tag": "0004_giant_bug",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1700844806213,
+      "tag": "0005_luxuriant_ultimo",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1700850851134,
+      "tag": "0006_yielding_jackal",
+      "breakpoints": true
     }
   ]
 }

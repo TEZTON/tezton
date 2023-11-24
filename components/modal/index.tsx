@@ -40,7 +40,7 @@ export default function Modal({
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-default bg-opacity-50 backdrop-blur-[2px]" />
         <Dialog.Content
-          className={`fixed top-1/2 left-1/2 min-h-[250px] w-full max-w-[450px] -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-md border border-disabled bg-white shadow-2DP ${className}`}
+          className={`z-50 fixed top-1/2 left-1/2 min-h-[250px] w-full max-w-[450px] -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-md border border-disabled bg-white shadow-2DP ${className}`}
         >
           {children}
         </Dialog.Content>

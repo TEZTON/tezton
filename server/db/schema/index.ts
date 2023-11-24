@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { v4 } from "uuid";
 
 export const usersSchema = sqliteTable("users", {
@@ -128,6 +128,48 @@ export const deliverablePhases = sqliteTable("deliverable_phases", {
     .notNull()
     .references(() => deliverableTypesSchema.id),
 });
+
+export const deliverableDiagramNodes = sqliteTable(
+  "deliverable_diagram_nodes",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => v4()),
+    name: text("name").notNull(),
+    positionX: integer("position_x").notNull(),
+    positionY: integer("position_y").notNull(),
+    createdAt: text("created_at")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    deliverableId: text("deliverable_id")
+      .notNull()
+      .references(() => deliverablesSchema.id, { onDelete: "cascade" }),
+  }
+);
+
+export const deliverableDiagramBoundries = sqliteTable(
+  "deliverable_diagram_boundries",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => v4()),
+    name: text("name").notNull(),
+    positionX: integer("position_x").notNull(),
+    positionY: integer("position_y").notNull(),
+    createdAt: text("created_at")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    deliverableId: text("deliverable_id")
+      .notNull()
+      .references(() => deliverablesSchema.id, { onDelete: "cascade" }),
+  }
+);
 
 export const deliverableTypesSchema = sqliteTable("deliverableTypes", {
   id: text("id").primaryKey(),

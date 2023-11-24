@@ -3,6 +3,7 @@
 import DeliverableDetailed from "@/components/deliverable/DeliverableDetailed";
 import DeliverableOptions from "@/components/deliverable/DeliverableOptions";
 import DeliverableTimeline from "@/components/deliverable/DeliverableTimeline";
+import DeliverableDiagram from "@/components/deliverable/DeliverableDiagram";
 import {
   UpsertDeliverablePhaseSchema,
   UpsertDeliverablePhaseSchemaType,
@@ -55,6 +56,7 @@ export default function DeliverablePage() {
           groups={deliverableTypesData || []}
           phases={phasesData || []}
         />
+        <DeliverableDiagram deliverableId={deliverableId as string} />
       </div>
       <DeliverableDetailed />
     </FormProvider>
