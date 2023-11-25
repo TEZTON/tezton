@@ -101,7 +101,7 @@ export const RegisterForm = () => {
         Já tenho conta
       </Link>
       <button
-        className="w-max border border-primary px-3 py-1 rounded-md hover:bg-primary hover:text-black"
+        className="w-max border border-primary px-3 py-1 rounded-md hover:bg-primary hover:text-white"
         type="submit"
       >
         Salvar

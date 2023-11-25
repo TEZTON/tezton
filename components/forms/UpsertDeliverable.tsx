@@ -29,8 +29,14 @@ export default function UpsertDeliverable({
   });
   const { deliverables } = trpc.useUtils();
   const create = trpc.deliverables.createDeliverable.useMutation();
+  const update = trpc.deliverables.updateDeliverable.useMutation();
 
   const onSubmit: SubmitHandler<UpsertDeliverableSchemaType> = async (data) => {
+    if (deliverableId) {
+      await update.mutateAsync({ ...data, deliverableId });
+      await deliverables.getDeliverables.invalidate();
+      return onSuccess();
+    }
     await create.mutateAsync({ ...data, functionalityId });
     await deliverables.getDeliverables.invalidate();
     onSuccess();

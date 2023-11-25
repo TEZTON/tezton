@@ -71,10 +71,10 @@ export const LoginForm = () => {
         Não tenho conta, criar
       </Link>
       <button
-        className="w-max border border-primary px-3 py-1 rounded-md hover:bg-primary hover:text-black"
+        className="w-max border border-primary px-3 py-1 rounded-md hover:bg-primary hover:text-white"
         type="submit"
       >
-        Salvar
+        Login
       </button>
     </form>
   );
