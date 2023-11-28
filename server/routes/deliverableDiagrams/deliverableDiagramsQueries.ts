@@ -7,7 +7,7 @@ import {
   deliverableDiagramBoundries,
   deliverableDiagramNodes,
 } from "../../db/schema";
-import { deliverableIdAccessMiddleware } from "./acl";
+import { deliverableIdAccessMiddleware } from "../deliverablesPhases/acl";
 
 export const deliverableDiagramsQueries = router({
   getNodes: protectedProcedure

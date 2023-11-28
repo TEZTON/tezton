@@ -1,10 +1,20 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "@/server";
-import { companiesSchema, productsSchema } from "../../db/schema";
-import { and, eq } from "drizzle-orm";
+import {
+  companiesSchema,
+  productsSchema,
+  requestAccessSchema,
+} from "../../db/schema";
+import { and, eq, or, inArray } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { CompanySchema } from "@/schema/company";
-import { ProductSchema } from "@/schema/product";
+import {
+  CompanySchema,
+  MyCompaniesSchema,
+  MyCompaniesSchemaType,
+} from "@/schema/company";
+
+import { RequestAccessStatus } from "@/schema/requestAccess";
+import { companyIdAccessMiddleware } from "./acl";
 
 export const companyQueries = router({
   getAllCompanies: protectedProcedure
@@ -19,24 +29,53 @@ export const companyQueries = router({
 
   getMyCompanies: protectedProcedure
     .input(z.void())
-    .output(z.array(CompanySchema.extend({ products: z.array(ProductSchema) })))
+    .output(MyCompaniesSchema)
+
     .query(async ({ ctx: { db, user } }) => {
+      const cids = await db
+        .select({ companyId: requestAccessSchema.companyId })
+        .from(requestAccessSchema)
+        .where(
+          and(
+            eq(requestAccessSchema.userId, user.id),
+            eq(requestAccessSchema.status, RequestAccessStatus.Enum.approved)
+          )
+        );
+
       const result = await db
         .select()
         .from(companiesSchema)
-        .where(eq(companiesSchema.userId, user.id));
+        .leftJoin(
+          productsSchema,
+          eq(productsSchema.companyId, companiesSchema.id)
+        )
+        .where(
+          or(
+            eq(companiesSchema.userId, user.id),
+            inArray(
+              companiesSchema.id,
+              cids.map(({ companyId }) => companyId)
+            )
+          )
+        );
 
-      const companies = await Promise.all(
-        result.map(async (c) => {
-          return {
-            ...c,
-            products: await db
-              .select()
-              .from(productsSchema)
-              .where(eq(productsSchema.companyId, c.id)),
-          };
-        })
-      );
+      const companies = result.reduce<MyCompaniesSchemaType>((acc, curr) => {
+        const company = acc.find((c) => c.id === curr.companies.id);
+        if (!company) {
+          return acc.concat({
+            ...curr.companies,
+            products: curr.products ? [curr.products] : [],
+          });
+        }
+
+        return acc.map((c) => {
+          if (curr.products && c.id === curr.companies.id) {
+            c.products.push(curr.products);
+          }
+
+          return c;
+        });
+      }, []);
 
       return companies;
     }),
@@ -47,16 +86,13 @@ export const companyQueries = router({
       })
     )
     .output(CompanySchema)
-    .query(async ({ ctx: { db, user }, input: { companyId } }) => {
+
+    .use(companyIdAccessMiddleware)
+    .query(async ({ ctx: { db }, input: { companyId } }) => {
       const companies = await db
         .select()
         .from(companiesSchema)
-        .where(
-          and(
-            eq(companiesSchema.userId, user.id),
-            eq(companiesSchema.id, companyId)
-          )
-        );
+        .where(eq(companiesSchema.id, companyId));
 
       if (companies.length !== 1) {
         throw new TRPCError({ code: "NOT_FOUND" });

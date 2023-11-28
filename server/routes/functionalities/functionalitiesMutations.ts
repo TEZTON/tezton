@@ -1,15 +1,13 @@
 import { z } from "zod";
 
 import { protectedProcedure, router } from "@/server";
-import {
-  companiesSchema,
-  functionalitiesSchema,
-  productsSchema,
-  projectsSchema,
-} from "../../db/schema";
+import { functionalitiesSchema } from "../../db/schema";
 import { and, eq, sql } from "drizzle-orm";
-import { TRPCError } from "@trpc/server";
-import { functionalityIdAccessMiddleware } from "./acl";
+
+import {
+  functionalityAccessMiddleware,
+  functionalityIdAccessMiddleware,
+} from "./acl";
 import {
   SingleFunctionalitySchema,
   UpsertFunctionalitySchema,
@@ -18,37 +16,10 @@ import {
 export const functionalitiesMutations = router({
   createFunctionality: protectedProcedure
     .input(UpsertFunctionalitySchema)
+    .use(functionalityAccessMiddleware)
     .output(z.string())
     .mutation(
-      async ({
-        ctx: { db, user },
-        input: { name, description, projectId },
-      }) => {
-        const result = await db
-          .select({ count: sql<number>`count(*)` })
-          .from(projectsSchema)
-          .leftJoin(
-            productsSchema,
-            eq(productsSchema.id, projectsSchema.productId)
-          )
-          .leftJoin(
-            companiesSchema,
-            eq(companiesSchema.id, productsSchema.companyId)
-          )
-          .where(
-            and(
-              eq(projectsSchema.id, projectId),
-              eq(companiesSchema.userId, user.id)
-            )
-          );
-
-        if (result.length !== 1) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: `Project: ${projectId} does not exist.`,
-          });
-        }
-
+      async ({ ctx: { db }, input: { name, description, projectId } }) => {
         const r = await db
           .insert(functionalitiesSchema)
           .values({ name, description, projectId })
@@ -57,7 +28,6 @@ export const functionalitiesMutations = router({
         return r[0].id;
       }
     ),
-
   updateFunctionality: protectedProcedure
     .input(
       UpsertFunctionalitySchema.extend({ functionalityId: z.string().uuid() })

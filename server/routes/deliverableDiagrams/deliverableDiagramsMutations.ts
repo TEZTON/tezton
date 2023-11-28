@@ -6,12 +6,12 @@ import {
   deliverableDiagramNodes,
 } from "../../db/schema";
 
-import { deliverableIdAccessMiddleware } from "./acl";
 import {
   UpdatePositionSchema,
   UpsertDeliverableDiagramNodeBoundrySchema,
 } from "@/schema/diagrams";
 import { eq } from "drizzle-orm";
+import { deliverableIdAccessMiddleware } from "../deliverablesPhases/acl";
 
 export const deliverableDiagramsMutations = router({
   createDeliverableDiagramNode: protectedProcedure

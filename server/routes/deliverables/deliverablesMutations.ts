@@ -1,16 +1,12 @@
 import { z } from "zod";
 
 import { protectedProcedure, router } from "@/server";
-import {
-  companiesSchema,
-  deliverablesSchema,
-  functionalitiesSchema,
-  productsSchema,
-  projectsSchema,
-} from "../../db/schema";
+import { deliverablesSchema } from "../../db/schema";
 import { and, eq, sql } from "drizzle-orm";
-import { TRPCError } from "@trpc/server";
-import { deliverableIdAccessMiddleware } from "./acl";
+import {
+  deliverableAccessMiddleware,
+  deliverableIdAccessMiddleware,
+} from "./acl";
 import {
   SingleDeliverableSchema,
   UpsertDeliverableSchema,
@@ -19,41 +15,13 @@ import {
 export const deliverablesMutations = router({
   createDeliverable: protectedProcedure
     .input(UpsertDeliverableSchema)
+    .use(deliverableAccessMiddleware)
     .output(z.string())
     .mutation(
       async ({
-        ctx: { db, user },
+        ctx: { db },
         input: { name, description, functionalityId },
       }) => {
-        const result = await db
-          .select({ count: sql<number>`count(*)` })
-          .from(functionalitiesSchema)
-          .leftJoin(
-            projectsSchema,
-            eq(projectsSchema.id, functionalitiesSchema.projectId)
-          )
-          .leftJoin(
-            productsSchema,
-            eq(productsSchema.id, projectsSchema.productId)
-          )
-          .leftJoin(
-            companiesSchema,
-            eq(companiesSchema.id, productsSchema.companyId)
-          )
-          .where(
-            and(
-              eq(functionalitiesSchema.id, functionalityId),
-              eq(companiesSchema.userId, user.id)
-            )
-          );
-
-        if (result.length !== 1) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: `Functionality: ${functionalityId} does not exist.`,
-          });
-        }
-
         let r = await db
           .insert(deliverablesSchema)
           .values({ name, description, functionalityId })

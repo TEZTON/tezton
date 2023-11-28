@@ -1,7 +1,7 @@
 "use client";
 
+import Self from "@/components/Self";
 import { Companies } from "@/components/company";
-import { Calendar } from "@/components/calendar";
 import AllCompaniesAside from "@/components/company/AllCompaniesAside";
 
 export default function Home() {
@@ -9,9 +9,7 @@ export default function Home() {
     <main className="flex min-h-full overflow-y-auto overflow-x-hidden">
       <AllCompaniesAside />
       <div className="w-[calc(100%-55px)] ml-4">
-        <div className="flex ">
-          <Calendar />
-        </div>
+        <Self />
         <div className="w-full grid grid-cols-2 justify-between gap-14 ">
           <Companies />
         </div>

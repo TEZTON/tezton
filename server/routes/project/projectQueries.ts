@@ -7,20 +7,15 @@ import {
 } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { projectIdAccessMiddleware } from "./acl";
+import { projectAccessMiddleware, projectIdAccessMiddleware } from "./acl";
 import { ProjectSchema, SingleProjectSchema } from "@/schema/project";
 
 export const projectQueries = router({
   getProjects: protectedProcedure
-    .meta({
-      openapi: {
-        method: "GET",
-        path: "/product/{productId}/project",
-      },
-    })
     .input(z.object({ productId: z.string() }))
     .output(z.array(ProjectSchema))
-    .query(async ({ ctx: { db, user }, input: { productId } }) => {
+    .use(projectAccessMiddleware)
+    .query(async ({ ctx: { db }, input: { productId } }) => {
       const result = await db
         .select()
         .from(projectsSchema)
@@ -28,16 +23,7 @@ export const projectQueries = router({
           productsSchema,
           eq(productsSchema.id, projectsSchema.productId)
         )
-        .leftJoin(
-          companiesSchema,
-          eq(companiesSchema.id, productsSchema.companyId)
-        )
-        .where(
-          and(
-            eq(productsSchema.id, productId),
-            eq(companiesSchema.userId, user.id)
-          )
-        );
+        .where(and(eq(productsSchema.id, productId)));
 
       return result.map(({ projects }) => projects);
     }),
@@ -46,7 +32,7 @@ export const projectQueries = router({
     .input(SingleProjectSchema)
     .use(projectIdAccessMiddleware)
     .output(ProjectSchema)
-    .query(async ({ ctx: { db, user }, input: { productId, projectId } }) => {
+    .query(async ({ ctx: { db }, input: { productId, projectId } }) => {
       const result = await db
         .select()
         .from(projectsSchema)
@@ -54,15 +40,10 @@ export const projectQueries = router({
           productsSchema,
           eq(productsSchema.id, projectsSchema.productId)
         )
-        .leftJoin(
-          companiesSchema,
-          eq(companiesSchema.id, productsSchema.companyId)
-        )
         .where(
           and(
             eq(projectsSchema.id, projectId),
-            eq(productsSchema.id, productId),
-            eq(companiesSchema.userId, user.id)
+            eq(productsSchema.id, productId)
           )
         );
 
