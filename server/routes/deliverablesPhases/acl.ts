@@ -27,6 +27,23 @@ export const deliverableIdAccessMiddleware = experimental_standaloneMiddleware<{
       )
     );
 
+  const params =
+    permission.length === 0
+      ? and(
+          eq(deliverablesSchema.id, deliverableId),
+          eq(companiesSchema.userId, user.id)
+        )
+      : and(
+          eq(deliverablesSchema.id, deliverableId),
+          or(
+            inArray(
+              companiesSchema.id,
+              permission.map((c) => c.companyId)
+            ),
+            eq(companiesSchema.userId, user.id)
+          )
+        );
+
   const result = await db
     .select({ count: sql<number>`count(*)` })
     .from(deliverablesSchema)
@@ -40,18 +57,7 @@ export const deliverableIdAccessMiddleware = experimental_standaloneMiddleware<{
     )
     .leftJoin(productsSchema, eq(productsSchema.id, projectsSchema.productId))
     .leftJoin(companiesSchema, eq(companiesSchema.id, productsSchema.companyId))
-    .where(
-      and(
-        eq(deliverablesSchema.id, deliverableId),
-        or(
-          inArray(
-            companiesSchema.id,
-            permission.map((c) => c.companyId)
-          ),
-          eq(companiesSchema.userId, user.id)
-        )
-      )
-    );
+    .where(params);
 
   if (!result[0] || result[0].count !== 1) {
     throw new TRPCError({

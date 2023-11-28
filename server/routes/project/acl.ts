@@ -24,6 +24,25 @@ export const projectIdAccessMiddleware = experimental_standaloneMiddleware<{
         )
       );
 
+    const params =
+      permission.length === 0
+        ? and(
+            eq(projectsSchema.id, projectId),
+            eq(productsSchema.id, productId),
+            eq(companiesSchema.userId, user.id)
+          )
+        : and(
+            eq(projectsSchema.id, projectId),
+            eq(productsSchema.id, productId),
+            or(
+              eq(companiesSchema.userId, user.id),
+              inArray(
+                companiesSchema.id,
+                permission.map((p) => p.companyId)
+              )
+            )
+          );
+
     const result = await db
       .select({ count: sql<number>`count(*)` })
       .from(projectsSchema)
@@ -32,19 +51,7 @@ export const projectIdAccessMiddleware = experimental_standaloneMiddleware<{
         companiesSchema,
         eq(companiesSchema.id, productsSchema.companyId)
       )
-      .where(
-        and(
-          eq(projectsSchema.id, projectId),
-          eq(productsSchema.id, productId),
-          or(
-            eq(companiesSchema.userId, user.id),
-            inArray(
-              companiesSchema.id,
-              permission.map((p) => p.companyId)
-            )
-          )
-        )
-      );
+      .where(params);
 
     if (!result[0] || result[0].count !== 1) {
       throw new TRPCError({
@@ -71,22 +78,28 @@ export const projectAccessMiddleware = experimental_standaloneMiddleware<{
       )
     );
 
+  const params =
+    permission.length === 0
+      ? and(
+          eq(productsSchema.id, productId),
+          eq(companiesSchema.userId, user.id)
+        )
+      : and(
+          eq(productsSchema.id, productId),
+          or(
+            eq(companiesSchema.userId, user.id),
+            inArray(
+              companiesSchema.id,
+              permission.map((p) => p.companyId)
+            )
+          )
+        );
+
   const result = await db
     .select({ count: sql<number>`count(*)` })
     .from(productsSchema)
     .leftJoin(companiesSchema, eq(companiesSchema.id, productsSchema.companyId))
-    .where(
-      and(
-        eq(productsSchema.id, productId),
-        or(
-          eq(companiesSchema.userId, user.id),
-          inArray(
-            companiesSchema.id,
-            permission.map((p) => p.companyId)
-          )
-        )
-      )
-    );
+    .where(params);
 
   if (!result[0] || result[0].count !== 1) {
     throw new TRPCError({

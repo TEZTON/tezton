@@ -41,6 +41,16 @@ export const companyQueries = router({
             eq(requestAccessSchema.status, RequestAccessStatus.Enum.approved)
           )
         );
+      const params =
+        cids.length === 0
+          ? eq(companiesSchema.userId, user.id)
+          : or(
+              eq(companiesSchema.userId, user.id),
+              inArray(
+                companiesSchema.id,
+                cids.map(({ companyId }) => companyId)
+              )
+            );
 
       const result = await db
         .select()
@@ -49,15 +59,7 @@ export const companyQueries = router({
           productsSchema,
           eq(productsSchema.companyId, companiesSchema.id)
         )
-        .where(
-          or(
-            eq(companiesSchema.userId, user.id),
-            inArray(
-              companiesSchema.id,
-              cids.map(({ companyId }) => companyId)
-            )
-          )
-        );
+        .where(params);
 
       const companies = result.reduce<MyCompaniesSchemaType>((acc, curr) => {
         const company = acc.find((c) => c.id === curr.companies.id);
