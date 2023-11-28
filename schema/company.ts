@@ -43,12 +43,6 @@ export const CompanySchema = z.object({
   companyImageUrl: z.string().url().optional().nullable(),
 });
 
-const AccessableCompanySchema = CompanySchema.extend({
-  products: z.array(ProductSchema),
-});
-
 export type UpsertCompanyFileUploadSchemaType = z.infer<
   typeof UpsertCompanyFileUploadSchema
 >;
-type CompanySchemaType = z.infer<typeof CompanySchema>;
-type AccessableCompanySchemaType = z.infer<typeof AccessableCompanySchema>;
