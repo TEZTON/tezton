@@ -1,38 +1,24 @@
 import { z } from "zod";
 
 import { protectedProcedure, router } from "@/server";
-import { companiesSchema, productsSchema } from "../../db/schema";
+import {
+  companiesSchema,
+  productsSchema,
+  requestAccessSchema,
+} from "../../db/schema";
 import { and, eq, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { productIdAccessMiddleware } from "./acl";
+import { productAccessMiddleware, productIdAccessMiddleware } from "./acl";
 import { SingleProductSchema, UpsertProductSchema } from "@/schema/product";
+import { RequestAccessStatus } from "@/schema/requestAccess";
 
 export const productMutations = router({
   createProduct: protectedProcedure
     .input(UpsertProductSchema)
     .output(z.string())
+    .use(productAccessMiddleware)
     .mutation(
-      async ({
-        ctx: { db, user },
-        input: { name, description, companyId },
-      }) => {
-        const result = await db
-          .select({ count: sql<number>`count(*)` })
-          .from(companiesSchema)
-          .where(
-            and(
-              eq(companiesSchema.id, companyId),
-              eq(companiesSchema.userId, user.id)
-            )
-          );
-
-        if (result.length === 0) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: `Company: ${companyId} does not exist.`,
-          });
-        }
-
+      async ({ ctx: { db }, input: { name, description, companyId } }) => {
         const insert = await db
           .insert(productsSchema)
           .values({ name, description, companyId })

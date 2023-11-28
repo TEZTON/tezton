@@ -12,7 +12,6 @@ export default function SettingsPage() {
     trpc.requestAccess.accept.useMutation();
   const { mutateAsync: rejectAsync, isPending: rejectIsPending } =
     trpc.requestAccess.reject.useMutation();
-
   const { requestAccess } = trpc.useUtils();
 
   const isDisabled = acceptIsPending || rejectIsPending;

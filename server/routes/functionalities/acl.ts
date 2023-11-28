@@ -3,10 +3,12 @@ import {
   functionalitiesSchema,
   productsSchema,
   projectsSchema,
+  requestAccessSchema,
 } from "../../db/schema";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, inArray, or, sql } from "drizzle-orm";
 import { TRPCError, experimental_standaloneMiddleware } from "@trpc/server";
 import { ExperimentalMiddlewareContext } from "../../context";
+import { RequestAccessStatus } from "@/schema/requestAccess";
 
 export const functionalityIdAccessMiddleware =
   experimental_standaloneMiddleware<{
@@ -21,6 +23,16 @@ export const functionalityIdAccessMiddleware =
       input: { projectId, functionalityId },
       next,
     }) => {
+      const permission = await db
+        .select({ companyId: requestAccessSchema.companyId })
+        .from(requestAccessSchema)
+        .where(
+          and(
+            eq(requestAccessSchema.userId, user.id),
+            eq(requestAccessSchema.status, RequestAccessStatus.Enum.approved)
+          )
+        );
+
       const result = await db
         .select({ count: sql<number>`count(*)` })
         .from(functionalitiesSchema)
@@ -40,7 +52,13 @@ export const functionalityIdAccessMiddleware =
           and(
             eq(functionalitiesSchema.id, functionalityId),
             eq(projectsSchema.id, projectId),
-            eq(companiesSchema.userId, user.id)
+            or(
+              inArray(
+                companiesSchema.id,
+                permission.map((p) => p.companyId)
+              ),
+              eq(companiesSchema.userId, user.id)
+            )
           )
         );
 
@@ -54,3 +72,51 @@ export const functionalityIdAccessMiddleware =
       return next();
     }
   );
+
+export const functionalityAccessMiddleware = experimental_standaloneMiddleware<{
+  ctx: ExperimentalMiddlewareContext;
+  input: {
+    projectId: string;
+  };
+}>().create(async ({ ctx: { db, user }, input: { projectId }, next }) => {
+  const permission = await db
+    .select({ companyId: requestAccessSchema.companyId })
+    .from(requestAccessSchema)
+    .where(
+      and(
+        eq(requestAccessSchema.userId, user.id),
+        eq(requestAccessSchema.status, RequestAccessStatus.Enum.approved)
+      )
+    );
+
+  const result = await db
+    .select()
+    .from(functionalitiesSchema)
+    .leftJoin(
+      projectsSchema,
+      eq(projectsSchema.id, functionalitiesSchema.projectId)
+    )
+    .leftJoin(productsSchema, eq(productsSchema.id, projectsSchema.productId))
+    .leftJoin(companiesSchema, eq(companiesSchema.id, productsSchema.companyId))
+    .where(
+      and(
+        eq(projectsSchema.id, projectId),
+        or(
+          inArray(
+            companiesSchema.id,
+            permission.map((p) => p.companyId)
+          ),
+          eq(companiesSchema.userId, user.id)
+        )
+      )
+    );
+
+  if (result.length !== 1) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Invalid parameters",
+    });
+  }
+
+  return next();
+});

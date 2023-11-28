@@ -4,6 +4,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { protectedProcedure, router } from "@/server";
 import { companiesSchema } from "../../db/schema";
 import { UpsertCompanySchema } from "@/schema/company";
+import { companyIdAccessMiddleware } from "./acl";
 
 export const companyMutations = router({
   createCompany: protectedProcedure
@@ -22,6 +23,7 @@ export const companyMutations = router({
 
   updateCompany: protectedProcedure
     .input(UpsertCompanySchema.extend({ companyId: z.string().uuid() }))
+    .use(companyIdAccessMiddleware)
     .output(z.string())
     .mutation(
       async ({ ctx: { db, user }, input: { name, type, companyId } }) => {
@@ -32,12 +34,7 @@ export const companyMutations = router({
             ...(type && { type }),
             updatedAt: sql`CURRENT_TIMESTAMP`,
           })
-          .where(
-            and(
-              eq(companiesSchema.id, companyId),
-              eq(companiesSchema.userId, user.id)
-            )
-          );
+          .where(and(eq(companiesSchema.id, companyId)));
 
         return "OK";
       }
@@ -49,16 +46,12 @@ export const companyMutations = router({
         companyId: z.string(),
       })
     )
+    .use(companyIdAccessMiddleware)
     .output(z.string())
-    .mutation(async ({ ctx: { db, user }, input: { companyId } }) => {
+    .mutation(async ({ ctx: { db }, input: { companyId } }) => {
       await db
         .delete(companiesSchema)
-        .where(
-          and(
-            eq(companiesSchema.id, companyId),
-            eq(companiesSchema.userId, user.id)
-          )
-        );
+        .where(and(eq(companiesSchema.id, companyId)));
 
       return "OK";
     }),
