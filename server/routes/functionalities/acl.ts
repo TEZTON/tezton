@@ -93,11 +93,7 @@ export const functionalityAccessMiddleware = experimental_standaloneMiddleware<{
 
   const result = await db
     .select()
-    .from(functionalitiesSchema)
-    .leftJoin(
-      projectsSchema,
-      eq(projectsSchema.id, functionalitiesSchema.projectId)
-    )
+    .from(projectsSchema)
     .leftJoin(productsSchema, eq(productsSchema.id, projectsSchema.productId))
     .leftJoin(companiesSchema, eq(companiesSchema.id, productsSchema.companyId))
     .where(
