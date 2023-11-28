@@ -40,7 +40,7 @@ export const deliverablesQueries = router({
           .where(
             and(
               eq(deliverablesSchema.id, deliverableId),
-              eq(functionalitiesSchema.id, functionalityId)
+              eq(deliverablesSchema.functionalityId, functionalityId)
             )
           );
 

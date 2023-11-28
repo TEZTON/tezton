@@ -63,7 +63,7 @@ export const deliverableIdAccessMiddleware = experimental_standaloneMiddleware<{
         )
       );
 
-    if (!result[0] || result[0].count !== 1) {
+    if (!result[0] || result[0].count === 0) {
       throw new TRPCError({
         code: "NOT_FOUND",
         message: "Invalid parameters",
@@ -92,11 +92,8 @@ export const deliverableAccessMiddleware = experimental_standaloneMiddleware<{
 
   const result = await db
     .select()
-    .from(deliverablesSchema)
-    .leftJoin(
-      functionalitiesSchema,
-      eq(functionalitiesSchema.id, deliverablesSchema.functionalityId)
-    )
+    .from(functionalitiesSchema)
+
     .leftJoin(
       projectsSchema,
       eq(projectsSchema.id, functionalitiesSchema.projectId)
@@ -116,7 +113,7 @@ export const deliverableAccessMiddleware = experimental_standaloneMiddleware<{
       )
     );
 
-  if (result.length !== 1) {
+  if (result.length === 0) {
     throw new TRPCError({
       code: "NOT_FOUND",
       message: "Invalid parameters",

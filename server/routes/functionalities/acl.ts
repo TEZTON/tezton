@@ -62,7 +62,9 @@ export const functionalityIdAccessMiddleware =
           )
         );
 
-      if (!result[0] || result[0].count !== 1) {
+      console.log(result);
+
+      if (!result[0] || result[0].count === 0) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Invalid parameters",
@@ -111,7 +113,7 @@ export const functionalityAccessMiddleware = experimental_standaloneMiddleware<{
       )
     );
 
-  if (result.length !== 1) {
+  if (result.length === 0) {
     throw new TRPCError({
       code: "NOT_FOUND",
       message: "Invalid parameters",
