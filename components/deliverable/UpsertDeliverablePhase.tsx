@@ -5,6 +5,7 @@ import { CalendarIcon } from "lucide-react";
 import CalendarPopover from "../calendar/CalendarPopover";
 import { useState } from "react";
 import { trpc } from "@/trpc";
+import { useParams } from "next/navigation";
 
 export default function UpsertDeliverablePhase() {
   const {
@@ -17,8 +18,7 @@ export default function UpsertDeliverablePhase() {
   } = useFormContext<UpsertDeliverablePhaseSchemaType>();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-  const createPhase =
-    trpc.deliverablePhases.createDeliverablePhase.useMutation();
+  const createPhase = trpc.deliverablePhases.createDeliverablePhase.useMutation();
 
   const { deliverablePhases } = trpc.useUtils();
 
@@ -43,12 +43,26 @@ export default function UpsertDeliverablePhase() {
   const startDate = watch("startDate");
   const endDate = watch("endDate");
 
+  const { deliverableId, functionalityId } = useParams();
+  const { data } = trpc.deliverables.byId.useQuery(
+    {
+      deliverableId: deliverableId as string,
+      functionalityId: functionalityId as string,
+    },
+    {
+      enabled:
+        typeof deliverableId === "string" &&
+        typeof functionalityId === "string",
+    }
+  );
+
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(submitForm)}>
       <p className="text-xs text-error">{getError()}</p>
       <input
         className="input input-sm input-bordered input-primary"
         placeholder="Titulo"
+        defaultValue={data?.name}
         {...register("name")}
       />
       <CalendarPopover
@@ -111,6 +125,7 @@ export default function UpsertDeliverablePhase() {
       </div>
       <textarea
         className="textarea textarea-sm textarea-bordered textarea-primary"
+        defaultValue={data?.description || ""}
         placeholder="Descricao"
         rows={4}
       />
