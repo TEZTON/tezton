@@ -6,6 +6,7 @@ import { trpc } from "@/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { Loader } from "lucide-react";
 
 interface UpsertDeliverableProps {
@@ -36,6 +37,9 @@ export default function UpsertDeliverable({
   const update = trpc.deliverables.updateDeliverable.useMutation();
   const [loading, setLoading] = useState(false);
 
+  const { companyId, productId, projectId } = useParams();
+  const router = useRouter();
+
   const onSubmit: SubmitHandler<UpsertDeliverableSchemaType> = async (data) => {
     setLoading(true);
     if (deliverable?.id) {
@@ -43,10 +47,14 @@ export default function UpsertDeliverable({
       await deliverables.getDeliverables.invalidate({ functionalityId });
       return onSuccess();
     }
-    await create.mutateAsync({ ...data, functionalityId });
+    const createdItem = await create.mutateAsync({ ...data, functionalityId });
+    const newDeliverableUri = `/company/${companyId}/product/${productId}/project/${projectId}/functionality/${functionalityId}/deliverable/${createdItem}`;
+    router.push(newDeliverableUri);
+
     await deliverables.getDeliverables.invalidate();
     setLoading(false);
     onSuccess();
+
   };
 
   const getError = () => {
