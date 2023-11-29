@@ -15,6 +15,7 @@ export const UpsertCompanySchema = z.object({
   type: z.optional(CompanyTypeEnum).default("Consultoria"),
   companyImageUrl: z.string().url().optional().nullable(),
   companyId: z.string().uuid().optional().nullable(),
+  id: z.string().uuid().optional().nullable(),
 });
 
 export const UpsertCompanyFileUploadSchema = UpsertCompanySchema.extend({
