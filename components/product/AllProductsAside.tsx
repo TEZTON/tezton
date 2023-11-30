@@ -5,7 +5,7 @@ import { trpc } from "@/trpc";
 import Dialog from "../modal";
 import UpsertProduct from "./UpsertProduct";
 import ImageRender from "../ImageRender";
-import { id } from "date-fns/locale";
+
 interface AllProductsAsideProps {
   id: string;
   name: string;
