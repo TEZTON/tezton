@@ -70,12 +70,12 @@ export default function AllCompaniesAside() {
             onMouseEnter={() => handleContextMenu(id)}
             onMouseLeave={closeContextMenu}
           >
-            {isContextMenuOpen && contextMenuId === id && (
-              <MoreVertical onClick={() => setOpenEdit(!isOpenEdit)} />
-            )}
             <Link key={id} href={`/company/${id}`}>
               <ImageRender name={name} imageUrl={companyImageUrl} />
             </Link>
+            {isContextMenuOpen && contextMenuId === id && (
+              <MoreVertical onClick={() => setOpenEdit(!isOpenEdit)} />
+            )}
           </div>
         ))}
       </div>
