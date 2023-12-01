@@ -13,7 +13,7 @@ import { useState } from "react";
 import UpsertFunctionality from "../functionality/UpsertFunctionality";
 import FunctionalityAccordion from "../functionality/FunctionalityAccordion";
 import { trpc } from "@/trpc";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import UpsertProject from "./UpsertProject";
 import { capitalizeFirstLetter } from "@/utils/hooks";
 
@@ -39,7 +39,6 @@ export default function ProjectAccordion({
   const remove = trpc.projects.deleteProduct.useMutation();
 
   const { projectId: pathProjectId } = useParams();
-  const { push } = useRouter();
   const { projects } = trpc.useUtils();
   const [projectModal, setProjectModal] = useState(false);
   const [confirmDeleteModal, setconfirmDeleteModal] = useState(false);
@@ -89,7 +88,7 @@ export default function ProjectAccordion({
  const refreshPage = async () => {
     await projects.getProjects.invalidate({ productId });
     setProjectModal(false);
- }
+ };
   return (
     <Accordion.Root
       className="bg-base-200 rounded-md"

@@ -34,7 +34,7 @@ export default function AllProductsAside({
     setContextMenuId(id);
     setContextMenuOpen(true);
 
-    const selectedItem = data?.find((product: any) => product.id === id);
+    const selectedItem = data?.find((product: UpsertProductProps) => product.id === id);
     setSelectedProduct(selectedItem);
   };
   const closeContextMenu = () => {
@@ -90,18 +90,18 @@ export default function AllProductsAside({
             />
           </Dialog>
         </div>
-        {data?.map(({ id, name }) => (
+        {data?.map(({ id: productId, name }) => (
           <div
-            key={id}
+            key={productId}
             className={`group flex items-center justify-center ${MIN_DIMENSION_CLASS} rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden p-1 group`}
-            onMouseEnter={() => handleContextMenu(id)}
+            onMouseEnter={() => handleContextMenu(productId)}
             onMouseLeave={closeContextMenu}
           >
          
-            <Link key={id} href={`/company/${id}`}>
+            <Link key={productId} href={`/company/${id}/product/${productId}`}>
               <ImageRender name={name} imageUrl={companyImageUrl} />
             </Link>
-            {isContextMenuOpen && contextMenuId === id && (
+            {isContextMenuOpen && contextMenuId === productId && (
               <MoreVertical onClick={() => setOpenEdit(!isOpenEdit)} />
             )}
           </div>

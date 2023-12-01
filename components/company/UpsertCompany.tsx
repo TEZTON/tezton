@@ -12,7 +12,11 @@ import { trpc } from "@/trpc";
 import { uploadAssetApi } from "@/trpc/asset";
 
 interface UpsertCompanyProps {
-  initialData?: UpsertCompanyFileUploadSchemaType;
+  initialData?: {
+    id: string;
+    name: string;
+    type: "Financeira" | "Tecnologia" | "Consultoria";
+  };
   onSuccess: () => void;
 }
 

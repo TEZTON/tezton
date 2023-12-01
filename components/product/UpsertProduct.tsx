@@ -17,7 +17,6 @@ interface UpsertProductProps {
 
 export default function UpsertProduct({
   companyId,
-  productId,
   onSuccessCallback,
   initialData,
 }: UpsertProductProps) {

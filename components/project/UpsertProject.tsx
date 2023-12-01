@@ -41,6 +41,9 @@ export default function UpsertProject({
   });
   const create = trpc.projects.createProject.useMutation();
   const update = trpc.projects.updateProject.useMutation();
+  const getProject = trpc.projects.getProjects.useQuery({
+    productId: productId
+  });
   const onSubmit: SubmitHandler<UpsertProjectSchemaType> = async (data) => {
     if (initialData && initialData.id) {
       await update.mutateAsync({
@@ -49,6 +52,7 @@ export default function UpsertProject({
       });
     } else {
       await create.mutateAsync({ ...data, productId });
+      getProject.isFetched && getProject.refetch();
     }
     onSuccess();
   };
