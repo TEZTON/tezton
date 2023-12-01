@@ -10,15 +10,7 @@ import {
 } from "@/schema/company";
 import { trpc } from "@/trpc";
 import { uploadAssetApi } from "@/trpc/asset";
-
-interface UpsertCompanyProps {
-  initialData?: {
-    id: string;
-    name: string;
-    type: "Financeira" | "Tecnologia" | "Consultoria";
-  };
-  onSuccess: () => void;
-}
+import { CompanyType, CompanyUpdate, UpsertCompanyProps } from "@/utils/types";
 
 export default function UpsertCompany({
   initialData,
@@ -40,6 +32,7 @@ export default function UpsertCompany({
   const update = trpc.companies.updateCompany.useMutation();
   const upload = useMutation({ mutationFn: uploadAssetApi });
   const deleted = trpc.companies.deleteCompany.useMutation();
+  const getCompanies = trpc.companies.getAllCompanies.useQuery();
   const { companies } = trpc.useUtils();
 
   const onSubmit: SubmitHandler<UpsertCompanyFileUploadSchemaType> = async (
@@ -57,13 +50,16 @@ export default function UpsertCompany({
     }
 
     if (initialData && initialData.id) {
-      await update.mutateAsync({
-        companyId: initialData?.id as any,
-        ...data,
+      const updateData: CompanyUpdate = {
+        companyId: initialData?.id as string,
+        name: data.name,
+        type: data.type as CompanyType,
         companyImageUrl: fileurl
-      });
+      };
+      await update.mutateAsync(updateData);
     } else {
       await create.mutateAsync({ ...data, companyImageUrl: fileurl });
+      getCompanies.isFetched && getCompanies.refetch();
     }
 
     await companies.getAllCompanies.invalidate();

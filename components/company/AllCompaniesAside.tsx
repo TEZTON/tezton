@@ -8,18 +8,10 @@ import Dialog from "../modal";
 import UpsertCompany from "@/components/company/UpsertCompany";
 import { trpc } from "@/trpc";
 import ImageRender from "../ImageRender";
+import { Company, CompanyType } from "@/utils/types";
 
 const MIN_DIMENSION_CLASS = "min-w-[40px] min-h-[40px]";
 
-type Company = {
-  type: 'Financeira' | 'Tecnologia' | 'Consultoria' | string | undefined;
-  name: string;
-  id: string | undefined;
-  createdAt: string;
-  updatedAt: string;
-  companyImageUrl?: string | null | undefined;
-};
-type CompanyType = 'Financeira' | 'Tecnologia' | 'Consultoria';
 export default function AllCompaniesAside() {
   const [isOpen, setOpen] = useState(false);
   const { data } = trpc.companies.getAllCompanies.useQuery();

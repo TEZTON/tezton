@@ -1,25 +1,15 @@
 import { UpsertProductSchema, UpsertProductSchemaType } from "@/schema/product";
 import { trpc } from "@/trpc";
+import { UpdateData, UpsertPropsProduct } from "@/utils/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-
-interface UpsertProductProps {
-  initialData?: {
-    id: string;
-    name: string;
-    description: string;
-  };
-  companyId: string;
-  productId?: string;
-  onSuccessCallback: () => void;
-}
 
 export default function UpsertProduct({
   companyId,
   onSuccessCallback,
   initialData,
-}: UpsertProductProps) {
+}: UpsertPropsProduct) {
   const {
     register,
     handleSubmit,
@@ -37,14 +27,21 @@ export default function UpsertProduct({
   const create = trpc.products.createProduct.useMutation();
   const update = trpc.products.updateProduct.useMutation();
   const deleted = trpc.products.deleteProduct.useMutation();
+  const getProducts = trpc.products.getProducts.useQuery({
+    companyId: companyId
+  });
   const onSubmit: SubmitHandler<UpsertProductSchemaType> = async (data) => {
     if (initialData && initialData.id) {
-      await update.mutateAsync({
-        productId: initialData?.id as any,
-        ...data,
-      });
+      const updateData: UpdateData = {
+        companyId: companyId,
+        productId: initialData.id,
+        name: data.name,
+        description: data.description,
+      };
+      await update.mutateAsync(updateData);
     } else {
     await create.mutateAsync({ ...data, companyId });
+    getProducts.isFetched && getProducts.refetch();
     }
     await products.getProducts.invalidate();
     onSuccessCallback();

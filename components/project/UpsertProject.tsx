@@ -4,29 +4,17 @@ import {
   UpsertProjectSchemaType
 } from "@/schema/project";
 import { trpc } from "@/trpc";
+import { UpdateProject, UpsertProps } from "@/utils/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-interface UpsertProjectProps {
-  initialData?: {
-    id: string;
-    name: string;
-    description: string;
-    priority: "Low" | "Medium" | "High";
-  };
-  productId: string;
-  projectId?: string;
-  companyId: string;
-  onSuccess: () => void;
-}
 
 export default function UpsertProject({
   productId,
   initialData,
   onSuccess,
-  companyId
-}: UpsertProjectProps) {
+}: UpsertProps) {
   const {
     register,
     handleSubmit,
@@ -46,10 +34,14 @@ export default function UpsertProject({
   });
   const onSubmit: SubmitHandler<UpsertProjectSchemaType> = async (data) => {
     if (initialData && initialData.id) {
-      await update.mutateAsync({
-        ...data,
-        projectId: initialData?.id as any
-      });
+      const updateData: UpdateProject = {
+        productId: productId,
+        projectId: initialData.id,
+        name: data.name,
+        description: data.description,
+        priority: data.priority
+      };
+      await update.mutateAsync(updateData);
     } else {
       await create.mutateAsync({ ...data, productId });
       getProject.isFetched && getProject.refetch();

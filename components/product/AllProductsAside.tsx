@@ -5,18 +5,9 @@ import { trpc } from "@/trpc";
 import Dialog from "../modal";
 import UpsertProduct from "./UpsertProduct";
 import ImageRender from "../ImageRender";
+import { AllProductsAsideProps, UpsertProductProps } from "@/utils/types";
 
-interface AllProductsAsideProps {
-  id: string;
-  name: string;
-  companyImageUrl?: string | null;
-}
 
-interface UpsertProductProps {
-  id?: string | undefined;
-  name?: string | undefined;
-  description?: string | null | undefined;
-}
 const MIN_DIMENSION_CLASS = "min-w-[40px] min-h-[40px]";
 export default function AllProductsAside({
   name,

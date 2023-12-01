@@ -16,13 +16,7 @@ import { trpc } from "@/trpc";
 import { useParams } from "next/navigation";
 import UpsertProject from "./UpsertProject";
 import { capitalizeFirstLetter } from "@/utils/hooks";
-
-interface ProjectAccordionProps {
-  name: string;
-  projectId: string;
-  companyId: string;
-  productId: string;
-}
+import { PriorityType, ProjectAccordionProps, UpsertProjectProps } from "@/utils/types";
 
 export default function ProjectAccordion({
   name,
@@ -43,7 +37,7 @@ export default function ProjectAccordion({
   const [projectModal, setProjectModal] = useState(false);
   const [confirmDeleteModal, setconfirmDeleteModal] = useState(false);
   const [functionalityModal, setFunctionalityModal] = useState(false);
-  const [projectSelected, selectProject] = useState<any>(null);
+  const [projectSelected, selectProject] = useState<UpsertProjectProps>();
   const [loading, setLoading] = useState(false);
   const projectsContexts = [
     {
@@ -51,7 +45,7 @@ export default function ProjectAccordion({
       label: "Editar",
       icon: PenSquareIcon,
       action: (id: any) => {
-        const project = data?.find((item: any) => item.id === id);
+        const project = data?.find((item: UpsertProjectProps) => item.id === id);
         selectProject(project);
         setProjectModal(true);
       }
@@ -98,9 +92,14 @@ export default function ProjectAccordion({
     >
       <Modal open={projectModal} setOpen={setProjectModal}>
         <UpsertProject
+          initialData={{
+            id: projectSelected?.id ?? '',
+            name: projectSelected?.name ?? '',
+            description: projectSelected?.description ?? '',
+            priority: projectSelected?.description as PriorityType || 'Low',
+          }}
           companyId={companyId}
           productId={productId}
-          initialData={{ ...projectSelected }}
           onSuccess={refreshPage}
         />
       </Modal>
@@ -156,7 +155,7 @@ export default function ProjectAccordion({
             />
           </Modal>
           <div className="mt-2 flex gap-2 flex-col">
-            {dataFunctionality?.map(({ id, name }: any) => (
+            {dataFunctionality?.map(({ id, name }) => (
               <FunctionalityAccordion
                 key={id}
                 functionalityId={id}
