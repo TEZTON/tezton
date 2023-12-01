@@ -1,51 +1,73 @@
 import {
   PriorityEnum,
   UpsertProjectSchema,
-  UpsertProjectSchemaType,
+  UpsertProjectSchemaType
 } from "@/schema/project";
 import { trpc } from "@/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 interface UpsertProjectProps {
+  initialData?: {
+    id: string;
+    name: string;
+    description: string;
+    priority: "Low" | "Medium" | "High";
+  };
   productId: string;
   projectId?: string;
+  companyId: string;
   onSuccess: () => void;
 }
 
 export default function UpsertProject({
   productId,
-  projectId,
+  initialData,
   onSuccess,
+  companyId
 }: UpsertProjectProps) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    setValue,
+    formState: { errors }
   } = useForm<UpsertProjectSchemaType>({
     defaultValues: {
       productId: productId,
+      ...initialData
     },
-    resolver: zodResolver(UpsertProjectSchema),
+    resolver: zodResolver(UpsertProjectSchema)
   });
-
-  const { projects } = trpc.useUtils();
   const create = trpc.projects.createProject.useMutation();
-
+  const update = trpc.projects.updateProject.useMutation();
   const onSubmit: SubmitHandler<UpsertProjectSchemaType> = async (data) => {
-    await create.mutateAsync({ ...data, productId });
-    projects.getProjects.invalidate();
+    if (initialData && initialData.id) {
+      await update.mutateAsync({
+        ...data,
+        projectId: initialData?.id as any
+      });
+    } else {
+      await create.mutateAsync({ ...data, productId });
+    }
     onSuccess();
   };
 
   const getError = () => {
     return errors.name?.message || errors.root?.message;
   };
+  useEffect(() => {
+    if (initialData) {
+      setValue("name", initialData.name);
+      setValue("priority", initialData.priority);
+      setValue("description", initialData.description);
+    }
+  }, [initialData, setValue]);
 
   return (
     <div className="bg-white p-6">
       <p className="font-bold mb-5">
-        {projectId ? "Atualizar Projeto" : "Adicionar Projeto"}
+        {initialData ? "Atualizar Projeto" : "Adicionar Projeto"}
       </p>
       <form
         className="w-full flex flex-col gap-5"

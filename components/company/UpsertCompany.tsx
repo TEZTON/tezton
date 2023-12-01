@@ -48,7 +48,7 @@ export default function UpsertCompany({
         const result = await upload.mutateAsync(data.companyImage[0]);
         fileurl = result.url;
       } catch (err) {
-        console.log("failed to upload image", err);
+        console.error(err);
       }
     }
 
