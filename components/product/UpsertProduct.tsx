@@ -5,7 +5,11 @@ import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 interface UpsertProductProps {
-  initialData?: any;
+  initialData?: {
+    id: string;
+    name: string;
+    description: string;
+  };
   companyId: string;
   productId?: string;
   onSuccessCallback: () => void;

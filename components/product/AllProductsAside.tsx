@@ -11,6 +11,12 @@ interface AllProductsAsideProps {
   name: string;
   companyImageUrl?: string | null;
 }
+
+interface UpsertProductProps {
+  id?: string | undefined;
+  name?: string | undefined;
+  description?: string | null | undefined;
+}
 const MIN_DIMENSION_CLASS = "min-w-[40px] min-h-[40px]";
 export default function AllProductsAside({
   name,
@@ -22,7 +28,7 @@ export default function AllProductsAside({
   const [isContextMenuOpen, setContextMenuOpen] = useState(false);
   const [isOpenEdit, setOpenEdit] = useState(false);
   const [contextMenuId, setContextMenuId] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<UpsertProductProps>();
 
   const handleContextMenu = (id: any) => {
     setContextMenuId(id);
@@ -31,7 +37,6 @@ export default function AllProductsAside({
     const selectedItem = data?.find((product: any) => product.id === id);
     setSelectedProduct(selectedItem);
   };
-  console.log(selectedProduct, "teste");
   const closeContextMenu = () => {
     setContextMenuId(null);
     setContextMenuOpen(false);
@@ -41,7 +46,11 @@ export default function AllProductsAside({
     <div className="w-14 min-w-[56px] border-r flex flex-col overflow-auto">
       <Dialog open={isOpenEdit} setOpen={setOpenEdit}>
         <UpsertProduct
-          initialData={{ ...selectedProduct }}
+          initialData={{
+            id: selectedProduct?.id ?? '',
+            name: selectedProduct?.name ?? '',
+            description: selectedProduct?.description ?? '',
+          }}
           companyId={id}
           onSuccessCallback={() => {
             setOpenEdit(false);
