@@ -79,7 +79,7 @@ export default function AllCompaniesAside() {
             </Link>
           </div>
         ))}
-        <div className=" border-b-2 border-slate-300" />
+        <div className="border-b-2 border-slate-300" />
         {data?.map(({ id, name, companyImageUrl }) => (
           <div
             key={id}

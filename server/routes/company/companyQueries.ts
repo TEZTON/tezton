@@ -42,21 +42,30 @@ export const companyQueries = router({
             eq(requestAccessSchema.status, RequestAccessStatus.Enum.denied)
           )
         );
-
-      const result = await db
-        .select()
-        .from(companiesSchema)
+      const approvedCompanies = await db
+        .select({
+          companyId: requestAccessSchema.companyId,
+        })
+        .from(requestAccessSchema)
         .where(
           and(
-            ne(companiesSchema.userId, user.id),
-            notInArray(
-              companiesSchema.id,
-              deniedCompanies.map(({ companyId }) => companyId)
-            )
+            eq(requestAccessSchema.userId, user.id),
+            eq(requestAccessSchema.status, RequestAccessStatus.Enum.approved)
           )
         );
 
-        // empty products while users can't manage company...
+      const ignoredCompanies = deniedCompanies
+        .concat(approvedCompanies)
+        .map(({ companyId }) => companyId);
+
+      const query = and(
+        ne(companiesSchema.userId, user.id),
+        notInArray(companiesSchema.id, ignoredCompanies)
+      );
+
+      const result = await db.select().from(companiesSchema).where(query);
+
+      // empty products while users still can't manage company...
       const companies = result.map((item) => ({ ...item, products: [] }));
 
       return companies;
