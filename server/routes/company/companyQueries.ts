@@ -5,7 +5,7 @@ import {
   productsSchema,
   requestAccessSchema,
 } from "../../db/schema";
-import { and, eq, or, inArray } from "drizzle-orm";
+import { and, eq, or, inArray, ne, notInArray } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import {
   CompanySchema,
@@ -23,6 +23,50 @@ export const companyQueries = router({
     .query(async ({ ctx: { db } }) => {
       // allow everybody to see all companies, however people will have to ask for permission to view the details of a especific company
       const companies = await db.select().from(companiesSchema);
+
+      return companies;
+    }),
+  // return companies where user has no access ...
+  getAnotherCompanies: protectedProcedure
+    .input(z.void())
+    .output(MyCompaniesSchema)
+    .query(async ({ ctx: { db, user } }) => {
+      const deniedCompanies = await db
+        .select({
+          companyId: requestAccessSchema.companyId,
+        })
+        .from(requestAccessSchema)
+        .where(
+          and(
+            eq(requestAccessSchema.userId, user.id),
+            eq(requestAccessSchema.status, RequestAccessStatus.Enum.denied)
+          )
+        );
+      const approvedCompanies = await db
+        .select({
+          companyId: requestAccessSchema.companyId,
+        })
+        .from(requestAccessSchema)
+        .where(
+          and(
+            eq(requestAccessSchema.userId, user.id),
+            eq(requestAccessSchema.status, RequestAccessStatus.Enum.approved)
+          )
+        );
+
+      const ignoredCompanies = deniedCompanies
+        .concat(approvedCompanies)
+        .map(({ companyId }) => companyId);
+
+      const query = and(
+        ne(companiesSchema.userId, user.id),
+        notInArray(companiesSchema.id, ignoredCompanies)
+      );
+
+      const result = await db.select().from(companiesSchema).where(query);
+
+      // empty products while users still can't manage company...
+      const companies = result.map((item) => ({ ...item, products: [] }));
 
       return companies;
     }),
