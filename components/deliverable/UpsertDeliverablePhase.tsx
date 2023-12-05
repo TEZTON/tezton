@@ -6,6 +6,9 @@ import { trpc } from "@/trpc";
 import { useState, useEffect } from "react";
 import { UpsertDeliverablePhaseSchemaType, DeliverablePhaseSchemaType } from "@/schema/deliverable";
 
+import { useParams } from "next/navigation";
+
+
 interface UpsertDeliverablePhaseProps {
   selectedPhase: DeliverablePhaseSchemaType | null;
 }
@@ -23,6 +26,7 @@ export default function UpsertDeliverablePhase({
   } = useFormContext<UpsertDeliverablePhaseSchemaType>();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+
   const [editMode, setEditMode] = useState(false);
   useEffect(() => {
     if (selectedPhase) {
@@ -38,6 +42,7 @@ export default function UpsertDeliverablePhase({
     trpc.deliverablePhases.createDeliverablePhase.useMutation();
   const updatePhase =
     trpc.deliverablePhases.updateDeliverablePhase.useMutation();
+
   const { deliverablePhases } = trpc.useUtils();
   const submitForm = async (data: UpsertDeliverablePhaseSchemaType) => {
     if (editMode) {
@@ -70,6 +75,19 @@ export default function UpsertDeliverablePhase({
   const startDate =
     watch("startDate") || (selectedPhase && selectedPhase.startDate);
   const endDate = watch("endDate") || (selectedPhase && selectedPhase.endDate);
+
+  const { deliverableId, functionalityId } = useParams();
+  const { data } = trpc.deliverables.byId.useQuery(
+    {
+      deliverableId: deliverableId as string,
+      functionalityId: functionalityId as string,
+    },
+    {
+      enabled:
+        typeof deliverableId === "string" &&
+        typeof functionalityId === "string",
+    }
+  );
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(submitForm)}>
@@ -139,6 +157,7 @@ export default function UpsertDeliverablePhase({
       </div>
       <textarea
         className="textarea textarea-sm textarea-bordered textarea-primary"
+        defaultValue={data?.description || ""}
         placeholder="Descricao"
         rows={4}
       />

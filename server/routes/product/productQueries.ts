@@ -3,14 +3,15 @@ import { protectedProcedure, router } from "@/server";
 import { companiesSchema, productsSchema } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { productIdAccessMiddleware } from "./acl";
+import { productAccessMiddleware, productIdAccessMiddleware } from "./acl";
 import { ProductSchema, SingleProductSchema } from "@/schema/product";
 
 export const productQueries = router({
   getProducts: protectedProcedure
     .input(z.object({ companyId: z.string() }))
+    .use(productAccessMiddleware)
     .output(z.array(ProductSchema))
-    .query(async ({ ctx: { db, user }, input: { companyId } }) => {
+    .query(async ({ ctx: { db }, input: { companyId } }) => {
       const result = await db
         .select()
         .from(productsSchema)
@@ -18,12 +19,7 @@ export const productQueries = router({
           companiesSchema,
           eq(productsSchema.companyId, companiesSchema.id)
         )
-        .where(
-          and(
-            eq(productsSchema.companyId, companyId),
-            eq(companiesSchema.userId, user.id)
-          )
-        );
+        .where(and(eq(productsSchema.companyId, companyId)));
 
       return result.map(({ products }) => products);
     }),
@@ -43,8 +39,7 @@ export const productQueries = router({
         .where(
           and(
             eq(productsSchema.id, productId),
-            eq(productsSchema.companyId, companyId),
-            eq(companiesSchema.userId, user.id)
+            eq(productsSchema.companyId, companyId)
           )
         );
 

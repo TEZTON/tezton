@@ -8,43 +8,19 @@ import {
   usersSchema,
 } from "../../db/schema";
 import { and, eq, sql } from "drizzle-orm";
-import { TRPCError } from "@trpc/server";
-import { projectIdAccessMiddleware } from "./acl";
-import { priorityTypeEnum } from "@/schema/common";
+import { projectAccessMiddleware, projectIdAccessMiddleware } from "./acl";
 import { SingleProjectSchema, UpsertProjectSchema } from "@/schema/project";
 
 export const projectMutations = router({
   createProject: protectedProcedure
     .input(UpsertProjectSchema)
     .output(z.string())
+    .use(projectAccessMiddleware)
     .mutation(
       async ({
-        ctx: { db, user },
+        ctx: { db },
         input: { name, description, productId, priority },
       }) => {
-        // ACL Check
-        const result = await db
-          .select({ count: sql<number>`count(*)` })
-          .from(productsSchema)
-          .leftJoin(
-            companiesSchema,
-            eq(companiesSchema.id, productsSchema.companyId)
-          )
-          .leftJoin(usersSchema, eq(usersSchema.id, companiesSchema.userId))
-          .where(
-            and(
-              eq(companiesSchema.userId, user.id),
-              eq(productsSchema.id, productId)
-            )
-          );
-
-        if (result.length === 0) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: `Product: ${productId} does not exist.`,
-          });
-        }
-
         let r = await db
           .insert(projectsSchema)
           .values({ name, priority, description, productId })
@@ -83,12 +59,6 @@ export const projectMutations = router({
     ),
 
   deleteProduct: protectedProcedure
-    .meta({
-      openapi: {
-        method: "DELETE",
-        path: "/product/{productId}/project/{projectId}",
-      },
-    })
     .input(SingleProjectSchema)
     .output(z.string())
     .use(projectIdAccessMiddleware)

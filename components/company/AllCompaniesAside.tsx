@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   PlusCircleIcon,
-  MoreVertical
+  MoreVertical,
 } from "lucide-react";
 import {
   CompanySchemaType
@@ -17,7 +17,8 @@ export type CompanyType = 'Financeira' | 'Tecnologia' | 'Consultoria';
 
 export default function AllCompaniesAside() {
   const [isOpen, setOpen] = useState(false);
-  const { data } = trpc.companies.getAllCompanies.useQuery();
+  const { data: myCompanies = [] } = trpc.companies.getMyCompanies.useQuery();
+  const { data = [] } = trpc.companies.getAnotherCompanies.useQuery();
   const [isOpenEdit, setOpenEdit] = useState(false);
   const [contextMenuId, setContextMenuId] = useState(null);
   const [isContextMenuOpen, setContextMenuOpen] = useState(false);
@@ -71,10 +72,26 @@ export default function AllCompaniesAside() {
           />
         </Dialog>
 
+        {myCompanies?.map(({ id, name, companyImageUrl }) => (
+          <div
+            key={id}
+            className={`group flex items-center justify-center ${MIN_DIMENSION_CLASS} rounded-r hover:bg-gray-300 dark:text-[gray] overflow-hidden p-1 group`}
+            onMouseEnter={() => handleContextMenu(id)}
+            onMouseLeave={closeContextMenu}
+          >
+            {isContextMenuOpen && contextMenuId === id && (
+              <MoreVertical onClick={() => setOpenEdit(!isOpenEdit)} />
+            )}
+            <Link key={id} href={`/company/${id}`}>
+              <ImageRender name={name} imageUrl={companyImageUrl} />
+            </Link>
+          </div>
+        ))}
+        <div className="border-b-2 border-slate-300" />
         {data?.map(({ id, name, companyImageUrl }) => (
           <div
             key={id}
-            className={`group flex items-center justify-center ${MIN_DIMENSION_CLASS} rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden p-1 group`}
+            className={`group flex items-center justify-center ${MIN_DIMENSION_CLASS} rounded-md hover:bg-gray-300 dark:text-[gray] overflow-hidden p-1 group`}
             onMouseEnter={() => handleContextMenu(id)}
             onMouseLeave={closeContextMenu}
           >

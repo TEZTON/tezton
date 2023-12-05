@@ -1,15 +1,12 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "@/server";
-import {
-  companiesSchema,
-  deliverablesSchema,
-  functionalitiesSchema,
-  productsSchema,
-  projectsSchema,
-} from "../../db/schema";
+import { deliverablesSchema, functionalitiesSchema } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { deliverableIdAccessMiddleware } from "./acl";
+import {
+  deliverableAccessMiddleware,
+  deliverableIdAccessMiddleware,
+} from "./acl";
 import {
   DeliverableSchema,
   SingleDeliverableSchema,
@@ -23,34 +20,12 @@ export const deliverablesQueries = router({
       })
     )
     .output(z.array(DeliverableSchema))
-    .query(async ({ ctx: { db, user }, input: { functionalityId } }) => {
-      const result = await db
+    .use(deliverableAccessMiddleware)
+    .query(async ({ ctx: { db }, input: { functionalityId } }) => {
+      return await db
         .select()
         .from(deliverablesSchema)
-        .leftJoin(
-          functionalitiesSchema,
-          eq(functionalitiesSchema.id, deliverablesSchema.functionalityId)
-        )
-        .leftJoin(
-          projectsSchema,
-          eq(projectsSchema.id, functionalitiesSchema.projectId)
-        )
-        .leftJoin(
-          productsSchema,
-          eq(productsSchema.id, projectsSchema.productId)
-        )
-        .leftJoin(
-          companiesSchema,
-          eq(companiesSchema.id, productsSchema.companyId)
-        )
-        .where(
-          and(
-            eq(functionalitiesSchema.id, functionalityId),
-            eq(companiesSchema.userId, user.id)
-          )
-        );
-
-      return result.map(({ deliverables }) => deliverables);
+        .where(eq(deliverablesSchema.functionalityId, functionalityId));
     }),
 
   byId: protectedProcedure
@@ -58,34 +33,14 @@ export const deliverablesQueries = router({
     .output(DeliverableSchema)
     .use(deliverableIdAccessMiddleware)
     .query(
-      async ({
-        ctx: { db, user },
-        input: { functionalityId, deliverableId },
-      }) => {
+      async ({ ctx: { db }, input: { functionalityId, deliverableId } }) => {
         const result = await db
           .select()
           .from(deliverablesSchema)
-          .leftJoin(
-            functionalitiesSchema,
-            eq(functionalitiesSchema.id, deliverablesSchema.functionalityId)
-          )
-          .leftJoin(
-            projectsSchema,
-            eq(projectsSchema.id, functionalitiesSchema.projectId)
-          )
-          .leftJoin(
-            productsSchema,
-            eq(productsSchema.id, projectsSchema.productId)
-          )
-          .leftJoin(
-            companiesSchema,
-            eq(companiesSchema.id, productsSchema.companyId)
-          )
           .where(
             and(
               eq(deliverablesSchema.id, deliverableId),
-              eq(functionalitiesSchema.id, functionalityId),
-              eq(companiesSchema.userId, user.id)
+              eq(deliverablesSchema.functionalityId, functionalityId)
             )
           );
 
@@ -93,7 +48,7 @@ export const deliverablesQueries = router({
           throw new TRPCError({ code: "NOT_FOUND" });
         }
 
-        return result[0].deliverables;
+        return result[0];
       }
     ),
 });

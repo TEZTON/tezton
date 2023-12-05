@@ -1,5 +1,6 @@
 import { router } from ".";
 import { userRouter } from "./routes/users";
+import { requestAccessRouter } from "./routes/requestAccess";
 import { companyRouter } from "./routes/company";
 import { productRouter } from "./routes/product";
 import { projectRouter } from "./routes/project";
@@ -11,6 +12,7 @@ import { deliverableDiagramsRouter } from "./routes/deliverableDiagrams";
 
 export const appRouter = router({
   users: userRouter,
+  requestAccess: requestAccessRouter,
   companies: companyRouter,
   products: productRouter,
   projects: projectRouter,

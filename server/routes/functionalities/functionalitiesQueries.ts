@@ -1,14 +1,12 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "@/server";
-import {
-  companiesSchema,
-  functionalitiesSchema,
-  productsSchema,
-  projectsSchema,
-} from "../../db/schema";
+import { functionalitiesSchema, projectsSchema } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { functionalityIdAccessMiddleware } from "./acl";
+import {
+  functionalityAccessMiddleware,
+  functionalityIdAccessMiddleware,
+} from "./acl";
 import {
   FunctionalitySchema,
   SingleFunctionalitySchema,
@@ -21,67 +19,36 @@ export const functionalitiesQueries = router({
         projectId: z.string(),
       })
     )
+    .use(functionalityAccessMiddleware)
     .output(z.array(FunctionalitySchema))
-    .query(async ({ ctx: { db, user }, input: { projectId } }) => {
+    .query(async ({ ctx: { db }, input: { projectId } }) => {
       const result = await db
         .select()
         .from(functionalitiesSchema)
-        .leftJoin(
-          projectsSchema,
-          eq(projectsSchema.id, functionalitiesSchema.projectId)
-        )
-        .leftJoin(
-          productsSchema,
-          eq(productsSchema.id, projectsSchema.productId)
-        )
-        .leftJoin(
-          companiesSchema,
-          eq(companiesSchema.id, productsSchema.companyId)
-        )
-        .where(
-          and(
-            eq(projectsSchema.id, projectId),
-            eq(companiesSchema.userId, user.id)
-          )
-        );
+        .where(and(eq(functionalitiesSchema.projectId, projectId)));
 
-      return result.map(({ functionalities }) => functionalities);
+      return result;
     }),
 
   byId: protectedProcedure
     .input(SingleFunctionalitySchema)
     .output(FunctionalitySchema)
     .use(functionalityIdAccessMiddleware)
-    .query(
-      async ({ ctx: { db, user }, input: { projectId, functionalityId } }) => {
-        const result = await db
-          .select()
-          .from(functionalitiesSchema)
-          .leftJoin(
-            projectsSchema,
-            eq(projectsSchema.id, functionalitiesSchema.projectId)
+    .query(async ({ ctx: { db }, input: { projectId, functionalityId } }) => {
+      const result = await db
+        .select()
+        .from(functionalitiesSchema)
+        .where(
+          and(
+            eq(functionalitiesSchema.id, functionalityId),
+            eq(functionalitiesSchema.projectId, projectId)
           )
-          .leftJoin(
-            productsSchema,
-            eq(productsSchema.id, projectsSchema.productId)
-          )
-          .leftJoin(
-            companiesSchema,
-            eq(companiesSchema.id, productsSchema.companyId)
-          )
-          .where(
-            and(
-              eq(functionalitiesSchema.id, functionalityId),
-              eq(projectsSchema.id, projectId),
-              eq(companiesSchema.userId, user.id)
-            )
-          );
+        );
 
-        if (result.length !== 1) {
-          throw new TRPCError({ code: "NOT_FOUND" });
-        }
-
-        return result[0].functionalities;
+      if (result.length !== 1) {
+        throw new TRPCError({ code: "NOT_FOUND" });
       }
-    ),
+
+      return result[0];
+    }),
 });

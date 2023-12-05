@@ -15,6 +15,23 @@ export const usersSchema = sqliteTable("users", {
     .default(sql`CURRENT_TIMESTAMP`),
 });
 
+export const requestAccessSchema = sqliteTable("request_access", {
+  userId: text("user_id")
+    .notNull()
+    .references(() => usersSchema.id, { onDelete: "cascade" }),
+  companyId: text("company_id")
+    .notNull()
+    .references(() => companiesSchema.id, { onDelete: "cascade" }),
+  status: text("status").notNull(),
+
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
+
 export const companiesSchema = sqliteTable("companies", {
   id: text("id")
     .primaryKey()

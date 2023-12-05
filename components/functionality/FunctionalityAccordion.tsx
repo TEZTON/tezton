@@ -1,5 +1,11 @@
 import * as Accordion from "@radix-ui/react-accordion";
-import { PlusIcon, PenSquareIcon, TrashIcon, InfoIcon } from "lucide-react";
+import {
+  PlusIcon,
+  PenSquareIcon,
+  TrashIcon,
+  InfoIcon,
+  Loader,
+} from "lucide-react";
 import { useState } from "react";
 import { trpc } from "@/trpc";
 
@@ -27,27 +33,36 @@ export default function FunctionalityAccordion({
   const [deliverableModal, setDeliverableModal] = useState(false);
   const [deliverableSelected, selectDeliverable] = useState<any>();
   const [confirmDeleteModal, setconfirmDeleteModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { data } = trpc.deliverables.getDeliverables.useQuery({
     functionalityId,
   });
 
-  const { functionalityId: pathFunctionalityId } = useParams();
+  const { functionalityId: pathFunctionalityId, deliverableId } = useParams();
   const { deliverables } = trpc.useUtils();
   const remove = trpc.deliverables.deleteDeliverable.useMutation();
 
   const createDeliverable = () => {
     selectDeliverable("");
-    setDeliverableModal(true);
+    setDeliverableModal(!deliverableModal);
   };
 
   const deleteSelectedDeliverable = async () => {
     if (deliverableSelected) {
-      await remove.mutateAsync({
-        functionalityId,
-        deliverableId: deliverableSelected,
-      });
-      await deliverables.getDeliverables.invalidate();
-      setconfirmDeleteModal(false);
+      try {
+        setLoading(true);
+        await remove.mutateAsync({
+          functionalityId,
+          deliverableId: deliverableSelected,
+        });
+        await deliverables.getDeliverables.invalidate({ functionalityId });
+        setLoading(false);
+        setconfirmDeleteModal(false);
+      } catch (error) {
+        setLoading(false);
+        setconfirmDeleteModal(false);
+        throw new Error("Erro!");
+      }
     }
   };
 
@@ -57,7 +72,8 @@ export default function FunctionalityAccordion({
       label: "Editar",
       icon: PenSquareIcon,
       action: (id: any) => {
-        selectDeliverable(id);
+        const deliverable = data?.find((item) => item.id === id);
+        selectDeliverable(deliverable);
         setDeliverableModal(true);
       },
     },
@@ -98,7 +114,7 @@ export default function FunctionalityAccordion({
           >
             <UpsertDeliverable
               functionalityId={functionalityId}
-              deliverableId={deliverableSelected}
+              deliverable={deliverableSelected}
               onSuccess={() => setDeliverableModal(false)}
             />
           </Modal>
@@ -109,28 +125,37 @@ export default function FunctionalityAccordion({
                 Excluir Entregavel:{" "}
                 {data?.find((item) => item.id === deliverableSelected)?.name}
               </p>
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-row gap-5">
                 <button
-                  className="btn bg-red-400 text-white hover:bg-rose-600"
+                  disabled={loading}
+                  className={`btn bg-rose-400 text-white hover:bg-rose-600 rounded-lg`}
                   onClick={deleteSelectedDeliverable}
                 >
-                  Excluir
+                  Excluir {loading && <Loader />}
+                </button>
+                <button
+                  className={`btn bg-sky-600 text-white hover:bg-sky-500 rounded-lg`}
+                  onClick={() => {
+                    setconfirmDeleteModal(false);
+                  }}
+                >
+                  Cancelar
                 </button>
               </div>
             </div>
           </Modal>
           <div className="mt-2 flex gap-2 flex-col align-center">
             {data?.map(({ id, name }) => (
-              <>
-                <Link
-                  className="cursor-pointer flex justify-between"
-                  key={id}
-                  href={`/company/${companyId}/product/${productId}/project/${projectId}/functionality/${functionalityId}/deliverable/${id}`}
-                >
-                  {name}
-                  <ContextMenu itemId={id} items={deliverablesContexts} />
-                </Link>
-              </>
+              <Link
+                key={id}
+                className={`cursor-pointer flex justify-between hover:bg-gray-300 ${
+                  deliverableId === id && "bg-gray-300"
+                }`}
+                href={`/company/${companyId}/product/${productId}/project/${projectId}/functionality/${functionalityId}/deliverable/${id}`}
+              >
+                {name}
+                <ContextMenu itemId={id} items={deliverablesContexts} />
+              </Link>
             ))}
           </div>
         </Accordion.AccordionContent>
