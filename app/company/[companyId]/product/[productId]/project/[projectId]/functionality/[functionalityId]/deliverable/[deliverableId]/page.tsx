@@ -33,8 +33,6 @@ export default function DeliverablePage() {
     deliverableId: deliverableId as string
   });
 
-  console.log(phasesData, 'testesss')
-
   const methods = useForm<UpsertDeliverablePhaseSchemaType>({
     defaultValues: {
       deliverableId: deliverableId as string
@@ -55,7 +53,6 @@ export default function DeliverablePage() {
       const selectedOption = deliverableTypesData?.find(
         (option) => option.id === phase.type
       );
-      console.log(phase.type, 'selectedOption')
       setSelectedOptions(selectedOption || null);
     };
 

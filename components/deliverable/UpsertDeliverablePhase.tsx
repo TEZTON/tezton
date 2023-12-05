@@ -24,7 +24,6 @@ export default function UpsertDeliverablePhase({
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  console.log(selectedPhase, 'teste')
   useEffect(() => {
     if (selectedPhase) {
       setEditMode(true);
