@@ -58,10 +58,12 @@ export const companyQueries = router({
         .concat(approvedCompanies)
         .map(({ companyId }) => companyId);
 
-      const query = and(
-        ne(companiesSchema.userId, user.id),
-        notInArray(companiesSchema.id, ignoredCompanies)
-      );
+      const query = !!ignoredCompanies.length
+        ? and(
+            ne(companiesSchema.userId, user.id),
+            notInArray(companiesSchema.id, ignoredCompanies)
+          )
+        : ne(companiesSchema.userId, user.id);
 
       const result = await db.select().from(companiesSchema).where(query);
 
