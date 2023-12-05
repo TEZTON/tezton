@@ -1,6 +1,6 @@
 import { UpsertProductSchema, UpsertProductSchemaType } from "@/schema/product";
 import { trpc } from "@/trpc";
-import { UpdateData, UpsertPropsProduct } from "@/utils/types";
+import { UpsertPropsProduct } from "@/utils/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -32,13 +32,16 @@ export default function UpsertProduct({
   });
   const onSubmit: SubmitHandler<UpsertProductSchemaType> = async (data) => {
     if (initialData && initialData.id) {
-      const updateData: UpdateData = {
+      const updateData: UpsertProductSchemaType = {
         companyId: companyId,
         productId: initialData.id,
         name: data.name,
         description: data.description,
       };
-      await update.mutateAsync(updateData);
+      await update.mutateAsync({
+        ...updateData,
+        productId: updateData.productId || "",
+      });
     } else {
     await create.mutateAsync({ ...data, companyId });
     getProducts.isFetched && getProducts.refetch();

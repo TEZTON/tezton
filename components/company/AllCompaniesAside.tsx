@@ -3,14 +3,17 @@ import {
   PlusCircleIcon,
   MoreVertical
 } from "lucide-react";
+import {
+  CompanySchemaType
+} from "@/schema/company";
 import Link from "next/link";
 import Dialog from "../modal";
 import UpsertCompany from "@/components/company/UpsertCompany";
 import { trpc } from "@/trpc";
 import ImageRender from "../ImageRender";
-import { Company, CompanyType } from "@/utils/types";
 
 const MIN_DIMENSION_CLASS = "min-w-[40px] min-h-[40px]";
+export type CompanyType = 'Financeira' | 'Tecnologia' | 'Consultoria';
 
 export default function AllCompaniesAside() {
   const [isOpen, setOpen] = useState(false);
@@ -19,17 +22,17 @@ export default function AllCompaniesAside() {
   const [contextMenuId, setContextMenuId] = useState(null);
   const [isContextMenuOpen, setContextMenuOpen] = useState(false);
 
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<CompanySchemaType | null>(null);
 
   const handleContextMenu = (id: any) => {
     setContextMenuId(id);
     setContextMenuOpen(true);
   
     const selectedItem = data?.find(
-      (company: Company) => company.id === id
-    ) as Company | undefined;
+      (company: CompanySchemaType) => company.id === id
+    ) as CompanySchemaType | undefined;
 
-    setSelectedCompany(selectedItem || null);
+    setSelectedCompany(selectedItem as CompanySchemaType);
   };
 
   const closeContextMenu = () => {

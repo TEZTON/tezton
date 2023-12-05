@@ -1,12 +1,18 @@
-import { UpsertDeliverablePhaseSchemaType } from "@/schema/deliverable";
 import { format, formatISO, startOfToday } from "date-fns";
 import { useFormContext } from "react-hook-form";
 import { CalendarIcon } from "lucide-react";
 import CalendarPopover from "../calendar/CalendarPopover";
-import { useState } from "react";
 import { trpc } from "@/trpc";
+import { useState, useEffect } from "react";
+import { UpsertDeliverablePhaseSchemaType, DeliverablePhaseSchemaType } from "@/schema/deliverable";
 
-export default function UpsertDeliverablePhase() {
+interface UpsertDeliverablePhaseProps {
+  selectedPhase: DeliverablePhaseSchemaType | null;
+}
+
+export default function UpsertDeliverablePhase({
+  selectedPhase
+}: UpsertDeliverablePhaseProps) {
   const {
     watch,
     register,
@@ -17,17 +23,39 @@ export default function UpsertDeliverablePhase() {
   } = useFormContext<UpsertDeliverablePhaseSchemaType>();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  console.log(selectedPhase, 'teste')
+  useEffect(() => {
+    if (selectedPhase) {
+      setEditMode(true);
+      setValue("name", selectedPhase.name);
+      setValue("startDate", selectedPhase.startDate);
+      setValue("endDate", selectedPhase.endDate);
+      setValue("deliverableTypeId", selectedPhase.type);
+    }
+  }, [selectedPhase, setValue]);
+
   const createPhase =
     trpc.deliverablePhases.createDeliverablePhase.useMutation();
-
+  const updatePhase =
+    trpc.deliverablePhases.updateDeliverablePhase.useMutation();
   const { deliverablePhases } = trpc.useUtils();
-
   const submitForm = async (data: UpsertDeliverablePhaseSchemaType) => {
-    await createPhase.mutateAsync(data);
+    if (editMode) {
+      await updatePhase.mutateAsync({
+        ...data,
+        id: selectedPhase?.id as string,
+        deliverableTypeId: selectedPhase?.type as string
+      });
+    } else {
+      await createPhase.mutateAsync(data);
+    }
     await deliverablePhases.getPhases.invalidate({
-      deliverableId: data.deliverableId,
+      deliverableId: data.deliverableId
     });
+
     reset();
+    setEditMode(false);
   };
 
   const getError = () => {
@@ -40,8 +68,9 @@ export default function UpsertDeliverablePhase() {
     );
   };
 
-  const startDate = watch("startDate");
-  const endDate = watch("endDate");
+  const startDate =
+    watch("startDate") || (selectedPhase && selectedPhase.startDate);
+  const endDate = watch("endDate") || (selectedPhase && selectedPhase.endDate);
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(submitForm)}>
@@ -49,7 +78,9 @@ export default function UpsertDeliverablePhase() {
       <input
         className="input input-sm input-bordered input-primary"
         placeholder="Titulo"
+        defaultValue={selectedPhase?.name || ""}
         {...register("name")}
+        readOnly={editMode}
       />
       <CalendarPopover
         open={startDateOpen}
@@ -66,7 +97,6 @@ export default function UpsertDeliverablePhase() {
         trigger={
           <div className="flex items-center gap-2">
             <CalendarIcon size={16} />
-
             <input
               className="input input-sm input-bordered input-primary w-full"
               placeholder="Data de Inicio"
@@ -90,7 +120,6 @@ export default function UpsertDeliverablePhase() {
         trigger={
           <div className="flex items-center gap-2">
             <CalendarIcon size={16} />
-
             <input
               className="input input-sm input-bordered input-primary w-full"
               placeholder="Data de Fim"
@@ -106,7 +135,7 @@ export default function UpsertDeliverablePhase() {
       />
 
       <div>
-        <p>Descricao</p>
+        <p>Descrição</p>
         <div className="divider m-0" />
       </div>
       <textarea
@@ -115,7 +144,7 @@ export default function UpsertDeliverablePhase() {
         rows={4}
       />
       <button className="btn btn-primary text-white" type="submit">
-        Salvar
+        {editMode ? "Atualizar" : "Salvar"}
       </button>
     </form>
   );

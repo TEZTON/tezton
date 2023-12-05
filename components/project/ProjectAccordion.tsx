@@ -16,7 +16,11 @@ import { trpc } from "@/trpc";
 import { useParams } from "next/navigation";
 import UpsertProject from "./UpsertProject";
 import { capitalizeFirstLetter } from "@/utils/hooks";
-import { PriorityType, ProjectAccordionProps, UpsertProjectProps } from "@/utils/types";
+import { ProjectAccordionProps } from "@/utils/types";
+import {
+  ProjectSchemaType,
+} from "@/schema/project";
+export type PriorityType = "Low" | "Medium" | "High";
 
 export default function ProjectAccordion({
   name,
@@ -37,7 +41,7 @@ export default function ProjectAccordion({
   const [projectModal, setProjectModal] = useState(false);
   const [confirmDeleteModal, setconfirmDeleteModal] = useState(false);
   const [functionalityModal, setFunctionalityModal] = useState(false);
-  const [projectSelected, selectProject] = useState<UpsertProjectProps>();
+  const [projectSelected, selectProject] = useState<ProjectSchemaType>();
   const [loading, setLoading] = useState(false);
   const projectsContexts = [
     {
@@ -45,7 +49,7 @@ export default function ProjectAccordion({
       label: "Editar",
       icon: PenSquareIcon,
       action: (id: any) => {
-        const project = data?.find((item: UpsertProjectProps) => item.id === id);
+        const project = data?.find((item: ProjectSchemaType) => item.id === id) as ProjectSchemaType | undefined;
         selectProject(project);
         setProjectModal(true);
       }
@@ -96,7 +100,7 @@ export default function ProjectAccordion({
             id: projectSelected?.id ?? '',
             name: projectSelected?.name ?? '',
             description: projectSelected?.description ?? '',
-            priority: projectSelected?.description as PriorityType || 'Low',
+            priority: projectSelected?.priority as PriorityType || 'Low',
           }}
           companyId={companyId}
           productId={productId}
@@ -108,7 +112,7 @@ export default function ProjectAccordion({
           <InfoIcon className="" size={50} color="red" opacity={0.3} />
           <p className="font-bold mb-5">
             Excluir Projeto:{" "}
-            {data?.find((item: any) => item.id === projectSelected)?.name}
+            {data?.find((item: any) => item.id === projectSelected)?.name} 
           </p>
           <div className="flex flex-row gap-5">
             <button

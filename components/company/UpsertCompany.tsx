@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
   ACCEPTED_IMAGE_TYPES,
@@ -10,8 +10,8 @@ import {
 } from "@/schema/company";
 import { trpc } from "@/trpc";
 import { uploadAssetApi } from "@/trpc/asset";
-import { CompanyType, CompanyUpdate, UpsertCompanyProps } from "@/utils/types";
-
+import { UpsertCompanyProps } from "@/utils/types";
+import { UpsertCompanySchemaType } from "@/schema/company";
 export default function UpsertCompany({
   initialData,
   onSuccess
@@ -50,13 +50,16 @@ export default function UpsertCompany({
     }
 
     if (initialData && initialData.id) {
-      const updateData: CompanyUpdate = {
-        companyId: initialData?.id as string,
+      const updateData: UpsertCompanySchemaType = {
         name: data.name,
-        type: data.type as CompanyType,
-        companyImageUrl: fileurl
+        type: data.type,
+        companyImageUrl: fileurl,
+        companyId: initialData.id,
       };
-      await update.mutateAsync(updateData);
+      await update.mutateAsync({
+        ...updateData,
+        companyId: updateData.companyId || "",
+      });
     } else {
       await create.mutateAsync({ ...data, companyImageUrl: fileurl });
       getCompanies.isFetched && getCompanies.refetch();
@@ -70,13 +73,16 @@ export default function UpsertCompany({
 
   const funcDelete = async () => {
     if (initialData && initialData.id) {
-      await deleted.mutateAsync({ companyId: initialData?.id }, {
-        onSuccess: async () => {
-          await companies.getAllCompanies.invalidate();
-          await companies.getMyCompanies.invalidate();
-          onSuccess();
-        },
-      });
+      await deleted.mutateAsync(
+        { companyId: initialData?.id },
+        {
+          onSuccess: async () => {
+            await companies.getAllCompanies.invalidate();
+            await companies.getMyCompanies.invalidate();
+            onSuccess();
+          }
+        }
+      );
     }
   };
 

@@ -1,11 +1,14 @@
 import { MoreVertical, HomeIcon, PlusCircleIcon } from "lucide-react";
 import { useState } from "react";
+import {
+  ProductSchemaType
+} from "@/schema/product";
 import Link from "next/link";
 import { trpc } from "@/trpc";
 import Dialog from "../modal";
 import UpsertProduct from "./UpsertProduct";
 import ImageRender from "../ImageRender";
-import { AllProductsAsideProps, UpsertProductProps } from "@/utils/types";
+import { AllProductsAsideProps } from "@/utils/types";
 
 
 const MIN_DIMENSION_CLASS = "min-w-[40px] min-h-[40px]";
@@ -19,13 +22,12 @@ export default function AllProductsAside({
   const [isContextMenuOpen, setContextMenuOpen] = useState(false);
   const [isOpenEdit, setOpenEdit] = useState(false);
   const [contextMenuId, setContextMenuId] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState<UpsertProductProps>();
-
+  const [selectedProduct, setSelectedProduct] = useState<ProductSchemaType>();
   const handleContextMenu = (id: any) => {
     setContextMenuId(id);
     setContextMenuOpen(true);
 
-    const selectedItem = data?.find((product: UpsertProductProps) => product.id === id);
+    const selectedItem = data?.find((product: ProductSchemaType) => product.id === id) as ProductSchemaType | undefined;
     setSelectedProduct(selectedItem);
   };
   const closeContextMenu = () => {
