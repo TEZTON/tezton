@@ -52,6 +52,6 @@ export type UpsertCompanyFileUploadSchemaType = z.infer<
 >;
 export type CompanySchemaType = z.infer<typeof CompanySchema>;
 export type UpsertCompanySchemaType = z.infer<typeof UpsertCompanySchema>;
-type AccessableCompanySchemaType = z.infer<typeof AccessableCompanySchema>;
+export type AccessableCompanySchemaType = z.infer<typeof AccessableCompanySchema>;
 
 export type MyCompaniesSchemaType = z.infer<typeof MyCompaniesSchema>;
