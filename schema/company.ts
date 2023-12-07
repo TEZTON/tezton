@@ -47,11 +47,11 @@ export const MyCompaniesSchema = z.array(
   CompanySchema.extend({ products: z.array(ProductSchema) })
 );
 
+export type CompanySchemaType = z.infer<typeof CompanySchema>;
+
 export type UpsertCompanyFileUploadSchemaType = z.infer<
   typeof UpsertCompanyFileUploadSchema
 >;
-export type CompanySchemaType = z.infer<typeof CompanySchema>;
-export type UpsertCompanySchemaType = z.infer<typeof UpsertCompanySchema>;
-export type AccessableCompanySchemaType = z.infer<typeof AccessableCompanySchema>;
 
+export type UpsertCompanySchemaType = z.infer<typeof UpsertCompanySchema>;
 export type MyCompaniesSchemaType = z.infer<typeof MyCompaniesSchema>;
