@@ -1,7 +1,14 @@
 import UpsertDeliverablePhase from "./UpsertDeliverablePhase";
 import * as Tabs from "@radix-ui/react-tabs";
+import {
+  DeliverablePhaseSchemaType,
+} from "@/schema/deliverable";
 
-export default function DeliverableDetailed() {
+interface UpsertDeliverablePhaseProps {
+  selectedPhase: DeliverablePhaseSchemaType | null;
+}
+
+export default function DeliverableDetailed({ selectedPhase }: UpsertDeliverablePhaseProps) {
   return (
     <Tabs.Root
       className="flex flex-col w-[330px] py-2 px-4 border-l"
@@ -31,7 +38,7 @@ export default function DeliverableDetailed() {
         </Tabs.Trigger>
       </Tabs.List>
       <Tabs.Content className="my-4" value="tab1">
-        <UpsertDeliverablePhase />
+        <UpsertDeliverablePhase selectedPhase={selectedPhase} />
       </Tabs.Content>
       <Tabs.Content className="my-4" value="tab2">
         Reporte

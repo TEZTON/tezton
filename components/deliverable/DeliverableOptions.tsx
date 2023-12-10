@@ -7,9 +7,13 @@ interface DeliverableOptionsProps {
     id: string;
     name: string;
   }[];
+  selectedOption: { id: string; name: string } | null;
 }
 
-export default function DeliverableOptions({ data }: DeliverableOptionsProps) {
+export default function DeliverableOptions({
+  data,
+  selectedOption,
+}: DeliverableOptionsProps) {
   const { watch, setValue } =
     useFormContext<UpsertDeliverablePhaseSchemaType>();
   const type = watch("deliverableTypeId");
@@ -20,7 +24,7 @@ export default function DeliverableOptions({ data }: DeliverableOptionsProps) {
         <button
           className={`btn btn-active text-white btn-sm text-xs ${
             type === id && "btn-primary"
-          }`}
+          } ${selectedOption?.id === id && "btn-selected"}`}
           key={id}
           onClick={() => {
             setValue("deliverableTypeId", id);
