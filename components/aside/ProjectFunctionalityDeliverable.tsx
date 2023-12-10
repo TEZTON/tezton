@@ -32,6 +32,7 @@ export default function ProjectFunctionalityDeliverableArea({
           setOpen={setProjectModal}
         >
           <UpsertProject
+            companyId={companyId}
             productId={productId}
             onSuccess={() => setProjectModal(false)}
           />

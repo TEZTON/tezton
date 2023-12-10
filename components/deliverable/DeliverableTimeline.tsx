@@ -1,7 +1,6 @@
 "use client";
-
 import { DeliverablePhaseSchemaType } from "@/schema/deliverable";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Timeline as TL, DataSet } from "vis-timeline/standalone";
 
 interface DeliverableTimelineProps {
@@ -10,6 +9,7 @@ interface DeliverableTimelineProps {
     name: string;
   }[];
   phases: DeliverablePhaseSchemaType[];
+  onPhaseClick?: (selectedPhase: DeliverablePhaseSchemaType) => void;
 }
 
 var groups = new DataSet([
@@ -24,6 +24,7 @@ var groups = new DataSet([
 export default function DeliverableTimeline({
   groups,
   phases,
+  onPhaseClick,
 }: DeliverableTimelineProps) {
   const timelineRef = useRef(null);
 
@@ -47,6 +48,13 @@ export default function DeliverableTimeline({
       timeline = new TL(timelineRef.current, mappedPhases, mappedGroups, {
         orientation: "top",
       });
+      timeline.on("select", (properties) => {
+        const selectedItem = properties.items[0];
+        const selectedPhase = phases.find((phase) => phase.id === selectedItem);
+        if (selectedPhase && onPhaseClick) {
+          onPhaseClick(selectedPhase);
+        }
+      });
     }
 
     return () => {
@@ -54,7 +62,7 @@ export default function DeliverableTimeline({
         timeline.destroy();
       }
     };
-  }, [timelineRef, groups, phases]);
+  }, [timelineRef, groups, phases, onPhaseClick]);
 
   return <div ref={timelineRef}> </div>;
 }

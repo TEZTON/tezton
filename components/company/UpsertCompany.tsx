@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Loader } from "lucide-react";
 import {
@@ -11,11 +11,8 @@ import {
 } from "@/schema/company";
 import { trpc } from "@/trpc";
 import { uploadAssetApi } from "@/trpc/asset";
-
-interface UpsertCompanyProps {
-  initialData?: UpsertCompanyFileUploadSchemaType;
-  onSuccess: () => void;
-}
+import { UpsertCompanyProps } from "@/utils/types";
+import { UpsertCompanySchemaType } from "@/schema/company";
 
 export default function UpsertCompany({
   initialData,
@@ -37,6 +34,7 @@ export default function UpsertCompany({
   const update = trpc.companies.updateCompany.useMutation();
   const upload = useMutation({ mutationFn: uploadAssetApi });
   const deleted = trpc.companies.deleteCompany.useMutation();
+  const getCompanies = trpc.companies.getAllCompanies.useQuery();
   const { companies } = trpc.useUtils();
   const [loading, setLoading] = useState(false);
 
@@ -51,18 +49,21 @@ export default function UpsertCompany({
         const result = await upload.mutateAsync(data.companyImage[0]);
         fileurl = result.url;
       } catch (err) {
-        console.log("failed to upload image", err);
+        console.error(err);
       }
     }
 
     if (initialData && initialData.id) {
-      await update.mutateAsync({
-        companyId: initialData?.id as any,
-        ...data,
+      const updateData: UpsertCompanySchemaType = {
+        name: data.name,
+        type: data.type,
         companyImageUrl: fileurl,
-      });
+        companyId: initialData.id || "",
+      };
+      await update.mutateAsync(updateData);
     } else {
       await create.mutateAsync({ ...data, companyImageUrl: fileurl });
+      getCompanies.isFetched && getCompanies.refetch();
     }
 
     await companies.getAllCompanies.invalidate();

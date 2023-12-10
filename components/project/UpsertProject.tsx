@@ -1,51 +1,71 @@
 import {
   PriorityEnum,
   UpsertProjectSchema,
-  UpsertProjectSchemaType,
+  UpsertProjectSchemaType
 } from "@/schema/project";
 import { trpc } from "@/trpc";
+import { UpsertProps } from "@/utils/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-
-interface UpsertProjectProps {
-  productId: string;
-  projectId?: string;
-  onSuccess: () => void;
-}
 
 export default function UpsertProject({
   productId,
-  projectId,
+  initialData,
   onSuccess,
-}: UpsertProjectProps) {
+}: UpsertProps) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    setValue,
+    formState: { errors }
   } = useForm<UpsertProjectSchemaType>({
     defaultValues: {
       productId: productId,
+      ...initialData
     },
-    resolver: zodResolver(UpsertProjectSchema),
+    resolver: zodResolver(UpsertProjectSchema)
   });
-
-  const { projects } = trpc.useUtils();
   const create = trpc.projects.createProject.useMutation();
-
+  const update = trpc.projects.updateProject.useMutation();
+  const getProject = trpc.projects.getProjects.useQuery({
+    productId: productId
+  });
   const onSubmit: SubmitHandler<UpsertProjectSchemaType> = async (data) => {
-    await create.mutateAsync({ ...data, productId });
-    projects.getProjects.invalidate();
+    if (initialData && initialData.id) {
+      const updateData: UpsertProjectSchemaType = {
+        productId: productId,
+        projectId: initialData.id,
+        name: data.name,
+        description: data.description,
+        priority: data.priority
+      };
+      await update.mutateAsync({
+        ...updateData,
+        projectId: updateData.projectId || "",
+      });
+    } else {
+      await create.mutateAsync({ ...data, productId });
+      getProject.isFetched && getProject.refetch();
+    }
     onSuccess();
   };
 
   const getError = () => {
     return errors.name?.message || errors.root?.message;
   };
+  useEffect(() => {
+    if (initialData) {
+      setValue("name", initialData.name);
+      setValue("priority", initialData.priority);
+      setValue("description", initialData.description);
+    }
+  }, [initialData, setValue]);
 
   return (
     <div className="bg-white p-6">
       <p className="font-bold mb-5">
-        {projectId ? "Atualizar Projeto" : "Adicionar Projeto"}
+        {initialData ? "Atualizar Projeto" : "Adicionar Projeto"}
       </p>
       <form
         className="w-full flex flex-col gap-5"
