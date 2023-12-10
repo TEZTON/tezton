@@ -15,7 +15,6 @@ export const UpsertCompanySchema = z.object({
   type: z.optional(CompanyTypeEnum).default("Consultoria"),
   companyImageUrl: z.string().url().optional().nullable(),
   companyId: z.string().uuid().optional().nullable(),
-  id: z.string().uuid().optional().nullable(),
 });
 
 export const UpsertCompanyFileUploadSchema = UpsertCompanySchema.extend({
@@ -48,8 +47,11 @@ export const MyCompaniesSchema = z.array(
   CompanySchema.extend({ products: z.array(ProductSchema) })
 );
 
+export type CompanySchemaType = z.infer<typeof CompanySchema>;
+
 export type UpsertCompanyFileUploadSchemaType = z.infer<
   typeof UpsertCompanyFileUploadSchema
 >;
 
+export type UpsertCompanySchemaType = z.infer<typeof UpsertCompanySchema>;
 export type MyCompaniesSchemaType = z.infer<typeof MyCompaniesSchema>;

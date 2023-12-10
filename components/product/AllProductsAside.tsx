@@ -1,28 +1,55 @@
-import { EditIcon, HomeIcon, PlusCircleIcon } from "lucide-react";
+import { MoreVertical, HomeIcon, PlusCircleIcon } from "lucide-react";
 import { useState } from "react";
+import {
+  ProductSchemaType
+} from "@/schema/product";
 import Link from "next/link";
 import { trpc } from "@/trpc";
-
 import Dialog from "../modal";
 import UpsertProduct from "./UpsertProduct";
 import ImageRender from "../ImageRender";
+import { AllProductsAsideProps } from "@/utils/types";
 
-interface AllProductsAsideProps {
-  id: string;
-  name: string;
-  companyImageUrl?: string | null;
-}
 
+const MIN_DIMENSION_CLASS = "min-w-[40px] min-h-[40px]";
 export default function AllProductsAside({
   name,
   id,
-  companyImageUrl,
+  companyImageUrl
 }: AllProductsAsideProps) {
   const [productModal, setProductModal] = useState(false);
   const { data } = trpc.products.getProducts.useQuery({ companyId: id });
+  const [isContextMenuOpen, setContextMenuOpen] = useState(false);
+  const [isOpenEdit, setOpenEdit] = useState(false);
+  const [contextMenuId, setContextMenuId] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductSchemaType>();
+  const handleContextMenu = (id: any) => {
+    setContextMenuId(id);
+    setContextMenuOpen(true);
+
+    const selectedItem = data?.find((product: ProductSchemaType) => product.id === id) as ProductSchemaType | undefined;
+    setSelectedProduct(selectedItem);
+  };
+  const closeContextMenu = () => {
+    setContextMenuId(null);
+    setContextMenuOpen(false);
+  };
 
   return (
     <div className="w-14 min-w-[56px] border-r flex flex-col overflow-auto">
+      <Dialog open={isOpenEdit} setOpen={setOpenEdit}>
+        <UpsertProduct
+          initialData={{
+            id: selectedProduct?.id ?? '',
+            name: selectedProduct?.name ?? '',
+            description: selectedProduct?.description ?? '',
+          }}
+          companyId={id}
+          onSuccessCallback={() => {
+            setOpenEdit(false);
+          }}
+        />
+      </Dialog>
       <div className="p-3 border-b">
         <ImageRender
           name={name}
@@ -57,16 +84,20 @@ export default function AllProductsAside({
           </Dialog>
         </div>
         {data?.map(({ id: productId, name }) => (
-          <Link
+          <div
             key={productId}
-            href={`/company/${id}/product/${productId}`}
-            className="group flex items-center justify-center w-10 h-10 rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden p-1 group"
+            className={`group flex items-center justify-center ${MIN_DIMENSION_CLASS} rounded-md hover:bg-[#e6e8eb] dark:hover:bg-[#2f2f2f] dark:text-[gray] overflow-hidden p-1 group`}
+            onMouseEnter={() => handleContextMenu(productId)}
+            onMouseLeave={closeContextMenu}
           >
-            <div className="invisible group-hover:visible absolute text-primary mt-[-30px] ml-[-30px]">
-              <EditIcon size={16} />
-            </div>
-            <ImageRender name={name} />
-          </Link>
+         
+            <Link key={productId} href={`/company/${id}/product/${productId}`}>
+              <ImageRender name={name} imageUrl={companyImageUrl} />
+            </Link>
+            {isContextMenuOpen && contextMenuId === productId && (
+              <MoreVertical onClick={() => setOpenEdit(!isOpenEdit)} />
+            )}
+          </div>
         ))}
       </div>
     </div>
