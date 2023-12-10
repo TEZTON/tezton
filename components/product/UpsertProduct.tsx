@@ -1,5 +1,7 @@
 import { UpsertProductSchema, UpsertProductSchemaType } from "@/schema/product";
 import { trpc } from "@/trpc";
+import { useState } from "react";
+import { Loader } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -25,12 +27,16 @@ export default function UpsertProduct({
     resolver: zodResolver(UpsertProductSchema),
   });
 
+  const [loading, setLoading] = useState(false);
+
   const { products } = trpc.useUtils();
   const create = trpc.products.createProduct.useMutation();
 
   const onSubmit: SubmitHandler<UpsertProductSchemaType> = async (data) => {
+    setLoading(true);
     await create.mutateAsync({ ...data, companyId });
     await products.getProducts.invalidate();
+    setLoading(false);
     onSuccessCallback();
   };
 
@@ -62,8 +68,8 @@ export default function UpsertProduct({
           className="input input-sm input-bordered input-primary"
         />
 
-        <button className="btn btn-primary text-white" type="submit">
-          Salvar
+        <button className="btn btn-primary text-white" type="submit" disabled={loading}>
+          Salvar {loading && <Loader />}
         </button>
       </form>
     </div>
