@@ -1,16 +1,11 @@
-import { useEffect, useState } from "react";
-import {
-  PenSquareIcon,
-  TrashIcon,
-  PlusCircleIcon,
-  MoreVertical,
-} from "lucide-react";
+import { useState } from "react";
+import { PlusCircleIcon, MoreVertical } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import Dialog from "../modal";
 import UpsertCompany from "@/components/company/UpsertCompany";
 import { trpc } from "@/trpc";
 import ImageRender from "../ImageRender";
+import Tooltip from "@/components/Tooltip";
 
 const MIN_DIMENSION_CLASS = "min-w-[40px] min-h-[40px]";
 
@@ -28,7 +23,7 @@ export default function AllCompaniesAside() {
     setContextMenuId(id);
     setContextMenuOpen(true);
 
-    const selectedItem = data?.find((company: any) => company.id === id);
+    const selectedItem = myCompanies?.find((company: any) => company.id === id);
     setSelectedCompany(selectedItem);
   };
 
@@ -65,35 +60,34 @@ export default function AllCompaniesAside() {
         </Dialog>
 
         {myCompanies?.map(({ id, name, companyImageUrl }) => (
-          <div
-            key={id}
-            className={`group flex items-center justify-center ${MIN_DIMENSION_CLASS} rounded-r hover:bg-gray-300 dark:text-[gray] overflow-hidden p-1 group`}
-            onMouseEnter={() => handleContextMenu(id)}
-            onMouseLeave={closeContextMenu}
-          >
-            {isContextMenuOpen && contextMenuId === id && (
-              <MoreVertical onClick={() => setOpenEdit(!isOpenEdit)} />
-            )}
-            <Link key={id} href={`/company/${id}`}>
-              <ImageRender name={name} imageUrl={companyImageUrl} />
-            </Link>
-          </div>
+          <Tooltip key={id} title={name}>
+            <div
+              key={id}
+              className={`group flex items-center justify-center ${MIN_DIMENSION_CLASS} rounded-r hover:bg-gray-300 dark:text-[gray] overflow-hidden p-1 group`}
+              onMouseEnter={() => handleContextMenu(id)}
+              onMouseLeave={closeContextMenu}
+            >
+              {isContextMenuOpen && contextMenuId === id && (
+                <MoreVertical onClick={() => setOpenEdit(!isOpenEdit)} />
+              )}
+              <Link key={id} href={`/company/${id}`}>
+                <ImageRender name={name} imageUrl={companyImageUrl} />
+              </Link>
+            </div>
+          </Tooltip>
         ))}
         <div className="border-b-2 border-slate-300" />
         {data?.map(({ id, name, companyImageUrl }) => (
-          <div
-            key={id}
-            className={`group flex items-center justify-center ${MIN_DIMENSION_CLASS} rounded-md hover:bg-gray-300 dark:text-[gray] overflow-hidden p-1 group`}
-            onMouseEnter={() => handleContextMenu(id)}
-            onMouseLeave={closeContextMenu}
-          >
-            {isContextMenuOpen && contextMenuId === id && (
-              <MoreVertical onClick={() => setOpenEdit(!isOpenEdit)} />
-            )}
-            <Link key={id} href={`/company/${id}`}>
-              <ImageRender name={name} imageUrl={companyImageUrl} />
-            </Link>
-          </div>
+          <Tooltip key={id} title={name}>
+            <div
+              key={id}
+              className={`group flex items-center justify-center ${MIN_DIMENSION_CLASS} rounded-md hover:bg-gray-300 dark:text-[gray] overflow-hidden p-1 group`}
+            >
+              <Link key={id} href={`/company/${id}`}>
+                <ImageRender name={name} imageUrl={companyImageUrl} />
+              </Link>
+            </div>
+          </Tooltip>
         ))}
       </div>
     </div>
