@@ -1,12 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { Loader } from "lucide-react";
 import {
   ACCEPTED_IMAGE_TYPES,
   CompanyTypeEnum,
   UpsertCompanyFileUploadSchema,
-  UpsertCompanyFileUploadSchemaType
+  UpsertCompanyFileUploadSchemaType,
 } from "@/schema/company";
 import { trpc } from "@/trpc";
 import { uploadAssetApi } from "@/trpc/asset";
@@ -18,30 +19,32 @@ interface UpsertCompanyProps {
 
 export default function UpsertCompany({
   initialData,
-  onSuccess
+  onSuccess,
 }: UpsertCompanyProps) {
   const {
     register,
     handleSubmit,
     setValue,
-    formState: { errors }
+    formState: { errors },
   } = useForm<UpsertCompanyFileUploadSchemaType>({
     defaultValues: {
       type: CompanyTypeEnum.Enum.Consultoria,
-      ...initialData
+      ...initialData,
     },
-    resolver: zodResolver(UpsertCompanyFileUploadSchema)
+    resolver: zodResolver(UpsertCompanyFileUploadSchema),
   });
   const create = trpc.companies.createCompany.useMutation();
   const update = trpc.companies.updateCompany.useMutation();
   const upload = useMutation({ mutationFn: uploadAssetApi });
   const deleted = trpc.companies.deleteCompany.useMutation();
   const { companies } = trpc.useUtils();
+  const [loading, setLoading] = useState(false);
 
   const onSubmit: SubmitHandler<UpsertCompanyFileUploadSchemaType> = async (
     data
   ) => {
     let fileurl: string | undefined = undefined;
+    setLoading(true);
 
     if (data.companyImage[0]) {
       try {
@@ -56,7 +59,7 @@ export default function UpsertCompany({
       await update.mutateAsync({
         companyId: initialData?.id as any,
         ...data,
-        companyImageUrl: fileurl
+        companyImageUrl: fileurl,
       });
     } else {
       await create.mutateAsync({ ...data, companyImageUrl: fileurl });
@@ -66,17 +69,23 @@ export default function UpsertCompany({
     await companies.getMyCompanies.invalidate();
 
     onSuccess();
+    setLoading(false);
   };
 
   const funcDelete = async () => {
     if (initialData && initialData.id) {
-      await deleted.mutateAsync({ companyId: initialData?.id }, {
-        onSuccess: async () => {
-          await companies.getAllCompanies.invalidate();
-          await companies.getMyCompanies.invalidate();
-          onSuccess();
-        },
-      });
+      setLoading(true);
+      await deleted.mutateAsync(
+        { companyId: initialData?.id },
+        {
+          onSuccess: async () => {
+            await companies.getAllCompanies.invalidate();
+            await companies.getMyCompanies.invalidate();
+            onSuccess();
+          },
+        }
+      );
+      setLoading(false);
     }
   };
 
@@ -140,16 +149,21 @@ export default function UpsertCompany({
           />
         </div>
 
-        <button className="btn btn-primary text-white" type="submit">
-          Salvar
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn btn-primary text-white"
+        >
+          Salvar {loading && <Loader />}
         </button>
         {initialData && (
           <button
+            type="button"
+            disabled={loading}
             onClick={funcDelete}
             className="btn btn-secondary text-white"
-            type="button"
           >
-            Excluir
+            Excluir {loading && <Loader />}
           </button>
         )}
       </form>
