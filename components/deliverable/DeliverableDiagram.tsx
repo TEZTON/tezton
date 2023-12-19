@@ -15,10 +15,11 @@ import "reactflow/dist/style.css";
 import UpsertDeliverableDiagramNode from "./UpsertDeliverableDiagramNode";
 import UpsertDeliverableDiagramBoundry from "./UpsertDeliverableDiagramBoundry";
 import BoundryNode from "./Boundry";
+import { DeliverableDiagramNodeBoundrySchemaType } from "@/schema/diagrams";
 
 interface DeliverableDiagramProps {
   deliverableId: string;
-  onClick: (node: Node<TeztonNode, string | undefined>) => void | undefined
+  onClick: (item: DeliverableDiagramNodeBoundrySchemaType) => void | undefined;
 }
 
 type TeztonNode = {
@@ -104,10 +105,10 @@ export default function DeliverableDiagram({
     }
   }, [nodesData, setNodes, boundriesData, onClick]);
 
-  const handleNodeClick = (event: MouseEvent, clickedNode: Node<TeztonNode, string | undefined>) => {
+  const handleNodeClick = (_: MouseEvent, clickedNode: Node<TeztonNode, string | undefined>) => {
     const filteredNodes = nodes.filter((n) => n.id === clickedNode.id);
     const selectedNode = filteredNodes[0]
-    onClick(selectedNode);
+    onClick(selectedNode as unknown as DeliverableDiagramNodeBoundrySchemaType);
   };
   return (
     <div className="my-4 h-1/2">
