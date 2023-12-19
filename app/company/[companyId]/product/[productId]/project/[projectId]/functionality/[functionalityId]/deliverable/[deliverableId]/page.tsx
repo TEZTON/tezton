@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import { useState } from "react";
+import { DeliverableDiagramNodeBoundrySchemaType } from "@/schema/diagrams";
 
 export default function DeliverablePage() {
   const { deliverableId, functionalityId } = useParams();
@@ -43,10 +44,10 @@ export default function DeliverablePage() {
     id: string;
     name: string;
   } | null>(null);
-  
+  const [selected, setSelected] = 
+    useState<DeliverableDiagramNodeBoundrySchemaType | null>(null);
   const [selectedPhase, setSelectedPhase] =
     useState<DeliverablePhaseSchemaType | null>(null);
-
     const handlePhaseClick = (phase: DeliverablePhaseSchemaType) => {
       setSelectedPhase(phase);
 
@@ -56,6 +57,9 @@ export default function DeliverablePage() {
       setSelectedOptions(selectedOption || null);
     };
 
+    const handleClick = (item: DeliverableDiagramNodeBoundrySchemaType) => {
+      setSelected(item);
+    };
   if (isLoading || !data) {
     return <div>Loading...</div>;
   }
@@ -76,10 +80,15 @@ export default function DeliverablePage() {
           phases={phasesData || []}
           onPhaseClick={handlePhaseClick}
         />
-        <DeliverableDiagram deliverableId={deliverableId as string} />
+        <DeliverableDiagram 
+          deliverableId={deliverableId as string} 
+          onClick={handleClick}
+        />
       </div>
       <DeliverableDetailed
         selectedPhase={selectedPhase as DeliverablePhaseSchemaType}
+        selected={selected as DeliverableDiagramNodeBoundrySchemaType}
+        deliverableId={deliverableId as string} 
       />
     </FormProvider>
   );

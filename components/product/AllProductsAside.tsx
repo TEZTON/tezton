@@ -1,8 +1,6 @@
 import { MoreVertical, HomeIcon, PlusCircleIcon } from "lucide-react";
 import { useState } from "react";
-import {
-  ProductSchemaType
-} from "@/schema/product";
+import { ProductSchemaType } from "@/schema/product";
 import Link from "next/link";
 import { trpc } from "@/trpc";
 import Dialog from "../modal";
@@ -27,7 +25,9 @@ export default function AllProductsAside({
     setContextMenuId(id);
     setContextMenuOpen(true);
 
-    const selectedItem = data?.find((product: ProductSchemaType) => product.id === id) as ProductSchemaType | undefined;
+    const selectedItem = data?.find(
+      (product: ProductSchemaType) => product.id === id
+    ) as ProductSchemaType | undefined;
     setSelectedProduct(selectedItem);
   };
   const closeContextMenu = () => {
@@ -40,9 +40,9 @@ export default function AllProductsAside({
       <Dialog open={isOpenEdit} setOpen={setOpenEdit}>
         <UpsertProduct
           initialData={{
-            id: selectedProduct?.id ?? '',
-            name: selectedProduct?.name ?? '',
-            description: selectedProduct?.description ?? '',
+            id: selectedProduct?.id ?? "",
+            name: selectedProduct?.name ?? "",
+            description: selectedProduct?.description ?? ""
           }}
           companyId={id}
           onSuccessCallback={() => {
@@ -90,13 +90,12 @@ export default function AllProductsAside({
             onMouseEnter={() => handleContextMenu(productId)}
             onMouseLeave={closeContextMenu}
           >
-         
-            <Link key={productId} href={`/company/${id}/product/${productId}`}>
-              <ImageRender name={name} imageUrl={companyImageUrl} />
-            </Link>
             {isContextMenuOpen && contextMenuId === productId && (
               <MoreVertical onClick={() => setOpenEdit(!isOpenEdit)} />
             )}
+            <Link key={productId} href={`/company/${id}/product/${productId}`}>
+              <ImageRender name={name} imageUrl={companyImageUrl} />
+            </Link>
           </div>
         ))}
       </div>

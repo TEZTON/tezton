@@ -7,7 +7,9 @@ import {
 } from "../../db/schema";
 
 import {
+  DeletePositionSchema,
   UpdatePositionSchema,
+  UpdateSchema,
   UpsertDeliverableDiagramNodeBoundrySchema,
 } from "@/schema/diagrams";
 import { eq } from "drizzle-orm";
@@ -33,6 +35,18 @@ export const deliverableDiagramsMutations = router({
         return "OK";
       }
     ),
+  updateDiagram: protectedProcedure
+    .input(UpdateSchema)
+    .output(z.string())
+    .mutation(async ({ ctx: { db }, input: { nodeId, name } }) => {
+      await db
+        .update(deliverableDiagramNodes)
+        .set({
+          name
+        })
+        .where(eq(deliverableDiagramNodes.id, nodeId));
+      return "OK";
+    }),
   updateNodePosition: protectedProcedure
     .input(UpdatePositionSchema)
     .output(z.string())
@@ -50,6 +64,16 @@ export const deliverableDiagramsMutations = router({
         return "OK";
       }
     ),
+  deleteDiagram: protectedProcedure
+    .input(DeletePositionSchema)
+    .output(z.string())
+    .mutation(async ({ ctx: { db }, input: { nodeId } }) => {
+      await db
+        .delete(deliverableDiagramNodes)
+        .where(eq(deliverableDiagramNodes.id, nodeId));
+
+      return "OK";
+    }),
   createDeliverableDiagramBoundry: protectedProcedure
     .input(UpsertDeliverableDiagramNodeBoundrySchema)
     .use(deliverableIdAccessMiddleware)
@@ -86,4 +110,25 @@ export const deliverableDiagramsMutations = router({
         return "OK";
       }
     ),
+  updateBoundry: protectedProcedure
+    .input(UpdateSchema)
+    .output(z.string())
+    .mutation(async ({ ctx: { db }, input: { nodeId, name } }) => {
+      await db
+        .update(deliverableDiagramBoundries)
+        .set({
+          name
+        })
+        .where(eq(deliverableDiagramBoundries.id, nodeId));
+      return "OK";
+    }),
+  deleteBoundry: protectedProcedure
+    .input(DeletePositionSchema)
+    .output(z.string())
+    .mutation(async ({ ctx: { db }, input: { nodeId } }) => {
+      await db
+        .delete(deliverableDiagramBoundries)
+        .where(eq(deliverableDiagramBoundries.id, nodeId));
+      return "OK";
+    })
 });
