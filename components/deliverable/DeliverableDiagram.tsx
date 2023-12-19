@@ -6,6 +6,7 @@ import ReactFlow, {
   OnNodesChange,
   useNodesState,
   Node,
+  NodeMouseHandler,
 } from "reactflow";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -17,6 +18,7 @@ import BoundryNode from "./Boundry";
 
 interface DeliverableDiagramProps {
   deliverableId: string;
+  onClick: (node: Node<TeztonNode, string | undefined>) => void | undefined
 }
 
 type TeztonNode = {
@@ -32,6 +34,7 @@ const nodeTypes = { [TeztonNodeType.BOUNDRY]: BoundryNode };
 
 export default function DeliverableDiagram({
   deliverableId,
+  onClick,
 }: DeliverableDiagramProps) {
   const [createNodeModal, setCreateNodeModal] = useState(false);
   const [createBroundyModal, setCreateBroundyModal] = useState(false);
@@ -99,8 +102,13 @@ export default function DeliverableDiagram({
 
       setNodes(n.concat(b));
     }
-  }, [nodesData, setNodes, boundriesData]);
+  }, [nodesData, setNodes, boundriesData, onClick]);
 
+  const handleNodeClick = (event: MouseEvent, clickedNode: Node<TeztonNode, string | undefined>) => {
+    const filteredNodes = nodes.filter((n) => n.id === clickedNode.id);
+    const selectedNode = filteredNodes[0]
+    onClick(selectedNode);
+  };
   return (
     <div className="my-4 h-1/2">
       <div className="mb-4">
@@ -143,6 +151,7 @@ export default function DeliverableDiagram({
         nodes={nodes}
         onNodesChange={onNodeChangePosition}
         nodeTypes={nodeTypes}
+        onNodeClick={handleNodeClick as unknown as NodeMouseHandler}
       >
         <Controls />
         <Background color="#aaa" gap={16} />

@@ -10,6 +10,7 @@ export const DeliverableDiagramNodeBoundrySchema = z.object({
     x: z.number(),
     y: z.number(),
   }),
+  type: z.string().optional().nullable(),
 });
 
 export const UpsertDeliverableDiagramNodeBoundrySchema = z.object({
@@ -18,11 +19,18 @@ export const UpsertDeliverableDiagramNodeBoundrySchema = z.object({
   positionX: z.number(),
   positionY: z.number(),
 });
+export const UpdateSchema = z.object({
+  nodeId: z.string().uuid(),
+  name: z.string()
+});
 
 export const UpdatePositionSchema = z.object({
   nodeId: z.string().uuid(),
   positionX: z.number(),
   positionY: z.number(),
+});
+export const DeletePositionSchema = z.object({
+  nodeId: z.string().uuid(),
 });
 
 export type UpsertDeliverableDiagramNodeBoundrySchemaType = z.infer<
@@ -34,3 +42,6 @@ export type DeliverableDiagramNodeBoundrySchemaType = z.infer<
 >;
 
 export type UpdatePositionSchemaType = z.infer<typeof UpdatePositionSchema>;
+
+export type DeletePositionSchemaType = z.infer<typeof DeletePositionSchema>;
+export type UpdateSchemaType = z.infer<typeof UpdateSchema>;
