@@ -53,7 +53,7 @@ export default function AllProductsAside({
           }}
         />
       </Dialog>
-      <Tooltip title={name} place="left">
+      <Tooltip title={name} place="right">
         <div className="p-3 border-b">
           <ImageRender
             name={name}
@@ -91,7 +91,7 @@ export default function AllProductsAside({
       </div>
       <div className="w-full flex flex-col gap-2 pb-4">
         {data?.map(({ id: productId, name }) => (
-          <Tooltip key={productId} title={name} place="left">
+          <Tooltip key={productId} title={name} place="right">
             {productId === currentProduct && (
               <div className="h-full bg-gray-800 w-1 absolute rounded-e" />
             )}

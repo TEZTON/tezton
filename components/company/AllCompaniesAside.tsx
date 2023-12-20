@@ -67,7 +67,7 @@ export default function AllCompaniesAside() {
         </Dialog>
 
         {myCompanies?.map(({ id, name, companyImageUrl }) => (
-          <Tooltip key={id} title={name}>
+          <Tooltip key={id} title={name} place="right">
             <div
               key={id}
               className={`flex items-center justify-center ${MIN_DIMENSION_CLASS} rounded-r hover:bg-gray-300 dark:text-[gray] overflow-hidden p-1 group`}
@@ -85,7 +85,7 @@ export default function AllCompaniesAside() {
         ))}
         <div className="border-b-2 border-slate-300" />
         {data?.map(({ id, name, companyImageUrl }) => (
-          <Tooltip key={id} title={name}>
+          <Tooltip key={id} title={name} place="right">
             <div
               key={id}
               className={`group flex items-center justify-center ${MIN_DIMENSION_CLASS} rounded-md hover:bg-gray-300 dark:text-[gray] overflow-hidden p-1 group`}

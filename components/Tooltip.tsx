@@ -18,8 +18,8 @@ function Tooltip({
     const places = {
       top: "bottom-10 mb-1",
       bottom: "top-10 mt-1",
-      left: "left-11 ml-4 top-2",
-      right: "right-11 ml-4 top-2",
+      right: "left-11 ml-4 top-2",
+      left: "right-11 ml-4 top-2",
     };
     return places[place];
   };
