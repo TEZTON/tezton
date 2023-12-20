@@ -104,10 +104,7 @@ export default function FunctionalityAccordion({
           {name}
           <ContextMenu itemId={functionalityId} items={functionalityContexts} />
         </Accordion.AccordionTrigger>
-        <Accordion.AccordionContent
-          className="pl-4 py-2 pr-1"
-          forceMount={!Deliverables?.list?.length}
-        >
+        <Accordion.AccordionContent className="pl-4 py-2 pr-1">
           {!Deliverables?.list?.length && (
             <button
               className="btn btn-xs"
@@ -133,9 +130,9 @@ export default function FunctionalityAccordion({
               </Link>
             ))}
           </div>
-          <Deliverables.Modal />
-          <Functionalities.Modal />
         </Accordion.AccordionContent>
+        <Deliverables.Modal />
+        <Functionalities.Modal />
       </Accordion.Item>
     </Accordion.Root>
   );
