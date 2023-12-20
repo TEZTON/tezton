@@ -4,17 +4,22 @@ import { CalendarIcon } from "lucide-react";
 import CalendarPopover from "../calendar/CalendarPopover";
 import { trpc } from "@/trpc";
 import { useState, useEffect } from "react";
-import { UpsertDeliverablePhaseSchemaType, DeliverablePhaseSchemaType } from "@/schema/deliverable";
+import {
+  UpsertDeliverablePhaseSchemaType,
+  DeliverablePhaseSchemaType
+} from "@/schema/deliverable";
 
 import { useParams } from "next/navigation";
-
+import { DeliverableDiagramNodeBoundrySchemaType } from "@/schema/diagrams";
 
 interface UpsertDeliverablePhaseProps {
   selectedPhase: DeliverablePhaseSchemaType | null;
+  selected: DeliverableDiagramNodeBoundrySchemaType | null;
 }
 
 export default function UpsertDeliverablePhase({
-  selectedPhase
+  selectedPhase,
+  selected
 }: UpsertDeliverablePhaseProps) {
   const {
     watch,
@@ -22,12 +27,14 @@ export default function UpsertDeliverablePhase({
     setValue,
     handleSubmit,
     formState: { errors },
-    reset,
+    reset
   } = useFormContext<UpsertDeliverablePhaseSchemaType>();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-
   const [editMode, setEditMode] = useState(false);
+  const { deliverableId, functionalityId } = useParams();
+  const { deliverablePhases } = trpc.useUtils();
+
   useEffect(() => {
     if (selectedPhase) {
       setEditMode(true);
@@ -36,21 +43,58 @@ export default function UpsertDeliverablePhase({
       setValue("endDate", selectedPhase.endDate);
       setValue("deliverableTypeId", selectedPhase.type);
     }
-  }, [selectedPhase, setValue]);
+
+    if (selected) {
+      setEditMode(true);
+      setValue("name", selected.data?.label);
+    }
+  }, [selectedPhase, setValue, selected]);
 
   const createPhase =
     trpc.deliverablePhases.createDeliverablePhase.useMutation();
   const updatePhase =
     trpc.deliverablePhases.updateDeliverablePhase.useMutation();
+  const updateDiagram = trpc.deliverableDiagrams.updateDiagram.useMutation();
+  const updateBoundry = trpc.deliverableDiagrams.updateBoundry.useMutation();
+  const fetchNode = trpc.deliverableDiagrams.getNodes.useQuery({
+    deliverableId: deliverableId as string
+  });
+  const fetchBoundry = trpc.deliverableDiagrams.getBoundries.useQuery({
+    deliverableId: deliverableId as string
+  });
 
-  const { deliverablePhases } = trpc.useUtils();
+  const submitDiagram = async (nameEdit: string) => {
+    await updateDiagram.mutateAsync({
+      name: nameEdit,
+      nodeId: selected?.id as string
+    });
+    fetchNode.refetch();
+  };
+
+  const submitBoundry = async (nameEdit: string) => {
+    await updateBoundry.mutateAsync({
+      name: nameEdit,
+      nodeId: selected?.id as string
+    });
+    fetchBoundry.refetch();
+  };
+
+  const submitPhase = async (data: UpsertDeliverablePhaseSchemaType) => {
+    await updatePhase.mutateAsync({
+      ...data,
+      id: selectedPhase?.id as string,
+      deliverableTypeId: selectedPhase?.type as string
+    });
+  };
+
   const submitForm = async (data: UpsertDeliverablePhaseSchemaType) => {
-    if (editMode) {
-      await updatePhase.mutateAsync({
-        ...data,
-        id: selectedPhase?.id as string,
-        deliverableTypeId: selectedPhase?.type as string
-      });
+    const nameEdit =
+      watch("name") || selectedPhase?.name || selected?.data?.label;
+
+    if (selected && editMode) {
+      await submitDiagram(nameEdit!);
+    } else if (selectedPhase && editMode) {
+      await submitPhase(data);
     } else {
       await createPhase.mutateAsync(data);
     }
@@ -63,29 +107,35 @@ export default function UpsertDeliverablePhase({
   };
 
   const getError = () => {
-    return (
-      errors.name?.message ||
-      errors.endDate?.message ||
-      errors.startDate?.message ||
-      errors.root?.message ||
-      errors.deliverableTypeId?.message
-    );
+    if (selected) {
+      return errors.name?.message;
+    }
+
+    if (selectedPhase) {
+      return (
+        errors.name?.message ||
+        errors.endDate?.message ||
+        errors.startDate?.message ||
+        errors.root?.message ||
+        errors.deliverableTypeId?.message
+      );
+    }
+
+    return "";
   };
 
   const startDate =
     watch("startDate") || (selectedPhase && selectedPhase.startDate);
   const endDate = watch("endDate") || (selectedPhase && selectedPhase.endDate);
 
-  const { deliverableId, functionalityId } = useParams();
   const { data } = trpc.deliverables.byId.useQuery(
     {
       deliverableId: deliverableId as string,
-      functionalityId: functionalityId as string,
+      functionalityId: functionalityId as string
     },
     {
       enabled:
-        typeof deliverableId === "string" &&
-        typeof functionalityId === "string",
+        typeof deliverableId === "string" && typeof functionalityId === "string"
     }
   );
 
@@ -95,56 +145,61 @@ export default function UpsertDeliverablePhase({
       <input
         className="input input-sm input-bordered input-primary"
         placeholder="Titulo"
-        defaultValue={selectedPhase?.name || ""}
+        defaultValue={selectedPhase?.name || selected?.data?.label}
         {...register("name")}
-        readOnly={editMode}
       />
-      <CalendarPopover
-        open={startDateOpen}
-        onOpenChange={setStartDateOpen}
-        value={startDate && formatISO(startDate)}
-        minDate={startOfToday()}
-        onChange={(date) => {
-          if (date && !Array.isArray(date)) {
-            setValue("startDate", date);
-          }
+      {selected === null ? (
+        <>
+          <CalendarPopover
+            open={startDateOpen}
+            onOpenChange={setStartDateOpen}
+            value={startDate && formatISO(startDate)}
+            minDate={startOfToday()}
+            onChange={(date) => {
+              if (date && !Array.isArray(date)) {
+                setValue("startDate", date);
+              }
 
-          setStartDateOpen(false);
-        }}
-        trigger={
-          <div className="flex items-center gap-2">
-            <CalendarIcon size={16} />
-            <input
-              className="input input-sm input-bordered input-primary w-full"
-              placeholder="Data de Inicio"
-              defaultValue={startDate && format(startDate, "PP")}
-            />
-          </div>
-        }
-      />
-      <CalendarPopover
-        open={endDateOpen}
-        onOpenChange={setEndDateOpen}
-        value={endDate && formatISO(endDate)}
-        minDate={startDate}
-        onChange={(date) => {
-          if (date && !Array.isArray(date)) {
-            setValue("endDate", date);
-          }
+              setStartDateOpen(false);
+            }}
+            trigger={
+              <div className="flex items-center gap-2">
+                <CalendarIcon size={16} />
+                <input
+                  className="input input-sm input-bordered input-primary w-full"
+                  placeholder="Data de Inicio"
+                  defaultValue={startDate && format(startDate, "PP")}
+                />
+              </div>
+            }
+          />
+          <CalendarPopover
+            open={endDateOpen}
+            onOpenChange={setEndDateOpen}
+            value={endDate && formatISO(endDate)}
+            minDate={startDate}
+            onChange={(date) => {
+              if (date && !Array.isArray(date)) {
+                setValue("endDate", date);
+              }
 
-          setEndDateOpen(false);
-        }}
-        trigger={
-          <div className="flex items-center gap-2">
-            <CalendarIcon size={16} />
-            <input
-              className="input input-sm input-bordered input-primary w-full"
-              placeholder="Data de Fim"
-              defaultValue={endDate && format(endDate, "PP")}
-            />
-          </div>
-        }
-      />
+              setEndDateOpen(false);
+            }}
+            trigger={
+              <div className="flex items-center gap-2">
+                <CalendarIcon size={16} />
+                <input
+                  className="input input-sm input-bordered input-primary w-full"
+                  placeholder="Data de Fim"
+                  defaultValue={endDate && format(endDate, "PP")}
+                />
+              </div>
+            }
+          />
+        </>
+      ) : (
+        <></>
+      )}
       <input
         type="file"
         className="file-input file-input-xs  file-input-bordered text-xs file-input-primary"
@@ -161,9 +216,34 @@ export default function UpsertDeliverablePhase({
         placeholder="Descricao"
         rows={4}
       />
-      <button className="btn btn-primary text-white" type="submit">
-        {editMode ? "Atualizar" : "Salvar"}
-      </button>
+      {selectedPhase && (
+        <button className="btn btn-primary text-white" type="submit">
+          {editMode ? "Atualizar" : "Salvar"}
+        </button>
+      )}
+      {selected?.type === "BOUNDRY" ? (
+        <button
+          className="btn btn-primary text-white"
+          type="button"
+          onClick={() => {
+            const nameEdit = watch("name") || selected?.data?.label;
+            submitBoundry(nameEdit!);
+          }}
+        >
+          Atualizar
+        </button>
+      ) : (
+        <button
+          className="btn btn-primary text-white"
+          type="button"
+          onClick={() => {
+            const nameEdit = watch("name") || selected?.data?.label;
+            submitDiagram(nameEdit!);
+          }}
+        >
+          Atualizar
+        </button>
+      )}
     </form>
   );
 }
