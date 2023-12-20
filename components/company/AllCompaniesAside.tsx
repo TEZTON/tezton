@@ -1,11 +1,6 @@
 import { useState } from "react";
-import {
-  PlusCircleIcon,
-  MoreVertical,
-} from "lucide-react";
-import {
-  CompanySchemaType
-} from "@/schema/company";
+import { PlusCircleIcon, MoreVertical } from "lucide-react";
+import { CompanySchemaType } from "@/schema/company";
 import Link from "next/link";
 import Dialog from "../modal";
 import UpsertCompany from "@/components/company/UpsertCompany";
@@ -14,7 +9,7 @@ import ImageRender from "../ImageRender";
 import Tooltip from "@/components/Tooltip";
 
 const MIN_DIMENSION_CLASS = "min-w-[40px] min-h-[40px]";
-export type CompanyType = 'Financeira' | 'Tecnologia' | 'Consultoria';
+export type CompanyType = "Financeira" | "Tecnologia" | "Consultoria";
 
 export default function AllCompaniesAside() {
   const [isOpen, setOpen] = useState(false);
@@ -24,7 +19,9 @@ export default function AllCompaniesAside() {
   const [contextMenuId, setContextMenuId] = useState(null);
   const [isContextMenuOpen, setContextMenuOpen] = useState(false);
 
-  const [selectedCompany, setSelectedCompany] = useState<CompanySchemaType | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<
+    CompanySchemaType | any
+  >({});
 
   const handleContextMenu = (id: any) => {
     setContextMenuId(id);
@@ -47,11 +44,7 @@ export default function AllCompaniesAside() {
       <div className="w-full flex flex-col gap-2 pb-4">
         <Dialog open={isOpenEdit} setOpen={setOpenEdit}>
           <UpsertCompany
-            initialData={{
-              id: selectedCompany?.id || "",
-              name: selectedCompany?.name || "",
-              type: selectedCompany?.type as CompanyType || 'Financeira',
-            }}
+            initialData={selectedCompany}
             onSuccess={() => {
               setOpenEdit(false);
             }}
@@ -77,7 +70,7 @@ export default function AllCompaniesAside() {
           <Tooltip key={id} title={name}>
             <div
               key={id}
-              className={`group flex items-center justify-center ${MIN_DIMENSION_CLASS} rounded-r hover:bg-gray-300 dark:text-[gray] overflow-hidden p-1 group`}
+              className={`flex items-center justify-center ${MIN_DIMENSION_CLASS} rounded-r hover:bg-gray-300 dark:text-[gray] overflow-hidden p-1 group`}
               onMouseEnter={() => handleContextMenu(id)}
               onMouseLeave={closeContextMenu}
             >

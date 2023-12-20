@@ -60,7 +60,10 @@ export default function UpsertCompany({
         companyImageUrl: fileurl,
         companyId: initialData.id || "",
       };
-      await update.mutateAsync(updateData);
+      await update.mutateAsync({
+        ...updateData,
+        companyId: updateData.companyId || "",
+      });
     } else {
       await create.mutateAsync({ ...data, companyImageUrl: fileurl });
       getCompanies.isFetched && getCompanies.refetch();
