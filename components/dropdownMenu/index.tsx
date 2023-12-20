@@ -40,7 +40,11 @@ export const ContextMenu = ({
         {items?.length &&
           items.map(({ id, label, icon: Icon, action }) => (
             <DropdownMenu.Item
-              onClick={() => action(itemId)}
+              onClick={(e) => {
+                // e.stopPropagation();
+                action(itemId);
+                e.preventDefault();
+              }}
               key={label + id}
               className="w-full h-7 flex justify-between items-center gap-2 hover:bg-primary px-2 py-3 hover:text-white"
             >

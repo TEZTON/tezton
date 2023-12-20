@@ -1,17 +1,10 @@
 import * as Accordion from "@radix-ui/react-accordion";
-import {
-  PlusIcon,
-  PenSquareIcon,
-  TrashIcon,
-  InfoIcon,
-  Loader,
-} from "lucide-react";
-
-import Modal from "../modal";
+import { PlusIcon, PenSquareIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ContextMenu } from "@/components/dropdownMenu";
 import useDeliverables from "../deliverable/useDeliverables";
+import useFunctionality from "../functionality/useFunctionalities";
 
 interface FunctionalityAccordionProps {
   name: string;
@@ -28,8 +21,8 @@ export default function FunctionalityAccordion({
   productId,
   projectId,
 }: FunctionalityAccordionProps) {
-
   const Deliverables = useDeliverables(functionalityId);
+  const Functionalities = useFunctionality(projectId);
 
   const { functionalityId: pathFunctionalityId, deliverableId } = useParams();
 
@@ -69,14 +62,27 @@ export default function FunctionalityAccordion({
       id: 1,
       label: "Editar",
       icon: PenSquareIcon,
-      action: (id: any) => {},
+      action: async (id: any) => {
+        const functionality = Functionalities.list?.find(
+          (item) => item.id === id
+        );
+        if (functionality) {
+          Functionalities.update(functionality);
+        }
+      },
     },
     {
       id: 2,
       label: "Apagar",
       icon: TrashIcon,
-      action: (id: any) => {
-        setconfirmDeleteModal(true);
+      action: async (id: any) => {
+        const functionality = Functionalities.list?.find(
+          (item) => item.id === id
+        );
+        if (functionality) {
+          const hasDeliverables = !!Deliverables?.list?.length;
+          Functionalities.remove(functionality, hasDeliverables);
+        }
       },
     },
   ];
@@ -98,7 +104,21 @@ export default function FunctionalityAccordion({
           {name}
           <ContextMenu itemId={functionalityId} items={functionalityContexts} />
         </Accordion.AccordionTrigger>
-        <Accordion.AccordionContent className="pl-4 py-2 pr-1" forceMount={!Deliverables?.list?.length}>
+        <Accordion.AccordionContent
+          className="pl-4 py-2 pr-1"
+          forceMount={!Deliverables?.list?.length}
+        >
+          {!Deliverables?.list?.length && (
+            <button
+              className="btn btn-xs"
+              onClick={() => {
+                Deliverables.create();
+              }}
+            >
+              <PlusIcon size={16} />
+              Criar entregavel
+            </button>
+          )}
           <div className="mt-2 flex gap-2 flex-col align-center p-1">
             {Deliverables?.list?.map(({ id, name }) => (
               <Link
@@ -114,6 +134,7 @@ export default function FunctionalityAccordion({
             ))}
           </div>
           <Deliverables.Modal />
+          <Functionalities.Modal />
         </Accordion.AccordionContent>
       </Accordion.Item>
     </Accordion.Root>
