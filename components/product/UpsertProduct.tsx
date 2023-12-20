@@ -1,8 +1,9 @@
+import { UpsertPropsProduct } from "@/utils/types";
 import { UpsertProductSchema, UpsertProductSchemaType } from "@/schema/product";
 import { trpc } from "@/trpc";
-import { UpsertPropsProduct } from "@/utils/types";
+import { useState, useEffect } from "react";
+import { Loader } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 export default function UpsertProduct({
@@ -23,6 +24,8 @@ export default function UpsertProduct({
     resolver: zodResolver(UpsertProductSchema),
   });
 
+  const [loading, setLoading] = useState(false);
+
   const { products } = trpc.useUtils();
   const create = trpc.products.createProduct.useMutation();
   const update = trpc.products.updateProduct.useMutation();
@@ -31,6 +34,7 @@ export default function UpsertProduct({
     companyId: companyId
   });
   const onSubmit: SubmitHandler<UpsertProductSchemaType> = async (data) => {
+    setLoading(true);
     if (initialData && initialData.id) {
       const updateData: UpsertProductSchemaType = {
         companyId: companyId,
@@ -47,11 +51,13 @@ export default function UpsertProduct({
     getProducts.isFetched && getProducts.refetch();
     }
     await products.getProducts.invalidate();
+    setLoading(false);
     onSuccessCallback();
   };
 
   const funcDelete = async () => {
     if (initialData && initialData.id) {
+      setLoading(true);
       await deleted.mutateAsync({
         productId: initialData?.id,
         companyId: companyId
@@ -61,6 +67,7 @@ export default function UpsertProduct({
           onSuccessCallback();
         },
       });
+      setLoading(false);
     }
   };
 
@@ -98,16 +105,17 @@ export default function UpsertProduct({
           className="input input-sm input-bordered input-primary"
         />
 
-        <button className="btn btn-primary text-white" type="submit">
-          Salvar
+        <button className="btn btn-primary text-white" type="submit" disabled={loading}>
+          Salvar {loading && <Loader />}
         </button>
         {initialData && (
           <button
+            disabled={loading}
             onClick={funcDelete}
             className="btn btn-secondary text-white"
             type="button"
           >
-            Excluir
+            Excluir {loading && <Loader />}
           </button>
         )}
       </form>
