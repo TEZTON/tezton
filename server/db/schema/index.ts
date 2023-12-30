@@ -153,6 +153,7 @@ export const deliverableDiagramNodes = sqliteTable(
       .primaryKey()
       .$defaultFn(() => v4()),
     name: text("name").notNull(),
+    description: text("description").notNull(),
     positionX: integer("position_x").notNull(),
     positionY: integer("position_y").notNull(),
     createdAt: text("created_at")
@@ -174,6 +175,7 @@ export const deliverableDiagramBoundries = sqliteTable(
       .primaryKey()
       .$defaultFn(() => v4()),
     name: text("name").notNull(),
+    description: text("description").notNull(),
     positionX: integer("position_x").notNull(),
     positionY: integer("position_y").notNull(),
     createdAt: text("created_at")
