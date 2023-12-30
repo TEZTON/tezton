@@ -65,8 +65,14 @@ export default function UpsertDeliverableDiagramNode({
         {getError() && <div className="text-error text-xs">{getError()}</div>}
         <input
           type="text"
-          placeholder="Nome do Empresa"
+          placeholder="Nome do Card"
           {...register("name")}
+          className="input input-sm input-bordered input-primary"
+        />
+        <input
+          type="text"
+          placeholder="Descrição"
+          {...register("description")}
           className="input input-sm input-bordered input-primary"
         />
 

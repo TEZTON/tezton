@@ -25,7 +25,7 @@ export const deliverableDiagramsQueries = router({
         .where(eq(deliverableDiagramNodes.deliverableId, deliverableId));
 
       const result = nodes.map(
-        ({ id, deliverableId, name, positionX, positionY }) => ({
+        ({ id, deliverableId, name, description, positionX, positionY }) => ({
           id,
           deliverableId,
           position: {
@@ -34,6 +34,7 @@ export const deliverableDiagramsQueries = router({
           },
           data: {
             label: name,
+            description: description,
           },
         })
       );
@@ -56,7 +57,7 @@ export const deliverableDiagramsQueries = router({
         .where(eq(deliverableDiagramBoundries.deliverableId, deliverableId));
 
       const result = nodes.map(
-        ({ id, deliverableId, name, positionX, positionY }) => ({
+        ({ id, deliverableId, name, description, positionX, positionY }) => ({
           id,
           deliverableId,
           position: {
@@ -65,6 +66,7 @@ export const deliverableDiagramsQueries = router({
           },
           data: {
             label: name,
+            description: description,
           },
         })
       );

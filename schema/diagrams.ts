@@ -5,6 +5,7 @@ export const DeliverableDiagramNodeBoundrySchema = z.object({
   deliverableId: z.string().uuid(),
   data: z.object({
     label: z.string(),
+    description: z.string().optional().nullable(),
   }),
   position: z.object({
     x: z.number(),
@@ -15,13 +16,15 @@ export const DeliverableDiagramNodeBoundrySchema = z.object({
 
 export const UpsertDeliverableDiagramNodeBoundrySchema = z.object({
   name: z.string().min(1, "Node name must contain at least 1 character(s)"),
+  description: z.string(),
   deliverableId: z.string().uuid(),
   positionX: z.number(),
   positionY: z.number(),
 });
 export const UpdateSchema = z.object({
   nodeId: z.string().uuid(),
-  name: z.string()
+  name: z.string(),
+  description: z.string(),
 });
 
 export const UpdatePositionSchema = z.object({

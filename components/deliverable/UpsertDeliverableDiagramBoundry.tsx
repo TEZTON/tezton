@@ -70,6 +70,12 @@ export default function UpsertDeliverableDiagramBoundry({
           className="input input-sm input-bordered input-primary"
         />
 
+        <input
+          type="text"
+          placeholder="Descrição"
+          {...register("description")}
+          className="input input-sm input-bordered input-primary"
+        />
         <button className="btn btn-primary text-white" type="submit">
           Salvar
         </button>

@@ -23,11 +23,12 @@ export const deliverableDiagramsMutations = router({
     .mutation(
       async ({
         ctx: { db },
-        input: { name, deliverableId, positionX, positionY },
+        input: { name, description, deliverableId, positionX, positionY },
       }) => {
         await db.insert(deliverableDiagramNodes).values({
           deliverableId,
           name,
+          description,
           positionX,
           positionY,
         });
@@ -38,11 +39,12 @@ export const deliverableDiagramsMutations = router({
   updateDiagram: protectedProcedure
     .input(UpdateSchema)
     .output(z.string())
-    .mutation(async ({ ctx: { db }, input: { nodeId, name } }) => {
+    .mutation(async ({ ctx: { db }, input: { nodeId, name, description } }) => {
       await db
         .update(deliverableDiagramNodes)
         .set({
-          name
+          name,
+          description
         })
         .where(eq(deliverableDiagramNodes.id, nodeId));
       return "OK";
@@ -81,11 +83,12 @@ export const deliverableDiagramsMutations = router({
     .mutation(
       async ({
         ctx: { db },
-        input: { name, deliverableId, positionX, positionY },
+        input: { name, description, deliverableId, positionX, positionY },
       }) => {
         await db.insert(deliverableDiagramBoundries).values({
           deliverableId,
           name,
+          description,
           positionX,
           positionY,
         });
@@ -113,11 +116,12 @@ export const deliverableDiagramsMutations = router({
   updateBoundry: protectedProcedure
     .input(UpdateSchema)
     .output(z.string())
-    .mutation(async ({ ctx: { db }, input: { nodeId, name } }) => {
+    .mutation(async ({ ctx: { db }, input: { nodeId, name, description } }) => {
       await db
         .update(deliverableDiagramBoundries)
         .set({
-          name
+          name,
+          description,
         })
         .where(eq(deliverableDiagramBoundries.id, nodeId));
       return "OK";

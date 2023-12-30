@@ -47,6 +47,7 @@ export default function UpsertDeliverablePhase({
     if (selected) {
       setEditMode(true);
       setValue("name", selected.data?.label);
+      setValue("description", selected.data?.description);
     }
   }, [selectedPhase, setValue, selected]);
 
@@ -63,18 +64,20 @@ export default function UpsertDeliverablePhase({
     deliverableId: deliverableId as string
   });
 
-  const submitDiagram = async (nameEdit: string) => {
+  const submitDiagram = async (nameEdit: string, descriptionEdit: string) => {
     await updateDiagram.mutateAsync({
       name: nameEdit,
-      nodeId: selected?.id as string
+      nodeId: selected?.id as string,
+      description: descriptionEdit
     });
     fetchNode.refetch();
   };
 
-  const submitBoundry = async (nameEdit: string) => {
+  const submitBoundry = async (nameEdit: string, descriptionEdit: string) => {
     await updateBoundry.mutateAsync({
       name: nameEdit,
-      nodeId: selected?.id as string
+      nodeId: selected?.id as string,
+      description: descriptionEdit
     });
     fetchBoundry.refetch();
   };
@@ -90,9 +93,10 @@ export default function UpsertDeliverablePhase({
   const submitForm = async (data: UpsertDeliverablePhaseSchemaType) => {
     const nameEdit =
       watch("name") || selectedPhase?.name || selected?.data?.label;
+    const descriptionEdit = watch("description") || selected?.data?.description;
 
     if (selected && editMode) {
-      await submitDiagram(nameEdit!);
+      await submitDiagram(nameEdit!, descriptionEdit!);
     } else if (selectedPhase && editMode) {
       await submitPhase(data);
     } else {
@@ -127,6 +131,7 @@ export default function UpsertDeliverablePhase({
   const startDate =
     watch("startDate") || (selectedPhase && selectedPhase.startDate);
   const endDate = watch("endDate") || (selectedPhase && selectedPhase.endDate);
+  const descriptionEdit = watch("description") || selected?.data?.description;
 
   const { data } = trpc.deliverables.byId.useQuery(
     {
@@ -211,8 +216,9 @@ export default function UpsertDeliverablePhase({
         <div className="divider m-0" />
       </div>
       <textarea
+        {...register("description")}
         className="textarea textarea-sm textarea-bordered textarea-primary"
-        defaultValue={data?.description || ""}
+        defaultValue={data?.description || descriptionEdit!}
         placeholder="Descricao"
         rows={4}
       />
@@ -227,7 +233,9 @@ export default function UpsertDeliverablePhase({
           type="button"
           onClick={() => {
             const nameEdit = watch("name") || selected?.data?.label;
-            submitBoundry(nameEdit!);
+            const descriptionEdit =
+              watch("description") || selected?.data?.description;
+            submitBoundry(nameEdit!, descriptionEdit!);
           }}
         >
           Atualizar
@@ -238,7 +246,8 @@ export default function UpsertDeliverablePhase({
           type="button"
           onClick={() => {
             const nameEdit = watch("name") || selected?.data?.label;
-            submitDiagram(nameEdit!);
+            const descriptionEdit = watch("description") || selected?.data?.description;
+            submitDiagram(nameEdit!, descriptionEdit!);
           }}
         >
           Atualizar
