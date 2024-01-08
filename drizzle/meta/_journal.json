@@ -57,6 +57,13 @@
       "when": 1701136730352,
       "tag": "0007_chief_senator_kelly",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1704721131165,
+      "tag": "0008_square_kabuki",
+      "breakpoints": true
     }
   ]
 }
