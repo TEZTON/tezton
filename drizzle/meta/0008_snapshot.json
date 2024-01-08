@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "bd5a0953-7f4f-4c40-948d-f9029ca337fa",
-  "prevId": "8feef47f-9070-4082-8619-b0da54d9c999",
+  "id": "c14c7227-9d50-491d-bebe-e9250686c408",
+  "prevId": "bd5a0953-7f4f-4c40-948d-f9029ca337fa",
   "tables": {
     "companies": {
       "name": "companies",
