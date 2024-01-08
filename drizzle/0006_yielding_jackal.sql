@@ -1,7 +1,6 @@
 CREATE TABLE `deliverable_diagram_boundries` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
-	`description` text NOT NULL,
 	`position_x` integer NOT NULL,
 	`position_y` integer NOT NULL,
 	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
